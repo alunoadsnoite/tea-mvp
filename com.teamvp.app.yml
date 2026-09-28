@@ -1,0 +1,60 @@
+Categories:
+  - Health
+  - Productivity
+License: GPL-3.0-or-later
+WebSite: https://github.com/alunoadsnoite/tea-mvp
+SourceCode: https://github.com/alunoadsnoite/tea-mvp
+IssueTracker: https://github.com/alunoadsnoite/tea-mvp/issues
+AutoName: TEA Autonomia
+Summary: Aplicativo offline para adultos no Espectro Autista focado em autonomia, previsibilidade e gerenciamento de crises
+Description: |
+  TEA Autonomia é um aplicativo Android para adultos no Espectro Autista (TEA)
+  que funciona totalmente offline e oferece ferramentas de apoio para
+  autonomia, previsibilidade e regulação sensorial.
+
+  Principais funcionalidades:
+
+  - **Cartão de Comunicação de Crise**: Acesso rápido em uma toque na home com
+    mensagens pré-configuradas personalizáveis, contatos de emergência para
+    ligação/mensagem, funcionando 100% offline.
+
+  - **Check-in de Bateria Social e Interocepção**: Registro rápido (menos de
+    10 segundos) para acompanhar bateria social (0-100%), carga sensorial
+    (0-5), energia física (0-5) e gatilhos rápidos selecionáveis.
+
+  - **Rotinas Visuais Sequenciais**: Criação de rotinas personalizadas com
+    passos e tempo estimado para aumentar previsibilidade.
+
+  - **Central de Cartões de Regulação (Coping Cards)**: Gestão de cartões
+    personalizados com título, descrição, categoria e passos para estratégias
+    de automerregulação.
+
+  - **Respiração Guiada**: Exercícios 4-4-4-4 e 4-7-8 que se adaptam à
+    orientação da tela.
+
+  - **Acessibilidade**: Fonte ajustável (respeita configurações do sistema
+    0.85x-1.3x), dark mode por padrão, tema claro opcional e modo automático.
+    Feedback háptico em botões de emergência e seleções.
+
+  - **Tema e Personalização**: Tela de configurações com seleção de tema e
+    descrições claras.
+
+  O app é offline-first: o estado do usuário é persistido localmente com
+  Zustand e AsyncStorage, continuando a funcionar sem conexão.
+
+  Contato do desenvolvedor: valdenorsa@proton.me
+
+  Licença: GPL-3.0-or-later
+RepoType: git
+Repo: https://github.com/alunoadsnoite/tea-mvp
+Builds:
+  - versionName: 1.0.5
+    versionCode: 1
+    commit: master
+    subdir: android
+    gradle:
+      - ./gradlew assembleDebug
+    buildToolsVersion: "34.0.0"
+    ndk:
+    scandelete:
+      - node_modules
