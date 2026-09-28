@@ -2,9 +2,28 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.1
+## Versão Atual: 1.0.4
 
 ### Changelog
+
+#### v1.0.4 (2026-09-27)
+- **Feedback háptico**: Vibração suave em botões de emergência e seleções
+- **Fonte ajustável**: Respeita configurações de acessibilidade do sistema (0.85x–1.3x)
+- **Tema claro/escuro**: Dark mode por padrão, tema claro opcional, modo automático
+- **Tela de configurações**: Seleção de tema com descrições claras
+- **Botão na Home**: Acesso rápido às configurações
+- **Haptic no cartão de crise**: Feedback sutil nos botões de ligar/mensagem
+
+#### v1.0.3 (2026-09-27)
+- **Texto alinhado à esquerda**: Cartão de crise com texto alinhado à esquerda
+- **Splash screen**: Adicionado splash.png com a imagem do puzzle
+- **Ícone do puzzle**: Imagem original do puzzle (1024x1024)
+
+#### v1.0.2 (2026-09-27)
+- **Rotação corrigida**: AndroidManifest alterado de portrait para sensor
+- **Texto reage à rotação**: useWindowDimensions em vez de Dimensions.get
+- **Texto cortado corrigido**: flexShrink no texto
+- **Rotação na tela**: orientation default no Stack.Screen
 
 #### v1.0.1 (2026-09-27)
 - **Ícone do app**: Nova imagem do puzzle colorido (símbolo universal do autismo)
