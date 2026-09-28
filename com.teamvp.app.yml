@@ -50,11 +50,11 @@ Repo: https://github.com/alunoadsnoite/tea-mvp
 Builds:
   - versionName: 1.0.5
     versionCode: 5
-    commit: master
+    commit: b05fcb6
     subdir: android
     gradle:
       - ./gradlew assembleDebug
     buildToolsVersion: "34.0.0"
-    ndk:
+    ndk: "25.1.8937393"
     scandelete:
       - node_modules
