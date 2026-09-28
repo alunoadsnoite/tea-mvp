@@ -8,6 +8,7 @@ import { CrisisCardModal } from "@/components/CrisisCardModal";
  * 
  * Modo cheio e alto contraste para momentos de sobrecarga sensorial.
  * Funcional 100% offline.
+ * Suporta rotação automática (portrait e landscape).
  */
 export default function CrisisCardScreen() {
   return (
@@ -19,6 +20,7 @@ export default function CrisisCardScreen() {
           headerStyle: { backgroundColor: "#1A1D23" },
           headerTintColor: "#E8E6E3",
           headerBackTitle: "Voltar",
+          orientation: "default",
         }}
       />
       <CrisisCardModal />

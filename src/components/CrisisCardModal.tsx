@@ -5,7 +5,7 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
-  Dimensions,
+  useWindowDimensions,
   Linking,
 } from "react-native";
 import { useCrisisStore } from "@/stores/crisisStore";
@@ -24,6 +24,7 @@ interface ScrollViewEvent {
  * Características:
  * - Modo cheio e alto contraste (texto grande, fundo escuro)
  * - Texto centralizado na tela para fácil leitura
+ * - Reage automaticamente à rotação do celular
  * - Navegação por gestos simples (swipe horizontal para alternar mensagens)
  * - Acesso ao contato de emergência
  * - Sem elementos piscando ou animações complexas
@@ -38,7 +39,7 @@ export function CrisisCardModal() {
   });
 
   const scrollViewRef = useRef<ScrollView>(null);
-  const { width } = Dimensions.get("window");
+  const { width } = useWindowDimensions();
 
   const currentMessage = messages[currentIndex];
 
@@ -164,6 +165,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    paddingHorizontal: 8,
   },
   messageTitle: {
     color: "#7B9EA8",
@@ -189,6 +191,8 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     textAlign: "center",
     fontWeight: "600",
+    flexWrap: "wrap",
+    flexShrink: 1,
   },
   emergencyActions: {
     gap: 12,
