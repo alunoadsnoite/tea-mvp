@@ -74,6 +74,14 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </Link>
+
+          <Link href="/settings" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <Text style={styles.secondaryButtonText}>
+                Configurações
+              </Text>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </SafeAreaView>

@@ -9,6 +9,7 @@ import {
   Linking,
 } from "react-native";
 import { useCrisisStore } from "@/stores/crisisStore";
+import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 
 interface ScrollViewEvent {
   nativeEvent: {
@@ -40,6 +41,7 @@ export function CrisisCardModal() {
 
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
+  const { trigger } = useHapticFeedback();
 
   const currentMessage = messages[currentIndex];
 
@@ -55,6 +57,7 @@ export function CrisisCardModal() {
 
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
+    trigger("success");
     const emergencyContact = contacts[0];
     if (emergencyContact?.phone) {
       Linking.openURL(`tel:${emergencyContact.phone}`);
@@ -63,6 +66,7 @@ export function CrisisCardModal() {
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
+    trigger("light");
     const emergencyContact = contacts[0];
     if (emergencyContact?.phone) {
       const message = encodeURIComponent(currentMessage?.content || "");
