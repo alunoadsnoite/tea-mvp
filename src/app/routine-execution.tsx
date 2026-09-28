@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useRouter } from "expo-router";
 import { useRoutineStore } from "@/stores/routineStore";
 import { VisualTimerBar } from "@/components/VisualTimerBar";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * RoutineExecutionScreen — Execução passo-a-passo
@@ -22,6 +23,7 @@ import { VisualTimerBar } from "@/components/VisualTimerBar";
  */
 export default function RoutineExecutionScreen() {
   const router = useRouter();
+  const { colors } = useThemeMode();
   const execution = useRoutineStore((state) => state.execution);
   const routines = useRoutineStore((state) => state.routines);
   const completeStep = useRoutineStore((state) => state.completeStep);
@@ -42,14 +44,14 @@ export default function RoutineExecutionScreen() {
 
   if (!execution) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhuma rotina em execução</Text>
+          <Text style={[styles.emptyText, { color: colors.text }]}>Nenhuma rotina em execução</Text>
           <Pressable
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Text style={styles.backButtonText}>Voltar</Text>
+            <Text style={[styles.backButtonText, { color: colors.text }]}>Voltar</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -192,7 +194,6 @@ export default function RoutineExecutionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   scrollView: {
     flex: 1,

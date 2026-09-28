@@ -10,10 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { useCheckInStore } from "@/stores/checkInStore";
 import { COMMON_TRIGGERS, REGULATION_SUGGESTIONS } from "@/types/checkin";
+import { useFontScale } from "@/hooks/useFontScale";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * EnergyCheckInScreen — Check-in de Bateria Social & Interocepção
- * 
+ *
  * Princípios:
  * - Mínimo de esforço cognitivo (menos de 10 segundos)
  * - Sem digitação obrigatória
@@ -21,16 +23,18 @@ import { COMMON_TRIGGERS, REGULATION_SUGGESTIONS } from "@/types/checkin";
  * - Sem cores saturadas agressivas
  */
 export default function EnergyCheckInScreen() {
+  const { fontSize } = useFontScale();
+  const { colors } = useThemeMode();
   const addEntry = useCheckInStore((state) => state.addEntry);
-  
+
   // Estados dos seletores
   const [socialBattery, setSocialBattery] = useState(50);
   const [sensoryLoad, setSensoryLoad] = useState(0);
   const [physicalEnergy, setPhysicalEnergy] = useState(3);
-  
+
   // Gatilhos selecionados
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
-  
+
   // Feedback
   const [showFeedback, setShowFeedback] = useState(false);
 
@@ -58,7 +62,7 @@ export default function EnergyCheckInScreen() {
       triggers: selectedTriggers,
     });
     setShowFeedback(true);
-    
+
     // Esconder feedback após 3 segundos (sem animação piscante)
     setTimeout(() => setShowFeedback(false), 3000);
   };
@@ -66,29 +70,29 @@ export default function EnergyCheckInScreen() {
   const suggestions = getSuggestions();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Como estou me sentindo",
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
         }}
       />
-      
+
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Bateria Social */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Bateria Social</Text>
-          <Text style={styles.sectionDescription}>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Bateria Social</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
             Disposição para interação interpessoal
           </Text>
-          
+
           <View style={styles.sliderContainer}>
             <View style={styles.sliderLabels}>
-              <Text style={styles.sliderLabel}>0%</Text>
-              <Text style={styles.sliderValue}>{socialBattery}%</Text>
-              <Text style={styles.sliderLabel}>100%</Text>
+              <Text style={[styles.sliderLabel, { fontSize: fontSize(14) }]}>0%</Text>
+              <Text style={[styles.sliderValue, { fontSize: fontSize(24) }]}>{socialBattery}%</Text>
+              <Text style={[styles.sliderLabel, { fontSize: fontSize(14) }]}>100%</Text>
             </View>
             <View style={styles.sliderTrack}>
               <View
@@ -103,13 +107,13 @@ export default function EnergyCheckInScreen() {
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.max(0, socialBattery - 10))}
               >
-                <Text style={styles.adjustButtonText}>-10</Text>
+                <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>-10</Text>
               </Pressable>
               <Pressable
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.min(100, socialBattery + 10))}
               >
-                <Text style={styles.adjustButtonText}>+10</Text>
+                <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>+10</Text>
               </Pressable>
             </View>
           </View>
@@ -117,11 +121,11 @@ export default function EnergyCheckInScreen() {
 
         {/* Carga Sensorial */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Carga Sensorial</Text>
-          <Text style={styles.sectionDescription}>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Carga Sensorial</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
             Desconforto com luzes, ruídos ou ambientes
           </Text>
-          
+
           <View style={styles.levelSelector}>
             {[0, 1, 2, 3, 4, 5].map((level) => (
               <Pressable
@@ -136,6 +140,7 @@ export default function EnergyCheckInScreen() {
                   style={[
                     styles.levelButtonText,
                     sensoryLoad === level && styles.levelButtonTextActive,
+                    { fontSize: fontSize(18) },
                   ]}
                 >
                   {level}
@@ -147,11 +152,11 @@ export default function EnergyCheckInScreen() {
 
         {/* Energia Física */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Energia Física</Text>
-          <Text style={styles.sectionDescription}>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Energia Física</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
             Disposição geral do corpo
           </Text>
-          
+
           <View style={styles.levelSelector}>
             {[0, 1, 2, 3, 4, 5].map((level) => (
               <Pressable
@@ -166,6 +171,7 @@ export default function EnergyCheckInScreen() {
                   style={[
                     styles.levelButtonText,
                     physicalEnergy === level && styles.levelButtonTextActive,
+                    { fontSize: fontSize(18) },
                   ]}
                 >
                   {level}
@@ -177,11 +183,11 @@ export default function EnergyCheckInScreen() {
 
         {/* Gatilhos Rápidos */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Gatilhos</Text>
-          <Text style={styles.sectionDescription}>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Gatilhos</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
             O que pode estar afetando você? (opcional)
           </Text>
-          
+
           <View style={styles.chipsContainer}>
             {COMMON_TRIGGERS.map((trigger) => (
               <Pressable
@@ -196,6 +202,7 @@ export default function EnergyCheckInScreen() {
                   style={[
                     styles.chipText,
                     selectedTriggers.includes(trigger) && styles.chipTextSelected,
+                    { fontSize: fontSize(14) },
                   ]}
                 >
                   {trigger}
@@ -208,10 +215,10 @@ export default function EnergyCheckInScreen() {
         {/* Sugestões de Regulação */}
         {suggestions.length > 0 && (
           <View style={styles.suggestionsContainer}>
-            <Text style={styles.suggestionsTitle}>Sugestões para você</Text>
+            <Text style={[styles.suggestionsTitle, { fontSize: fontSize(16) }]}>Sugestões para você</Text>
             {suggestions.map((suggestion, index) => (
               <View key={index} style={styles.suggestionCard}>
-                <Text style={styles.suggestionText}>{suggestion.message}</Text>
+                <Text style={[styles.suggestionText, { fontSize: fontSize(14) }]}>{suggestion.message}</Text>
               </View>
             ))}
           </View>
@@ -220,7 +227,7 @@ export default function EnergyCheckInScreen() {
         {/* Feedback de sucesso */}
         {showFeedback && (
           <View style={styles.feedbackContainer}>
-            <Text style={styles.feedbackText}>
+            <Text style={[styles.feedbackText, { fontSize: fontSize(16) }]}>
               Check-in registrado. Cuide-se.
             </Text>
           </View>
@@ -228,7 +235,7 @@ export default function EnergyCheckInScreen() {
 
         {/* Botão Salvar */}
         <Pressable style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Registrar</Text>
+          <Text style={[styles.saveButtonText, { fontSize: fontSize(18) }]}>Registrar</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -238,7 +245,6 @@ export default function EnergyCheckInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   scrollView: {
     flex: 1,
@@ -252,12 +258,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: "#E8E6E3",
-    fontSize: 20,
     fontWeight: "600",
   },
   sectionDescription: {
     color: "#8A8782",
-    fontSize: 14,
   },
   sliderContainer: {
     gap: 12,
@@ -269,11 +273,9 @@ const styles = StyleSheet.create({
   },
   sliderLabel: {
     color: "#8A8782",
-    fontSize: 14,
   },
   sliderValue: {
     color: "#E8E6E3",
-    fontSize: 24,
     fontWeight: "600",
   },
   sliderTrack: {
@@ -302,7 +304,6 @@ const styles = StyleSheet.create({
   },
   adjustButtonText: {
     color: "#B8B5B0",
-    fontSize: 16,
   },
   levelSelector: {
     flexDirection: "row",
@@ -324,7 +325,6 @@ const styles = StyleSheet.create({
   },
   levelButtonText: {
     color: "#B8B5B0",
-    fontSize: 18,
     fontWeight: "600",
   },
   levelButtonTextActive: {
@@ -349,7 +349,6 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: "#B8B5B0",
-    fontSize: 14,
   },
   chipTextSelected: {
     color: "#1A1D23",
@@ -359,7 +358,6 @@ const styles = StyleSheet.create({
   },
   suggestionsTitle: {
     color: "#B8B5B0",
-    fontSize: 16,
     fontWeight: "600",
   },
   suggestionCard: {
@@ -371,7 +369,6 @@ const styles = StyleSheet.create({
   },
   suggestionText: {
     color: "#B8B5B0",
-    fontSize: 14,
     lineHeight: 20,
   },
   feedbackContainer: {
@@ -382,7 +379,6 @@ const styles = StyleSheet.create({
   },
   feedbackText: {
     color: "#8FA98F",
-    fontSize: 16,
   },
   saveButton: {
     backgroundColor: "#7B9EA8",
@@ -393,7 +389,6 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#1A1D23",
-    fontSize: 18,
     fontWeight: "600",
   },
 });

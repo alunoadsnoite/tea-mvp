@@ -86,7 +86,7 @@ export const useCopingCardsStore = create<CopingCardsStore>()(
       },
 
       resetToDefaults: () => {
-        set({ cards: DEFAULT_COPING_CARDS });
+        set({ cards: DEFAULT_COPING_CARDS.map(c => ({ ...c, createdAt: 0 })) });
       },
     }),
     {

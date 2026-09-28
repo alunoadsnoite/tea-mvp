@@ -5,22 +5,21 @@ import {
   Pressable,
   StyleSheet,
   Animated,
-  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
-
-const { width } = Dimensions.get("window");
-const CIRCLE_SIZE = width * 0.6;
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * BreathingGuideScreen — Exercício de Respiração Guiada
- * 
+ *
  * Animação suave de expansão/contração sem sons estridentes.
  * Técnicas: 4-4-4-4 (caixa) e 4-7-8 (relaxante).
  */
 export default function BreathingGuideScreen() {
+  const { colors } = useThemeMode();
+
   const [selectedExercise, setSelectedExercise] = useState<BreathingExerciseConfig>(
     BREATHING_EXERCISES[0]
   );
@@ -107,7 +106,10 @@ export default function BreathingGuideScreen() {
   };
 
   const currentPhaseLabel = phaseLabels[currentPhase % pattern.length];
-  const progress = Math.min(100, ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100);
+  const progress = Math.min(
+    100,
+    ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -119,7 +121,7 @@ export default function BreathingGuideScreen() {
           headerTintColor: "#E8E6E3",
         }}
       />
-      
+
       <View style={styles.content}>
         {/* Seleção de exercício */}
         <View style={styles.exerciseSelector}>
@@ -275,9 +277,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   circle: {
-    width: CIRCLE_SIZE,
-    height: CIRCLE_SIZE,
-    borderRadius: CIRCLE_SIZE / 2,
+    width: "60%",
+    aspectRatio: 1,
+    borderRadius: 9999,
     backgroundColor: "#7B9EA8",
     justifyContent: "center",
     alignItems: "center",

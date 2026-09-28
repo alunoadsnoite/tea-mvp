@@ -21,6 +21,7 @@ interface CrisisStore extends CrisisCardState {
   addContact: (contact: Omit<EmergencyContact, "id">) => void;
   updateContact: (id: string, updates: Partial<EmergencyContact>) => void;
   deleteContact: (id: string) => void;
+  setPrimaryContact: (id: string | null) => void;
 
   // Utilitários
   resetToDefaults: () => void;
@@ -34,6 +35,7 @@ export const useCrisisStore = create<CrisisStore>()(
       contacts: [],
       activeMessageId: DEFAULT_MESSAGES[0]?.id ?? null,
       isLoading: false,
+      primaryContactId: null,
 
       // === MENSAGENS ===
       addMessage: (message) => {
@@ -83,6 +85,9 @@ export const useCrisisStore = create<CrisisStore>()(
         };
         set((state) => ({
           contacts: [...state.contacts, newContact],
+          // Se for o primeiro contato, torna-o primário automaticamente
+          primaryContactId:
+            state.primaryContactId ?? newContact.id,
         }));
       },
 
@@ -97,7 +102,14 @@ export const useCrisisStore = create<CrisisStore>()(
       deleteContact: (id) => {
         set((state) => ({
           contacts: state.contacts.filter((c) => c.id !== id),
+          // Se o contato excluído era o primário, remove a referência
+          primaryContactId:
+            state.primaryContactId === id ? null : state.primaryContactId,
         }));
+      },
+
+      setPrimaryContact: (id) => {
+        set({ primaryContactId: id });
       },
 
       // === UTILITÁRIOS ===
@@ -106,6 +118,7 @@ export const useCrisisStore = create<CrisisStore>()(
           messages: DEFAULT_MESSAGES,
           contacts: [],
           activeMessageId: DEFAULT_MESSAGES[0]?.id ?? null,
+          primaryContactId: null,
         });
       },
     }),

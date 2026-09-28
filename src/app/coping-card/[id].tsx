@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCopingCardsStore } from "@/stores/copingCardsStore";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * CopingCardDetailScreen — Detalhes de um cartão de regulação
@@ -20,6 +21,7 @@ export default function CopingCardDetailScreen() {
   const router = useRouter();
   const getCardById = useCopingCardsStore((state) => state.getCardById);
   const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
+  const { colors } = useThemeMode();
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -58,13 +60,13 @@ export default function CopingCardDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: card.title,
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
           headerRight: () => (
             <Pressable
               onPress={() => toggleFavorite(card.id)}
@@ -160,7 +162,6 @@ export default function CopingCardDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   emptyContainer: {
     flex: 1,

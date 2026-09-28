@@ -23,6 +23,8 @@ export interface CrisisCardState {
   contacts: EmergencyContact[];
   activeMessageId: string | null;
   isLoading: boolean;
+  /** Contato preferido para ação rápida no cartão de crise (null = usar o primeiro da lista) */
+  primaryContactId: string | null;
 }
 
 // Mensagens pré-configuradas (padrão)

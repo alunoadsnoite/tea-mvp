@@ -2,11 +2,21 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.4
+## Versão Atual: 1.0.5
 
 ### Changelog
 
-#### v1.0.4 (2026-09-27)
+#### v1.0.5 (2026-09-28)
+- **Contato primário de emergência**: Permite escolher qual contato usar no cartão de crise
+- **Criação de rotinas personalizadas**: Nova tela para criar rotinas com passos e tempo estimado
+- **Criação de cartões de coping personalizados**: Nova tela para criar cartões com título, descrição, categoria e passos
+- **Ícone atualizado**: Usa a imagem peca.png como ícone do app
+- **Font scale em todas as telas**: Ajuste de fonte aplicado em home, check-in, configurações do cartão e configurações do app
+- **Respiração guiada reage à rotação**: Agora usa useWindowDimensions para se adaptar à orientação
+- **Contato do desenvolvedor**: Seção com e-mail (valdenorsa@proton.me) nas configurações do app e nas configurações do cartão de crise
+- **Error boundary**: Tela de recuperação para erros inesperados
+- **Retenção de histórico**: Check-ins aquide retaining apenas entradas dos últimos dias (limite configurável)
+- **Acesso rápido a novos cartões**: Botão "Novo cartão personalizado" na tela de estratégias de calma
 - **Feedback háptico**: Vibração suave em botões de emergência e seleções
 - **Fonte ajustável**: Respeita configurações de acessibilidade do sistema (0.85x–1.3x)
 - **Tema claro/escuro**: Dark mode por padrão, tema claro opcional, modo automático

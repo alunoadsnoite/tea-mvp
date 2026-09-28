@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useRouter } from "expo-router";
 import { useCopingCardsStore } from "@/stores/copingCardsStore";
 import { CopingCardCategory } from "@/types/coping";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * CopingCardsScreen — Central de Cartões de Regulação
@@ -20,6 +21,7 @@ export default function CopingCardsScreen() {
   const router = useRouter();
   const cards = useCopingCardsStore((state) => state.cards);
   const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
+  const { colors } = useThemeMode();
   
   const [selectedCategory, setSelectedCategory] = useState<CopingCardCategory | "all">("all");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -49,13 +51,13 @@ export default function CopingCardsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Estratégias de Calma",
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
         }}
       />
       
@@ -149,6 +151,11 @@ export default function CopingCardsScreen() {
             Técnicas 4-4-4-4 e 4-7-8 para acalmar
           </Text>
         </Pressable>
+
+        {/* Novo cartão */}
+        <Pressable style={styles.newCardButton} onPress={() => router.push("/coping-card/new")}>
+          <Text style={styles.newCardButtonText}>+ Novo cartão personalizado</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -157,7 +164,6 @@ export default function CopingCardsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   filters: {
     padding: 16,
@@ -276,5 +282,19 @@ const styles = StyleSheet.create({
   breathingShortcutDescription: {
     color: "#8A8782",
     fontSize: 14,
+  },
+  newCardButton: {
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#7B9EA8",
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  newCardButtonText: {
+    color: "#7B9EA8",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

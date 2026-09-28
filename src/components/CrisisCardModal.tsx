@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useCrisisStore } from "@/stores/crisisStore";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 interface ScrollViewEvent {
   nativeEvent: {
@@ -31,8 +32,9 @@ interface ScrollViewEvent {
  * - Sem elementos piscando ou animações complexas
  */
 export function CrisisCardModal() {
-  const { messages, contacts, activeMessageId, setActiveMessage } =
+  const { messages, contacts, activeMessageId, setActiveMessage, primaryContactId } =
     useCrisisStore();
+  const { colors } = useThemeMode();
   const [currentIndex, setCurrentIndex] = useState(() => {
     if (!activeMessageId || messages.length === 0) return 0;
     const index = messages.findIndex((m) => m.id === activeMessageId);
@@ -58,19 +60,19 @@ export function CrisisCardModal() {
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
     trigger("success");
-    const emergencyContact = contacts[0];
-    if (emergencyContact?.phone) {
-      Linking.openURL(`tel:${emergencyContact.phone}`);
+    const contact = contacts.find((c) => c.id === primaryContactId) ?? contacts[0];
+    if (contact?.phone) {
+      Linking.openURL(`tel:${contact.phone}`);
     }
   };
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
     trigger("light");
-    const emergencyContact = contacts[0];
-    if (emergencyContact?.phone) {
+    const contact = contacts.find((c) => c.id === primaryContactId) ?? contacts[0];
+    if (contact?.phone) {
       const message = encodeURIComponent(currentMessage?.content || "");
-      Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`);
+      Linking.openURL(`sms:${contact.phone}?body=${message}`);
     }
   };
 

@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { useCheckInStore } from "@/stores/checkInStore";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * CheckInHistoryScreen — Histórico de Check-ins
@@ -17,6 +18,7 @@ import { useCheckInStore } from "@/stores/checkInStore";
 export default function CheckInHistoryScreen() {
   const getRecentEntries = useCheckInStore((state) => state.getRecentEntries);
   const entries = getRecentEntries(7);
+  const { colors } = useThemeMode();
 
   // Agrupar por dia
   const groupedByDay = entries.reduce((acc, entry) => {
@@ -40,13 +42,13 @@ export default function CheckInHistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Histórico de Check-ins",
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
         }}
       />
       
@@ -103,7 +105,6 @@ export default function CheckInHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   scrollView: {
     flex: 1,

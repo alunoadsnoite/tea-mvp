@@ -41,8 +41,8 @@ Este widget permite abrir o Cartão de Comunicação de Crise diretamente da tel
 - **iOS**: Widget estático com texto informativo (requer app aberto para interagir)
 - **Android**: Widget interativo que abre o app no Cartão de Crise
 
-## Notas
+## Estado
 
-- O widget é opcional e não afeta o funcionamento principal do app
-- Para testar, é necessário build nativo (EAS Build ou Xcode/Android Studio)
-- O app funciona 100% sem o widget instalado
+- O widget é **planejado mas não implementado**.
+- Os arquivos descritos neste documento não existem no codebase atual.
+- O app funciona 100% sem o widget instalado.

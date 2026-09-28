@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useCheckInStore } from "@/stores/checkInStore";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * CheckInCard — Resumo visual do último check-in
@@ -10,6 +11,7 @@ import { useCheckInStore } from "@/stores/checkInStore";
  */
 export function CheckInCard() {
   const lastEntry = useCheckInStore((state) => state.getLastEntry());
+  const { colors } = useThemeMode();
 
   if (!lastEntry) {
     return (

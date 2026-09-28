@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useRouter } from "expo-router";
 import { useRoutineStore } from "@/stores/routineStore";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 /**
  * RoutinesListScreen — Listagem e criação de rotinas
@@ -19,6 +20,7 @@ export default function RoutinesListScreen() {
   const router = useRouter();
   const routines = useRoutineStore((state) => state.routines);
   const startExecution = useRoutineStore((state) => state.startExecution);
+  const { colors } = useThemeMode();
 
   const handleStartRoutine = (routineId: string) => {
     startExecution(routineId);
@@ -26,17 +28,21 @@ export default function RoutinesListScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Minhas Rotinas",
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
         }}
       />
       
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        <Pressable style={styles.newButton} onPress={() => router.push("/routines/new")}>
+          <Text style={styles.newButtonText}>+ Nova rotina</Text>
+        </Pressable>
+
         {routines.map((routine) => (
           <View key={routine.id} style={styles.routineCard}>
             <Text style={styles.routineName}>{routine.name}</Text>
@@ -73,7 +79,6 @@ export default function RoutinesListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1A1D23",
   },
   scrollView: {
     flex: 1,
@@ -120,6 +125,20 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: "#1A1D23",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  newButton: {
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#7B9EA8",
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  newButtonText: {
+    color: "#7B9EA8",
     fontSize: 16,
     fontWeight: "600",
   },

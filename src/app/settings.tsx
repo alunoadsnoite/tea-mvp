@@ -5,15 +5,17 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
+import { useFontScale } from "@/hooks/useFontScale";
 
 /**
  * SettingsScreen — Configurações do App
- * 
+ *
  * Princípios:
  * - Uma opção por vez
  * - Descrições claras
@@ -22,12 +24,17 @@ import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 export default function SettingsScreen() {
   const { mode, changeMode, colors } = useThemeMode();
   const { trigger } = useHapticFeedback();
+  const { fontSize } = useFontScale();
 
   const themeOptions: { key: typeof mode; label: string; description: string }[] = [
     { key: "dark", label: "Escuro", description: "Reduz fadiga visual (recomendado)" },
     { key: "light", label: "Claro", description: "Para ambientes bem iluminados" },
     { key: "auto", label: "Automático", description: "Segue o tema do sistema" },
   ];
+
+  const handleContactDeveloper = () => {
+    Linking.openURL("mailto:valdenorsa@proton.me?subject=TEA%20Autonomia%20-%20Feedback");
+  };
 
   return (
     <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
@@ -43,10 +50,10 @@ export default function SettingsScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Tema */}
         <View style={StyleSheet.flatten([styles.section, { backgroundColor: colors.surface }])}>
-          <Text style={StyleSheet.flatten([styles.sectionTitle, { color: colors.text }])}>
+          <Text style={StyleSheet.flatten([styles.sectionTitle, { color: colors.text, fontSize: fontSize(20) }])}>
             Tema
           </Text>
-          <Text style={StyleSheet.flatten([styles.sectionDescription, { color: colors.textSecondary }])}>
+          <Text style={StyleSheet.flatten([styles.sectionDescription, { color: colors.textSecondary, fontSize: fontSize(14) }])}>
             Escolha como o app aparece
           </Text>
 
@@ -66,15 +73,15 @@ export default function SettingsScreen() {
               accessibilityHint={option.description}
             >
               <View style={styles.optionContent}>
-                <Text style={[styles.optionLabel, { color: colors.text }]}>
+                <Text style={[styles.optionLabel, { color: colors.text, fontSize: fontSize(16) }]}>
                   {option.label}
                 </Text>
-                <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
+                <Text style={[styles.optionDescription, { color: colors.textSecondary, fontSize: fontSize(13) }]}>
                   {option.description}
                 </Text>
               </View>
               {mode === option.key && (
-                <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: colors.accent, fontSize: fontSize(20) }]}>✓</Text>
               )}
             </Pressable>
           ))}
@@ -82,13 +89,35 @@ export default function SettingsScreen() {
 
         {/* Sobre */}
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fontSize(20) }]}>
             Sobre
           </Text>
-          <Text style={[styles.aboutText, { color: colors.textSecondary }]}>
-            TEA Autonomia v1.0.4{'\n'}
+          <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fontSize(14) }]}>
+            TEA Autonomia v1.0.5
+            {"\n"}
             App para autonomia e regulação de adultos no Espectro Autista.
           </Text>
+        </View>
+
+        {/* Desenvolvedor */}
+        <View style={[styles.section, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fontSize(20) }]}>
+            Desenvolvedor
+          </Text>
+          <Text style={[styles.developerName, { color: colors.text, fontSize: fontSize(14) }]}>
+            Valdenor Tavares
+          </Text>
+          <Text style={[styles.developerEmail, { color: colors.textSecondary, fontSize: fontSize(13) }]}>
+            valdenorsa@proton.me
+          </Text>
+          <Pressable
+            style={[styles.contactButton, { backgroundColor: colors.accent }]}
+            onPress={handleContactDeveloper}
+          >
+            <Text style={[styles.contactButtonText, { color: colors.background, fontSize: fontSize(14) }]}>
+              Enviar e-mail
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -114,11 +143,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    fontSize: 20,
     fontWeight: "600",
   },
   sectionDescription: {
-    fontSize: 14,
     marginBottom: 8,
   },
   optionButton: {
@@ -134,19 +161,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionLabel: {
-    fontSize: 16,
     fontWeight: "600",
   },
   optionDescription: {
-    fontSize: 13,
     marginTop: 2,
   },
   checkmark: {
-    fontSize: 20,
     fontWeight: "700",
   },
   aboutText: {
-    fontSize: 14,
     lineHeight: 20,
+  },
+  developerName: {
+    fontWeight: "600",
+  },
+  developerEmail: {
+  },
+  contactButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  contactButtonText: {
+    fontWeight: "600",
   },
 });
