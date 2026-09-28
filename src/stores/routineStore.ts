@@ -112,7 +112,6 @@ export const useRoutineStore = create<RoutineStore>()(
           );
           if (!routine) return state;
 
-          const currentStep = routine.steps[state.execution.currentStepIndex];
           const remainingTime = state.execution.stepEndsAt! - now;
           const newEndTime = now + Math.max(remainingTime, 0);
 

@@ -1,13 +1,25 @@
+/* eslint-disable no-undef */
+const path = require("path");
+
 module.exports = function (api) {
   api.cache(true);
   return {
     presets: [
-      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-      "nativewind/babel",
+      "babel-preset-expo",
     ],
     plugins: [
-      // Necessário para expo-router
-      "expo-router/babel",
+      // NativeWind 2.0 — deve vir por último
+      path.resolve(__dirname, "node_modules/nativewind/babel"),
+      // Resolver aliases @/ -> ./src/
+      [
+        "module-resolver",
+        {
+          root: ["./src"],
+          alias: {
+            "@": "./src",
+          },
+        },
+      ],
     ],
   };
 };

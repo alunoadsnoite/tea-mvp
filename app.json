@@ -2,28 +2,44 @@
   "expo": {
     "name": "TEA Autonomia",
     "slug": "tea-mvp",
-    "version": "1.0.0",
-    "orientation": "portrait",
+    "version": "1.0.1",
+    "orientation": "default",
     "scheme": "tea",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#1A1D23",
+    "icon": "./assets/icon.png",
     "splash": {
       "backgroundColor": "#1A1D23",
-      "resizeMode": "contain"
+      "resizeMode": "contain",
+      "image": "./assets/icon.png"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.teamvp.app"
+      "bundleIdentifier": "com.teamvp.app",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1A1D23"
+        "backgroundColor": "#1A1D23",
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-icon.png"
       },
       "package": "com.teamvp.app"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "57309983-779d-4853-8f9c-642ee62e256f"
+      }
+    },
+    "owner": "valdenortavares"
   }
 }

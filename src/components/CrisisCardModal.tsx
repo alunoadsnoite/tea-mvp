@@ -5,17 +5,25 @@ import {
   Pressable,
   StyleSheet,
   ScrollView,
-  Animated,
   Dimensions,
   Linking,
 } from "react-native";
 import { useCrisisStore } from "@/stores/crisisStore";
 
+interface ScrollViewEvent {
+  nativeEvent: {
+    contentOffset: {
+      x: number;
+    };
+  };
+}
+
 /**
  * CrisisCardModal — Cartão de Comunicação de Crise
- * 
+ *
  * Características:
  * - Modo cheio e alto contraste (texto grande, fundo escuro)
+ * - Texto centralizado na tela para fácil leitura
  * - Navegação por gestos simples (swipe horizontal para alternar mensagens)
  * - Acesso ao contato de emergência
  * - Sem elementos piscando ou animações complexas
@@ -23,15 +31,19 @@ import { useCrisisStore } from "@/stores/crisisStore";
 export function CrisisCardModal() {
   const { messages, contacts, activeMessageId, setActiveMessage } =
     useCrisisStore();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (!activeMessageId || messages.length === 0) return 0;
+    const index = messages.findIndex((m) => m.id === activeMessageId);
+    return index >= 0 ? index : 0;
+  });
+
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get("window");
 
-  const currentMessage = messages[currentIndex] || messages[0];
-  const emergencyContact = contacts[0]; // Primeiro contato de emergência
+  const currentMessage = messages[currentIndex];
 
   // Navegação por gesto (swipe horizontal)
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: ScrollViewEvent) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / width);
     if (index !== currentIndex && index >= 0 && index < messages.length) {
@@ -42,6 +54,7 @@ export function CrisisCardModal() {
 
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
+    const emergencyContact = contacts[0];
     if (emergencyContact?.phone) {
       Linking.openURL(`tel:${emergencyContact.phone}`);
     }
@@ -49,6 +62,7 @@ export function CrisisCardModal() {
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
+    const emergencyContact = contacts[0];
     if (emergencyContact?.phone) {
       const message = encodeURIComponent(currentMessage?.content || "");
       Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`);
@@ -77,31 +91,34 @@ export function CrisisCardModal() {
         onMomentumScrollEnd={handleScroll}
         scrollEventThrottle={16}
       >
-        {messages.map((message, index) => (
+        {messages.map((message) => (
           <View key={message.id} style={[styles.messageContainer, { width }]}>
-            <Text style={styles.messageTitle}>{message.title}</Text>
-            <Text style={styles.messageContent}>{message.content}</Text>
+            <View style={styles.messageContentWrapper}>
+              <Text style={styles.messageTitle}>{message.title}</Text>
+              <View style={styles.divider} />
+              <Text style={styles.messageContent}>{message.content}</Text>
+            </View>
           </View>
         ))}
       </ScrollView>
 
       {/* Botões de emergência */}
-      {emergencyContact && (
+      {contacts[0] && (
         <View style={styles.emergencyActions}>
           <Pressable
             style={styles.emergencyButton}
             onPress={handleEmergencyCall}
-            accessibilityLabel={`Ligar para ${emergencyContact.name}`}
+            accessibilityLabel={`Ligar para ${contacts[0].name}`}
           >
             <Text style={styles.emergencyButtonText}>
-              Ligar para {emergencyContact.name}
+              Ligar para {contacts[0].name}
             </Text>
           </Pressable>
 
           <Pressable
             style={styles.emergencyButtonSecondary}
             onPress={handleEmergencyMessage}
-            accessibilityLabel={`Enviar mensagem para ${emergencyContact.name}`}
+            accessibilityLabel={`Enviar mensagem para ${contacts[0].name}`}
           >
             <Text style={styles.emergencyButtonSecondaryText}>
               Enviar mensagem
@@ -142,19 +159,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
   },
+  messageContentWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
   messageTitle: {
-    color: "#E8E6E3",
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 32,
+    color: "#7B9EA8",
+    fontSize: 36,
+    fontWeight: "800",
+    marginBottom: 24,
     textAlign: "center",
-    lineHeight: 40,
+    lineHeight: 44,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  divider: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#7B9EA8",
+    borderRadius: 2,
+    marginBottom: 32,
   },
   messageContent: {
     color: "#E8E6E3",
-    fontSize: 24,
-    lineHeight: 36,
+    fontSize: 26,
+    lineHeight: 40,
     textAlign: "center",
+    fontWeight: "600",
   },
   emergencyActions: {
     gap: 12,
@@ -170,7 +204,7 @@ const styles = StyleSheet.create({
   emergencyButtonText: {
     color: "#1A1D23",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   emergencyButtonSecondary: {
     backgroundColor: "transparent",
@@ -184,6 +218,7 @@ const styles = StyleSheet.create({
   emergencyButtonSecondaryText: {
     color: "#7B9EA8",
     fontSize: 16,
+    fontWeight: "600",
   },
   swipeHint: {
     color: "#8A8782",

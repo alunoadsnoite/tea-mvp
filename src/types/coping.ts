@@ -22,6 +22,7 @@ export interface BreathingExerciseConfig {
   name: string;
   description: string;
   // Padrão de respiração em segundos: [inspirar, segurar, expirar, segurar]
+  // Exercícios com 3 fases repetem o último valor para manter o ciclo
   pattern: [number, number, number, number];
   cycles: number;
 }
@@ -39,7 +40,7 @@ export const BREATHING_EXERCISES: BreathingExerciseConfig[] = [
     id: "relaxing-4-7-8",
     name: "Respiração Relaxante",
     description: "Técnica 4-7-8 para acalmar o sistema nervoso",
-    pattern: [4, 7, 8],
+    pattern: [4, 7, 8, 0],
     cycles: 3,
   },
 ];

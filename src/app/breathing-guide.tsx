@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
 
 const { width } = Dimensions.get("window");
@@ -21,17 +21,15 @@ const CIRCLE_SIZE = width * 0.6;
  * Técnicas: 4-4-4-4 (caixa) e 4-7-8 (relaxante).
  */
 export default function BreathingGuideScreen() {
-  const router = useRouter();
   const [selectedExercise, setSelectedExercise] = useState<BreathingExerciseConfig>(
     BREATHING_EXERCISES[0]
   );
   const [isActive, setIsActive] = useState(false);
   const [currentPhase, setCurrentPhase] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
-  
+
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const phaseLabels = ["Inspirar", "Segurar", "Expirar", "Segurar"];
   const pattern = selectedExercise.pattern;
@@ -44,11 +42,13 @@ export default function BreathingGuideScreen() {
       return;
     }
 
-    const phaseDuration = pattern[currentPhase % pattern.length] * 1000;
-    
+    const phaseIndex = currentPhase % pattern.length;
+    // Fases com duração 0 (como a 4ª fase do 4-7-8) são puladas automaticamente
+    const phaseDuration = Math.max(pattern[phaseIndex] * 1000, 100);
+
     // Animação de expansão/contração
-    const isInhale = currentPhase % pattern.length === 0;
-    const isExhale = currentPhase % pattern.length === 2;
+    const isInhale = phaseIndex === 0;
+    const isExhale = phaseIndex === 2;
 
     if (isInhale) {
       Animated.timing(scaleAnim, {
@@ -65,9 +65,15 @@ export default function BreathingGuideScreen() {
     }
 
     intervalRef.current = setTimeout(() => {
-      const nextPhase = (currentPhase + 1) % pattern.length;
-      const newCycle = nextPhase === 0 ? cycleCount + 1 : cycleCount;
-      
+      // Avança para a próxima fase, pulando fases com duração 0
+      let nextPhase = (currentPhase + 1) % pattern.length;
+      while (pattern[nextPhase] === 0) {
+        nextPhase = (nextPhase + 1) % pattern.length;
+        if (nextPhase === currentPhase) break; // Evita loop infinito se todas as fases forem 0
+      }
+
+      const newCycle = nextPhase <= currentPhase ? cycleCount + 1 : cycleCount;
+
       if (newCycle >= selectedExercise.cycles) {
         setIsActive(false);
         setCurrentPhase(0);
@@ -101,7 +107,7 @@ export default function BreathingGuideScreen() {
   };
 
   const currentPhaseLabel = phaseLabels[currentPhase % pattern.length];
-  const progress = ((cycleCount + currentPhase / pattern.length) / selectedExercise.cycles) * 100;
+  const progress = Math.min(100, ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100);
 
   return (
     <SafeAreaView style={styles.container}>

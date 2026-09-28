@@ -24,7 +24,7 @@ export default function CopingCardDetailScreen() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
-  const card = getCardById(id);
+  const card = getCardById(id as string);
 
   if (!card) {
     return (

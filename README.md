@@ -2,6 +2,30 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
+## Versão Atual: 1.0.1
+
+### Changelog
+
+#### v1.0.1 (2026-09-27)
+- **Ícone do app**: Nova imagem do puzzle colorido (símbolo universal do autismo)
+- **Cartão de Crise**: Texto com destaque visual aprimorado (título maior, divisor, sombra)
+- **Rotação automática**: App agora gira automaticamente quando o celular é rotacionado para horizontal
+- **Correções de dependências**: Atualizado para Expo SDK 50 com todas as dependências compatíveis
+- **Bugs corrigidos**: 
+  - `metro.config.js` corrigido para CommonJS
+  - `babel.config.js` atualizado (removido `expo-router/babel` deprecado)
+  - Adicionado `babel-plugin-module-resolver` como dependência
+  - Corrigido problema de tela preta
+  - Corrigido problema de conexão com o Metro
+
+#### v1.0.0 (2026-09-26)
+- Lançamento inicial do MVP
+- Cartão de Comunicação de Crise
+- Check-in de Bateria Social & Interocepção
+- Rotinas Visuais Sequenciais
+- Central de Cartões de Regulação (Coping Cards)
+- Respiração Guiada (4-4-4-4 e 4-7-8)
+
 ## Principais Funcionalidades
 
 ### 1. Cartão de Comunicação de Crise
@@ -26,7 +50,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - Rotinas pré-configuráveis e personalizáveis
 - Pausa e extensão de tempo sem penalidade
 
-### 4. Central de Cartões de Regulação (Coping Cards)
+### 4. Central de Cartões of Regulação (Coping Cards)
 - Exercício de Ancoragem 5-4-3-2-1
 - Respiração Guiada (4-4-4-4 e 4-7-8)
 - Cartões personalizados
@@ -34,7 +58,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 
 ## Stack Tecnológica
 
-- **Frontend**: React Native + Expo + TypeScript
+- **Frontend**: React Native + Expo SDK 50 + TypeScript
 - **Estilização**: Tailwind CSS (NativeWind)
 - **Estado**: Zustand + AsyncStorage (offline-first)
 - **Navegação**: Expo Router
@@ -91,11 +115,7 @@ src/
 - **Sem alertas vermelhos**: Notificações discretas
 - **Tipografia legível**: Contraste WCAG AA
 - **Espaçamento generoso**: Respiro visual
-
-## Widgets
-
-- **iOS**: WidgetKit (pasta `ios/TEAWidget/`)
-- **Android**: AppWidgetProvider (pasta `android/`)
+- **Rotação automática**: App gira quando o celular gira
 
 ## Licença
 

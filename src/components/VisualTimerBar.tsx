@@ -28,6 +28,9 @@ export function VisualTimerBar({
     const remaining = Math.max(0, endTime - Date.now());
     const progressValue = remaining / totalDuration;
 
+    // Reseta a animação para o início quando startTime/endTime mudam (novo passo)
+    progress.setValue(1);
+
     if (isPaused) {
       animationRef.current?.stop();
       return;
