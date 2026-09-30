@@ -27,10 +27,10 @@ Arquivos-fonte:
 | Origem (versionado) | Destino no projeto gerado |
 | --- | --- |
 | `widget/android/CrisisWidgetProvider.kt` | `android/app/src/main/java/com/teamvp/app/CrisisWidgetProvider.kt` |
-| `widget/android/crisis_widget.xml` | `android/app/src/main/res/layout/crisis_widget.xml` |
+| `widget/android/crisis_widget_layout.xml` | `android/app/src/main/res/layout/crisis_widget.xml` |
 | `widget/android/crisis_widget_background.xml` | `android/app/src/main/res/drawable/crisis_widget_background.xml` |
 | `widget/android/crisis_widget_info.xml` | `android/app/src/main/res/xml/crisis_widget_info.xml` |
-| `widget/android/crisis_widget.xml` | `android/app/src/main/res/values/crisis_widget.xml` |
+| `widget/android/crisis_widget_values.xml` | `android/app/src/main/res/values/crisis_widget.xml` |
 
 ## Como testar
 
@@ -38,13 +38,18 @@ Arquivos-fonte:
 npx expo prebuild -p android
 
 # JDK 17 é obrigatório: o AGP 8.1.1 do SDK 50 quebra com JDK 21
-JAVA_HOME=/path/para/jdk17 ./android/gradlew assembleDebug
+JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleRelease
 
-adb install android/app/build/outputs/apk/debug/app-debug.apk
+adb install android/app/build/outputs/apk/release/app-release.apk
 ```
 
 Depois, no launcher: segure em um espaço vazio da tela inicial → **Widgets** →
 **TEA Autonomia** → arrastar para a tela.
+
+**Use `assembleRelease`, não `assembleDebug`.** O APK debug não embute o bundle
+JS: ele tenta carregar de `localhost:8081` e abre uma tela vermelha sem o
+Metro conectado ao celular. Para instalar no aparelho e testar sozinho, é
+obrigatório o release.
 
 ## Decisões de implementação
 
@@ -65,6 +70,11 @@ Depois, no launcher: segure em um espaço vazio da tela inicial → **Widgets** 
 - **`R.id` resolvido por nome.** O AGP 8 usa `nonFinalResIds` por padrão, então
   os IDs do layout não existem como campos em `R`. O provider usa
   `resources.getIdentifier("crisis_widget_root", "id", packageName)`.
+- **Fontes de recurso com nomes distintos.** `layout/` e `values/` geram
+  arquivos de mesmo nome no destino (`crisis_widget.xml`), então os fontes
+  versionados usam sufixos (`crisis_widget_layout.xml`,
+  `crisis_widget_values.xml`). Com nomes iguais, a cópia de `values` sobrescreve
+  a de `layout` e o build falha em `lintVitalRelease` com `WrongFolder`.
 
 ## iOS (não implementado)
 

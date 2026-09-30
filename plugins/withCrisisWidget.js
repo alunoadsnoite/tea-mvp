@@ -25,11 +25,14 @@ const { withAndroidManifest, withDangerousMod } = require("@expo/config-plugins"
 
 const SOURCE_DIR = path.join(__dirname, "..", "widget", "android");
 
+// Os nomes de origem são distintos de propósito: layout e values só podem ter
+// o mesmo nome no destino, e nomes iguais na origem faziam a cópia de values
+// sobrescrever a de layout.
 const RES_FILES = [
-  ["res/layout/crisis_widget.xml", "crisis_widget.xml"],
+  ["res/layout/crisis_widget.xml", "crisis_widget_layout.xml"],
   ["res/drawable/crisis_widget_background.xml", "crisis_widget_background.xml"],
   ["res/xml/crisis_widget_info.xml", "crisis_widget_info.xml"],
-  ["res/values/crisis_widget.xml", "crisis_widget.xml"],
+  ["res/values/crisis_widget.xml", "crisis_widget_values.xml"],
 ];
 
 /** Lê o pacote real do projeto nativo para não duplicar o applicationId. */

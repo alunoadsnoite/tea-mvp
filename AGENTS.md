@@ -28,8 +28,11 @@ O projeto é **managed workflow**: não existe pasta `ios/` versionada e `androi
 npx expo prebuild -p android   # ou -p ios; cria android/ ou ios/
 
 # JDK 17 é obrigatório: o AGP 8.1.1 do SDK 50 falha com JDK 21 (jlink)
-JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleDebug
+JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleRelease
 ```
+
+Para instalar no aparelho, use `assembleRelease`. O APK `debug` não embute o
+bundle JS e depende do Metro em `localhost:8081`.
 
 Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild` gera dezenas de arquivos e `npx expo export` já valida o bundle JS sem esse custo.
 

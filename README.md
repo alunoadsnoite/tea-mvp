@@ -117,8 +117,12 @@ npx expo export --platform android
 npx expo prebuild -p android
 
 # Atenção: JDK 17 é obrigatório. O AGP 8.1.1 do SDK 50 falha com JDK 21.
-JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleDebug
+JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleRelease
 ```
+
+Use `assembleRelease` para instalar no celular. O APK **debug** não embute o
+bundle JS e depende do Metro rodando em `localhost:8081` — instalado sozinho,
+abre uma tela de erro.
 
 O projeto usa **managed workflow**: a pasta nativa (`ios/`, `android/`) não é
 versionada. O build com EAS gera a pasta na nuvem; para build local, rode
