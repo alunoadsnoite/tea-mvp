@@ -1,48 +1,61 @@
 # Widget de Acesso Rápido ao Cartão de Crise
 
-Este widget permite abrir o Cartão de Comunicação de Crise diretamente da tela inicial do dispositivo, sem precisar navegar pelo app.
+> **Status: não implementado.** Nenhum código nativo de widget existe neste
+> repositório. Este documento descreve o que seria necessário implementar, não
+> algo pronto para compilar ou instalar. As seções abaixo são um plano.
+>
+> Para acessar o Cartão de Crise hoje, use o botão flutuante de emergência
+> (`EmergencyFab`) ou o card na Home. O app funciona 100% sem widget.
 
-## iOS (WidgetKit)
+## O que falta para existir
 
-### Arquivos criados:
-- `ios/TEAWidget/TEAWidget.swift` — Widget principal
-- `ios/TEAWidget/Info.plist` — Configuração do extension
+Nenhum destes arquivos está no repositório (verificado em 2026-09-30):
 
-### Como usar:
-1. Abra o projeto no Xcode (`ios/TEA-MVP.xcworkspace`)
-2. Adicione o target "TEAWidget" ao projeto
-3. O widget aparecerá na galeria de widgets do iOS
-4. Adicione-o à tela inicial
+| Plataforma | Arquivo previsto | Existe |
+| --- | --- | --- |
+| iOS | `ios/TEAWidget/TEAWidget.swift` | não |
+| iOS | `ios/TEAWidget/Info.plist` | não |
+| Android | `android/app/src/main/java/com/teamvp/app/CrisisWidgetProvider.kt` | não |
+| Android | `android/app/src/main/res/layout/crisis_widget.xml` | não |
+| Android | `android/app/src/main/res/drawable/widget_background.xml` | não |
+| Android | `android/app/src/main/res/xml/crisis_widget_info.xml` | não |
 
-### Personalização:
-- Cores: Edite `Color(red: 0.1, green: 0.11, blue: 0.14)` no Swift
-- Textos: Edite as strings no `TEAWidgetEntryView`
+## Pré-requisito: projeto nativo gerado
 
-## Android (AppWidgetProvider)
+O projeto é **managed workflow** (Expo SDK 50, config em `app.json` com
+`plugins: [expo-router]`). Não existe pasta `ios/` versionada, e `android/` está
+no `.gitignore` — o único arquivo rastreado é `android/app/build.gradle`,
+mantido apenas para o `versionCode` do F-Droid.
 
-### Arquivos criados:
-- `android/app/src/main/java/com/teamvp/app/CrisisWidgetProvider.kt` — Provider do widget
-- `android/app/src/main/res/layout/crisis_widget.xml` — Layout do widget
-- `android/app/src/main/res/drawable/widget_background.xml` — Fundo arredondado
-- `android/app/src/main/res/xml/crisis_widget_info.xml` — Metadados do widget
+Antes de escrever qualquer código de widget é preciso gerar a pasta nativa:
 
-### Como usar:
-1. O widget aparecerá automaticamente na galeria de widgets após build
-2. Adicione-o à tela inicial do Android
-3. Ao tocar, o app abre diretamente no Cartão de Crise
+```bash
+npx expo prebuild -p android   # ou -p ios
+```
 
-### Personalização:
-- Cores: Edite `@drawable/widget_background.xml`
-- Textos: Edite `crisis_widget.xml`
-- Tamanho: Edite `minWidth` e `minHeight` em `crisis_widget_info.xml`
+Sem isso não há `AndroidManifest.xml`, receiver declarado ou target de widget
+para build. O arquivo `ios/TEA-MVP.xcworkspace` citado em versões anteriores
+deste documento nunca existiu neste repositório.
 
-## Funcionalidade
+## Plano — iOS (WidgetKit)
 
-- **iOS**: Widget estático com texto informativo (requer app aberto para interagir)
-- **Android**: Widget interativo que abre o app no Cartão de Crise
+1. Gerar a pasta nativa com `npx expo prebuild -p ios`.
+2. Criar o target `TEAWidget` (WidgetKit extension) no Xcode.
+3. Implementar a view estática do widget e seu `Info.plist`.
+4. Cores e textos: derivar de `src/constants/theme.ts` em vez de valores fixos,
+   para manter a paleta acessível.
 
-## Estado
+## Plano — Android (AppWidgetProvider)
 
-- O widget é **planejado mas não implementado**.
-- Os arquivos descritos neste documento não existem no codebase atual.
-- O app funciona 100% sem o widget instalado.
+1. Gerar a pasta nativa com `npx expo prebuild -p android`.
+2. Criar o `CrisisWidgetProvider` e registrar o receiver no `AndroidManifest.xml`.
+3. Criar os recursos de layout, drawable e metadados do widget.
+4. Abrir a rota do Cartão de Crise via o scheme `tea` (definido em `app.json`).
+
+## Cuidados de implementação
+
+- Manter o caminho de crise rápido e totalmente offline.
+- O widget é acessória: se falhar, o app e o Cartão de Crise continuam
+  funcionando sem ele.
+- Não expor dados de contatos ou mensagens no widget — apenas um atalho para
+  abrir a rota.

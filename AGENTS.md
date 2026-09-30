@@ -5,22 +5,31 @@
 - Este é um app móvel Expo/React Native com TypeScript para autonomia, previsibilidade e regulação de adultos no Espectro Autista.
 - O app é offline-first: o estado de usuário deve continuar funcionando sem rede e é persistido localmente com Zustand + AsyncStorage.
 - Preserve a baixa carga cognitiva: uma ação principal por tela, transições suaves, contraste legível e ausência de alertas visuais agressivos.
-- Consulte [README.md](README.md) para o panorama funcional e [WIDGET_SETUP.md](WIDGET_SETUP.md) antes de alterar integrações de widgets.
+- Consulte [README.md](README.md) para o panorama funcional. [WIDGET_SETUP.md](WIDGET_SETUP.md) descreve um widget que **não está implementado** — trate-o como plano, nunca como prova de que o código existe.
 
 ## Comandos
 
 ```bash
 npm install
 npm run lint
-npx tsc --noEmit
+npm run typecheck
 npx expo start
+npx expo export --platform android   # valida o bundle de todas as rotas
 npm run android
 npm run ios
 npx eas build -p android --profile preview
+```
+
+Não há runner de testes configurado atualmente. Para qualquer alteração, execute pelo menos `npm run lint` e `npm run typecheck`.
+
+O projeto é **managed workflow**: não existe pasta `ios/` versionada e `android/` está no `.gitignore` (só `android/app/build.gradle` é rastreado, para o `versionCode` do F-Droid). Portanto `npm run android`, `npm run ios` e qualquer comando Gradle exigem gerar a pasta nativa antes:
+
+```bash
+npx expo prebuild -p android   # ou -p ios; cria android/ ou ios/
 cd android && ./gradlew assembleDebug
 ```
 
-Não há runner de testes configurado atualmente. Para qualquer alteração, execute pelo menos `npm run lint` e `npx tsc --noEmit`; para mudanças nativas, valide também o build correspondente.
+Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild` gera dezenas de arquivos e `npx expo export` já valida o bundle JS sem esse custo.
 
 ## Organização e limites
 
@@ -43,8 +52,9 @@ Não há runner de testes configurado atualmente. Para qualquer alteração, exe
 
 ## Android e arquivos nativos
 
-- Alterações em `android/` exigem validação com Gradle e podem depender de `android/local.properties` e do ambiente local.
-- Não trate `WIDGET_SETUP.md` como prova de que os arquivos do widget existem: confirme os arquivos nativos antes de editar ou documentar a integração.
+- Alterações em código nativo exigem `npx expo prebuild` antes e validação com Gradle depois. `android/local.properties` é gerado localmente e não deve ser commitado.
+- `WIDGET_SETUP.md` descreve um widget planejado e **não implementado**; nenhum dos arquivos listados lá existe. Confirme os arquivos nativos antes de editar ou documentar qualquer integração de widget.
+- Antes de documentar um recurso, verifique que ele existe no código. Prefira um "não implementado" explícito a instruções de setup que não funcionam.
 - Preserve configurações existentes de Hermes, New Architecture e SDK salvo quando a tarefa exigir mudança explícita.
 - Não exponha dados sensíveis de contatos ou mensagens em logs, fixtures ou mensagens de erro.
 
