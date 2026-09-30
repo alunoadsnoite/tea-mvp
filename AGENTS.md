@@ -5,7 +5,7 @@
 - Este é um app móvel Expo/React Native com TypeScript para autonomia, previsibilidade e regulação de adultos no Espectro Autista.
 - O app é offline-first: o estado de usuário deve continuar funcionando sem rede e é persistido localmente com Zustand + AsyncStorage.
 - Preserve a baixa carga cognitiva: uma ação principal por tela, transições suaves, contraste legível e ausência de alertas visuais agressivos.
-- Consulte [README.md](README.md) para o panorama funcional. [WIDGET_SETUP.md](WIDGET_SETUP.md) descreve um widget que **não está implementado** — trate-o como plano, nunca como prova de que o código existe.
+- Consulte [README.md](README.md) para o panorama funcional e [WIDGET_SETUP.md](WIDGET_SETUP.md) antes de alterar o widget. O widget **existe no Android** (fontes em `widget/android/`, injetadas por `plugins/withCrisisWidget.js`) e **não existe no iOS**.
 
 ## Comandos
 
@@ -26,7 +26,9 @@ O projeto é **managed workflow**: não existe pasta `ios/` versionada e `androi
 
 ```bash
 npx expo prebuild -p android   # ou -p ios; cria android/ ou ios/
-cd android && ./gradlew assembleDebug
+
+# JDK 17 é obrigatório: o AGP 8.1.1 do SDK 50 falha com JDK 21 (jlink)
+JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleDebug
 ```
 
 Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild` gera dezenas de arquivos e `npx expo export` já valida o bundle JS sem esse custo.
@@ -53,7 +55,8 @@ Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild`
 ## Android e arquivos nativos
 
 - Alterações em código nativo exigem `npx expo prebuild` antes e validação com Gradle depois. `android/local.properties` é gerado localmente e não deve ser commitado.
-- `WIDGET_SETUP.md` descreve um widget planejado e **não implementado**; nenhum dos arquivos listados lá existe. Confirme os arquivos nativos antes de editar ou documentar qualquer integração de widget.
+- O widget do Android é entregue por config plugin: os fontes versionados ficam em `widget/android/` e são copiados para `android/` a cada `expo prebuild`. **Nunca edite os arquivos gerados em `android/`** — a mudança seria perdida no próximo prebuild. Altere o fonte em `widget/android/` ou o plugin.
+- `WIDGET_SETUP.md` afirma que o widget iOS não está implementado. Confirme os arquivos antes de documentar qualquer integração de widget.
 - Antes de documentar um recurso, verifique que ele existe no código. Prefira um "não implementado" explícito a instruções de setup que não funcionam.
 - Preserve configurações existentes de Hermes, New Architecture e SDK salvo quando a tarefa exigir mudança explícita.
 - Não exponha dados sensíveis de contatos ou mensagens em logs, fixtures ou mensagens de erro.

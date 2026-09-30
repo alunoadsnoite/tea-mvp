@@ -27,10 +27,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundImage": "./assets/adaptive-icon.png"
       },
-      "package": "com.teamvp.app"
+      "package": "com.teamvp.app",
+      "versionCode": 5
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "./plugins/withCrisisWidget"
     ],
     "extra": {
       "router": {

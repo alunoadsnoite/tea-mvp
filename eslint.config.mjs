@@ -26,6 +26,8 @@ export default tseslint.config(
       'tailwind.config.js',
       'babel.config.js',
       'metro.config.js',
+      // Config plugins do Expo rodam em Node/CommonJS, fora do escopo do app
+      'plugins/',
     ],
   },
 );

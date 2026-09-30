@@ -115,16 +115,19 @@ npx expo export --platform android
 
 # Build local — exige gerar a pasta nativa primeiro
 npx expo prebuild -p android
-cd android && ./gradlew assembleDebug
+
+# Atenção: JDK 17 é obrigatório. O AGP 8.1.1 do SDK 50 falha com JDK 21.
+JAVA_HOME=/caminho/para/jdk17 ./android/gradlew assembleDebug
 ```
 
 O projeto usa **managed workflow**: a pasta nativa (`ios/`, `android/`) não é
 versionada. O build com EAS gera a pasta na nuvem; para build local, rode
 `npx expo prebuild` antes dos comandos Gradle.
 
-O widget de acesso rápido ao Cartão de Crise está **planejado mas não
-implementado** — ver [WIDGET_SETUP.md](WIDGET_SETUP.md). O acesso ao Cartão de
-Crise funciona pelo botão flutuante e pelo card da Home.
+O widget de acesso rápido ao Cartão de Crise está **implementado no Android**
+(um toque abre `/crisis-card`) e **não implementado no iOS** — ver
+[WIDGET_SETUP.md](WIDGET_SETUP.md). Sem o widget, o Cartão de Crise continua
+acessível pelo botão flutuante e pelo card da Home.
 
 ## Estrutura do Projeto
 
