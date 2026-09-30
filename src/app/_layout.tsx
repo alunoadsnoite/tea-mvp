@@ -7,7 +7,7 @@ import { EmergencyFab } from "@/components/EmergencyFab";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { View } from "react-native";
 
-// Previne que o splash screen seja ocultado automaticamente
+// Mantém o splash screen até que o tema salvo seja lido do armazenamento
 void SplashScreen.preventAutoHideAsync();
 
 function ThemedStack() {
@@ -23,17 +23,22 @@ function ThemedStack() {
           animation: "fade", // Animação suave, sem elementos piscando
         }}
       />
-      {/* Botão flutuante de emergência em todas as telas */}
+      {/* Botão flutuante de emergência em todas as telas (exceto o próprio cartão de crise) */}
       <EmergencyFab />
     </View>
   );
 }
 
 export default function RootLayout() {
+  const { hasHydrated } = useThemeMode();
+
   useEffect(() => {
-    // Quando o app estiver pronto, oculta o splash screen
-    void SplashScreen.hideAsync();
-  }, []);
+    // Só oculta o splash depois da reidratação, para não exibir um flash com
+    // a paleta errada quando o usuário tenha salvo o tema claro.
+    if (hasHydrated) {
+      void SplashScreen.hideAsync();
+    }
+  }, [hasHydrated]);
 
   return (
     <SafeAreaProvider>

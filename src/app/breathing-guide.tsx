@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 /**
  * BreathingGuideScreen — Exercício de Respiração Guiada
@@ -19,6 +20,7 @@ import { useThemeMode } from "@/hooks/useThemeMode";
  */
 export default function BreathingGuideScreen() {
   const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const [selectedExercise, setSelectedExercise] = useState<BreathingExerciseConfig>(
     BREATHING_EXERCISES[0]
@@ -112,13 +114,13 @@ export default function BreathingGuideScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Respiração Guiada",
-          headerStyle: { backgroundColor: "#1A1D23" },
-          headerTintColor: "#E8E6E3",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
         }}
       />
 
@@ -136,6 +138,9 @@ export default function BreathingGuideScreen() {
                 handleStop();
                 setSelectedExercise(exercise);
               }}
+              accessibilityRole="radio"
+              accessibilityLabel={exercise.name}
+              accessibilityState={{ selected: selectedExercise.id === exercise.id }}
             >
               <Text
                 style={[
@@ -224,6 +229,13 @@ export default function BreathingGuideScreen() {
         <Pressable
           style={[styles.controlButton, isActive && styles.controlButtonStop]}
           onPress={isActive ? handleStop : handleStart}
+          accessibilityRole="button"
+          accessibilityLabel={isActive ? "Parar exercício" : "Começar exercício"}
+          accessibilityHint={
+            isActive
+              ? "Interrompe o ciclo de respiração"
+              : `Inicia ${selectedExercise.cycles} ciclos de respiração ${selectedExercise.name}`
+          }
         >
           <Text style={styles.controlButtonText}>
             {isActive ? "Parar" : "Começar"}
@@ -234,136 +246,137 @@ export default function BreathingGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1A1D23",
-  },
-  content: {
-    flex: 1,
-    padding: 24,
-    gap: 24,
-  },
-  exerciseSelector: {
-    gap: 12,
-  },
-  exerciseButton: {
-    backgroundColor: "#22262E",
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  exerciseButtonActive: {
-    borderColor: "#7B9EA8",
-    backgroundColor: "#2A2F38",
-  },
-  exerciseButtonText: {
-    color: "#E8E6E3",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  exerciseButtonTextActive: {
-    color: "#7B9EA8",
-  },
-  exerciseDescription: {
-    color: "#8A8782",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  circleContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  circle: {
-    width: "60%",
-    aspectRatio: 1,
-    borderRadius: 9999,
-    backgroundColor: "#7B9EA8",
-    justifyContent: "center",
-    alignItems: "center",
-    opacity: 0.8,
-  },
-  phaseLabel: {
-    color: "#1A1D23",
-    fontSize: 24,
-    fontWeight: "700",
-  },
-  cycleLabel: {
-    color: "#1A1D23",
-    fontSize: 16,
-    marginTop: 8,
-  },
-  progressContainer: {
-    paddingHorizontal: 24,
-  },
-  progressTrack: {
-    height: 8,
-    backgroundColor: "#2A2F38",
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#7B9EA8",
-    borderRadius: 4,
-  },
-  patternContainer: {
-    gap: 12,
-  },
-  patternLabel: {
-    color: "#8A8782",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  patternSteps: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 12,
-  },
-  patternStep: {
-    backgroundColor: "#22262E",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-    minWidth: 70,
-  },
-  patternStepActive: {
-    backgroundColor: "#7B9EA8",
-    borderColor: "#7B9EA8",
-  },
-  patternStepText: {
-    color: "#B8B5B0",
-    fontSize: 12,
-  },
-  patternStepTextActive: {
-    color: "#1A1D23",
-  },
-  patternSeconds: {
-    color: "#8A8782",
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 4,
-  },
-  patternSecondsActive: {
-    color: "#1A1D23",
-  },
-  controlButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 18,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  controlButtonStop: {
-    backgroundColor: "#C4A882",
-  },
-  controlButtonText: {
-    color: "#1A1D23",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      padding: 24,
+      gap: 24,
+    },
+    exerciseSelector: {
+      gap: 12,
+    },
+    exerciseButton: {
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    exerciseButtonActive: {
+      borderColor: colors.accent,
+      backgroundColor: colors.surfaceAlt,
+    },
+    exerciseButtonText: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    exerciseButtonTextActive: {
+      color: colors.accent,
+    },
+    exerciseDescription: {
+      color: colors.textMuted,
+      fontSize: 14,
+      marginTop: 4,
+    },
+    circleContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    circle: {
+      width: "60%",
+      aspectRatio: 1,
+      borderRadius: 9999,
+      backgroundColor: colors.accent,
+      justifyContent: "center",
+      alignItems: "center",
+      opacity: 0.8,
+    },
+    phaseLabel: {
+      color: colors.accentText,
+      fontSize: 24,
+      fontWeight: "700",
+    },
+    cycleLabel: {
+      color: colors.accentText,
+      fontSize: 16,
+      marginTop: 8,
+    },
+    progressContainer: {
+      paddingHorizontal: 24,
+    },
+    progressTrack: {
+      height: 8,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: 4,
+      overflow: "hidden",
+    },
+    progressFill: {
+      height: "100%",
+      backgroundColor: colors.accent,
+      borderRadius: 4,
+    },
+    patternContainer: {
+      gap: 12,
+    },
+    patternLabel: {
+      color: colors.textMuted,
+      fontSize: 14,
+      textAlign: "center",
+    },
+    patternSteps: {
+      flexDirection: "row",
+      justifyContent: "center",
+      flexWrap: "wrap",
+      gap: 12,
+    },
+    patternStep: {
+      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      minWidth: 70,
+    },
+    patternStepActive: {
+      backgroundColor: colors.accent,
+      borderColor: colors.accent,
+    },
+    patternStepText: {
+      color: colors.textSecondary,
+      fontSize: 12,
+    },
+    patternStepTextActive: {
+      color: colors.accentText,
+    },
+    patternSeconds: {
+      color: colors.textMuted,
+      fontSize: 18,
+      fontWeight: "600",
+      marginTop: 4,
+    },
+    patternSecondsActive: {
+      color: colors.accentText,
+    },
+    controlButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 18,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    controlButtonStop: {
+      backgroundColor: colors.warm,
+    },
+    controlButtonText: {
+      color: colors.accentText,
+      fontSize: 18,
+      fontWeight: "600",
+    },
+  });

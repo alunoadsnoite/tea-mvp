@@ -5,7 +5,7 @@
     "version": "1.0.5",
     "orientation": "default",
     "scheme": "tea",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "backgroundColor": "#1A1D23",
     "icon": "./assets/icon.png",
     "splash": {

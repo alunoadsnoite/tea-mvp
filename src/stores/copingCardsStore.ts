@@ -2,26 +2,25 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CopingCard, DEFAULT_COPING_CARDS } from "@/types/coping";
+import { createId } from "@/lib/id";
 
 /**
  * Store Zustand — Central de Cartões de Regulação
- * 
+ *
  * Gerencia cartões de coping padrão e personalizados com persistência local.
  */
 interface CopingCardsStore {
   cards: CopingCard[];
-  
+
   // Ações para cartões personalizados
   addCard: (card: Omit<CopingCard, "id" | "createdAt" | "isDefault">) => void;
   updateCard: (id: string, updates: Partial<CopingCard>) => void;
   deleteCard: (id: string) => void;
-  
+
   // Favoritos
   toggleFavorite: (id: string) => void;
-  
+
   // Utilitários
-  getCardsByCategory: (category: string) => CopingCard[];
-  getFavoriteCards: () => CopingCard[];
   getCardById: (id: string) => CopingCard | undefined;
   resetToDefaults: () => void;
 }
@@ -35,7 +34,7 @@ export const useCopingCardsStore = create<CopingCardsStore>()(
       addCard: (card) => {
         const newCard: CopingCard = {
           ...card,
-          id: `card-${Date.now()}`,
+          id: createId("card"),
           isDefault: false,
           createdAt: Date.now(),
         };
@@ -53,8 +52,7 @@ export const useCopingCardsStore = create<CopingCardsStore>()(
       },
 
       deleteCard: (id) => {
-        const state = get();
-        const card = state.cards.find((c) => c.id === id);
+        const card = get().cards.find((c) => c.id === id);
         // Não permite excluir cartões padrão
         if (card?.isDefault) return;
 
@@ -73,25 +71,35 @@ export const useCopingCardsStore = create<CopingCardsStore>()(
       },
 
       // === UTILITÁRIOS ===
-      getCardsByCategory: (category) => {
-        return get().cards.filter((c) => c.category === category);
-      },
-
-      getFavoriteCards: () => {
-        return get().cards.filter((c) => c.isFavorite);
-      },
-
       getCardById: (id) => {
         return get().cards.find((c) => c.id === id);
       },
 
       resetToDefaults: () => {
-        set({ cards: DEFAULT_COPING_CARDS.map(c => ({ ...c, createdAt: 0 })) });
+        // Os favoritos são uma preferência do usuário, não conteúdo: são
+        // preservados para que "Restaurar padrões" não apague silenciosamente
+        // algo que a pessoa escolheu de propósito.
+        const favorites = new Set(
+          get()
+            .cards.filter((c) => c.isFavorite)
+            .map((c) => c.id)
+        );
+
+        set({
+          cards: DEFAULT_COPING_CARDS.map((c) => ({ ...c, isFavorite: favorites.has(c.id) })),
+        });
       },
     }),
     {
       name: "coping-cards-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persisted) => {
+        const state = (persisted ?? {}) as Partial<CopingCardsStore>;
+        return {
+          cards: Array.isArray(state.cards) ? state.cards : DEFAULT_COPING_CARDS,
+        };
+      },
     }
   )
 );

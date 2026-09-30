@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,35 +9,41 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCopingCardsStore } from "@/stores/copingCardsStore";
+import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 /**
  * CopingCardDetailScreen — Detalhes de um cartão de regulação
- * 
+ *
  * Mostra os passos do cartão de forma clara e sequencial.
  */
 export default function CopingCardDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const getCardById = useCopingCardsStore((state) => state.getCardById);
-  const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
+  const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
-  
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const card = useCopingCardsStore((state) =>
+    id ? state.getCardById(id) : undefined
+  );
+  const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
-  const card = getCardById(id as string);
-
-  if (!card) {
+  if (!card || card.steps.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Cartão não encontrado</Text>
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>Cartão não encontrado</Text>
           <Pressable
             style={styles.backButton}
             onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar para as estratégias de calma"
           >
-            <Text style={styles.backButtonText}>Voltar</Text>
+            <Text style={[styles.backButtonText, { fontSize: fontSize(16) }]}>Voltar</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -60,7 +66,7 @@ export default function CopingCardDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -71,6 +77,9 @@ export default function CopingCardDetailScreen() {
             <Pressable
               onPress={() => toggleFavorite(card.id)}
               style={styles.headerFavorite}
+              accessibilityRole="checkbox"
+              accessibilityLabel={card.isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              accessibilityState={{ checked: card.isFavorite }}
             >
               <Text style={styles.headerFavoriteIcon}>
                 {card.isFavorite ? "★" : "☆"}
@@ -79,14 +88,14 @@ export default function CopingCardDetailScreen() {
           ),
         }}
       />
-      
+
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Descrição */}
-        <Text style={styles.description}>{card.description}</Text>
+        <Text style={[styles.description, { fontSize: fontSize(16) }]}>{card.description}</Text>
 
         {/* Progresso */}
         <View style={styles.progressContainer}>
-          <Text style={styles.progressText}>
+          <Text style={[styles.progressText, { fontSize: fontSize(14) }]}>
             Passo {Math.min(currentStep + 1, card.steps.length)} de {card.steps.length}
           </Text>
           <View style={styles.progressBar}>
@@ -104,12 +113,16 @@ export default function CopingCardDetailScreen() {
         {/* Passo atual */}
         {!isComplete ? (
           <View style={styles.stepCard}>
-            <Text style={styles.stepNumber}>Passo {currentStep + 1}</Text>
-            <Text style={styles.stepText}>{card.steps[currentStep]}</Text>
+            <Text style={[styles.stepNumber, { fontSize: fontSize(14) }]}>
+              Passo {currentStep + 1}
+            </Text>
+            <Text style={[styles.stepText, { fontSize: fontSize(24) }]}>
+              {card.steps[currentStep]}
+            </Text>
           </View>
         ) : (
           <View style={styles.completedCard}>
-            <Text style={styles.completedText}>
+            <Text style={[styles.completedText, { fontSize: fontSize(20) }]}>
               Exercício concluído. Como você se sente?
             </Text>
           </View>
@@ -122,16 +135,23 @@ export default function CopingCardDetailScreen() {
               <Pressable
                 style={styles.secondaryButton}
                 onPress={() => setCurrentStep(currentStep - 1)}
+                accessibilityRole="button"
+                accessibilityLabel="Passo anterior"
+                accessibilityHint={`Volta para o passo ${currentStep}`}
               >
-                <Text style={styles.secondaryButtonText}>Passo anterior</Text>
+                <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>
+                  Passo anterior
+                </Text>
               </Pressable>
             )}
 
             <Pressable
               style={styles.primaryButton}
               onPress={handleNextStep}
+              accessibilityRole="button"
+              accessibilityLabel={isLastStep ? "Concluir exercício" : "Próximo passo"}
             >
-              <Text style={styles.primaryButtonText}>
+              <Text style={[styles.primaryButtonText, { fontSize: fontSize(18) }]}>
                 {isLastStep ? "Concluir" : "Próximo passo"}
               </Text>
             </Pressable>
@@ -143,14 +163,20 @@ export default function CopingCardDetailScreen() {
             <Pressable
               style={styles.secondaryButton}
               onPress={handleRestart}
+              accessibilityRole="button"
+              accessibilityLabel="Recomeçar exercício"
             >
-              <Text style={styles.secondaryButtonText}>Recomeçar</Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>
+                Recomeçar
+              </Text>
             </Pressable>
             <Pressable
               style={styles.primaryButton}
               onPress={() => router.back()}
+              accessibilityRole="button"
+              accessibilityLabel="Voltar para as estratégias de calma"
             >
-              <Text style={styles.primaryButtonText}>Voltar</Text>
+              <Text style={[styles.primaryButtonText, { fontSize: fontSize(18) }]}>Voltar</Text>
             </Pressable>
           </View>
         )}
@@ -159,127 +185,122 @@ export default function CopingCardDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  emptyText: {
-    color: "#8A8782",
-    fontSize: 16,
-    marginBottom: 24,
-  },
-  backButton: {
-    backgroundColor: "#22262E",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "#B8B5B0",
-    fontSize: 16,
-  },
-  headerFavorite: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerFavoriteIcon: {
-    color: "#C4A882",
-    fontSize: 24,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    gap: 24,
-  },
-  description: {
-    color: "#B8B5B0",
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
-  },
-  progressContainer: {
-    gap: 8,
-  },
-  progressText: {
-    color: "#8A8782",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#2A2F38",
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#7B9EA8",
-    borderRadius: 3,
-  },
-  stepCard: {
-    backgroundColor: "#22262E",
-    borderRadius: 12,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-    gap: 16,
-  },
-  stepNumber: {
-    color: "#8A8782",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  stepText: {
-    color: "#E8E6E3",
-    fontSize: 24,
-    lineHeight: 34,
-    textAlign: "center",
-  },
-  completedCard: {
-    backgroundColor: "#22262E",
-    borderRadius: 12,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: "#8FA98F",
-    alignItems: "center",
-  },
-  completedText: {
-    color: "#8FA98F",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  actions: {
-    gap: 12,
-  },
-  primaryButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 18,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    color: "#1A1D23",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  secondaryButton: {
-    backgroundColor: "#22262E",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  secondaryButtonText: {
-    color: "#B8B5B0",
-    fontSize: 16,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 24,
+    },
+    emptyText: {
+      color: colors.textMuted,
+      marginBottom: 24,
+      textAlign: "center",
+    },
+    backButton: {
+      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    backButtonText: {
+      color: colors.textSecondary,
+    },
+    headerFavorite: {
+      padding: 8,
+      marginRight: 8,
+    },
+    headerFavoriteIcon: {
+      color: colors.warm,
+      fontSize: 24,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: 24,
+      gap: 24,
+    },
+    description: {
+      color: colors.textSecondary,
+      lineHeight: 24,
+      textAlign: "center",
+    },
+    progressContainer: {
+      gap: 8,
+    },
+    progressText: {
+      color: colors.textMuted,
+      textAlign: "center",
+    },
+    progressBar: {
+      height: 6,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: 3,
+      overflow: "hidden",
+    },
+    progressFill: {
+      height: "100%",
+      backgroundColor: colors.accent,
+      borderRadius: 3,
+    },
+    stepCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 32,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 16,
+    },
+    stepNumber: {
+      color: colors.textMuted,
+      textAlign: "center",
+    },
+    stepText: {
+      color: colors.text,
+      lineHeight: 34,
+      textAlign: "center",
+    },
+    completedCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 32,
+      borderWidth: 1,
+      borderColor: colors.success,
+      alignItems: "center",
+    },
+    completedText: {
+      color: colors.success,
+      textAlign: "center",
+    },
+    actions: {
+      gap: 12,
+    },
+    primaryButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 18,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    primaryButtonText: {
+      color: colors.accentText,
+      fontWeight: "600",
+    },
+    secondaryButton: {
+      backgroundColor: colors.surface,
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    secondaryButtonText: {
+      color: colors.textSecondary,
+    },
+  });

@@ -1,41 +1,26 @@
-import { useState, useEffect } from "react";
 import { useColorScheme } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeStore, useThemeHydrated } from "@/stores/themeStore";
+import { ThemeMode, ThemeColors, darkTheme, lightTheme } from "@/constants/theme";
+
+export type { ThemeMode, ThemeColors };
 
 /**
  * Hook para gerenciar tema (claro/escuro)
- * 
+ *
  * Princípios:
  * - Dark mode por padrão (reduz fadiga visual)
  * - Tema claro opcional para usuários que preferem
  * - Modo automático (segue o sistema)
  * - Transições suaves entre temas
+ *
+ * O estado vive em um store compartilhado (ver `themeStore`), então a troca de
+ * tema em Configurações se reflete imediatamente em todas as telas.
  */
-
-export type ThemeMode = "dark" | "light" | "auto";
-
-const THEME_STORAGE_KEY = "@tea-theme-mode";
-
 export function useThemeMode() {
   const systemColorScheme = useColorScheme();
-  const [mode, setMode] = useState<ThemeMode>("dark");
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Carrega tema salvo
-  useEffect(() => {
-    AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
-      if (saved === "dark" || saved === "light" || saved === "auto") {
-        setMode(saved);
-      }
-      setIsLoaded(true);
-    });
-  }, []);
-
-  // Salva tema quando muda
-  const changeMode = (newMode: ThemeMode) => {
-    setMode(newMode);
-    AsyncStorage.setItem(THEME_STORAGE_KEY, newMode);
-  };
+  const mode = useThemeStore((state) => state.mode);
+  const setMode = useThemeStore((state) => state.setMode);
+  const hasHydrated = useThemeHydrated();
 
   // Determina se está em dark mode
   const isDark = mode === "dark" || (mode === "auto" && systemColorScheme === "dark");
@@ -43,23 +28,12 @@ export function useThemeMode() {
   return {
     mode,
     isDark,
-    changeMode,
-    isLoaded,
-    // Cores adaptadas para cada tema
-    colors: isDark
-      ? {
-          background: "#1A1D23",
-          surface: "#22262E",
-          text: "#E8E6E3",
-          textSecondary: "#8A8782",
-          accent: "#7B9EA8",
-        }
-      : {
-          background: "#F5F5F5",
-          surface: "#FFFFFF",
-          text: "#1A1D23",
-          textSecondary: "#666666",
-          accent: "#5A7A88",
-        },
+    changeMode: setMode,
+    hasHydrated,
+    /** Alias mantido por compatibilidade com a API anterior */
+    isLoaded: hasHydrated,
+    // Paletas são constantes de módulo: a referência é estável entre renders,
+    // o que permite memoizar StyleSheet por tema.
+    colors: isDark ? darkTheme : lightTheme,
   };
 }

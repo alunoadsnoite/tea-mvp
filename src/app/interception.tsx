@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import { useCheckInStore } from "@/stores/checkInStore";
 import { COMMON_TRIGGERS, REGULATION_SUGGESTIONS } from "@/types/checkin";
 import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useHapticFeedback } from "@/hooks/useHapticFeedback";
+import { ThemeColors } from "@/constants/theme";
 
 /**
  * EnergyCheckInScreen — Check-in de Bateria Social & Interocepção
@@ -22,9 +24,21 @@ import { useThemeMode } from "@/hooks/useThemeMode";
  * - Feedback imediato e suave
  * - Sem cores saturadas agressivas
  */
+
+const LEVEL_LABELS: Record<string, string> = {
+  "0": "nenhum",
+  "1": "muito leve",
+  "2": "leve",
+  "3": "moderado",
+  "4": "intenso",
+  "5": "muito intenso",
+};
+
 export default function EnergyCheckInScreen() {
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
+  const { trigger } = useHapticFeedback();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const addEntry = useCheckInStore((state) => state.addEntry);
 
   // Estados dos seletores
@@ -37,6 +51,15 @@ export default function EnergyCheckInScreen() {
 
   // Feedback
   const [showFeedback, setShowFeedback] = useState(false);
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimer.current) {
+        clearTimeout(feedbackTimer.current);
+      }
+    };
+  }, []);
 
   // Alternar gatilho
   const toggleTrigger = (trigger: string) => {
@@ -61,16 +84,18 @@ export default function EnergyCheckInScreen() {
       physicalEnergy,
       triggers: selectedTriggers,
     });
+    trigger("success");
     setShowFeedback(true);
 
     // Esconder feedback após 3 segundos (sem animação piscante)
-    setTimeout(() => setShowFeedback(false), 3000);
+    if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = setTimeout(() => setShowFeedback(false), 3000);
   };
 
   const suggestions = getSuggestions();
 
   return (
-    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -88,7 +113,18 @@ export default function EnergyCheckInScreen() {
             Disposição para interação interpessoal
           </Text>
 
-          <View style={styles.sliderContainer}>
+          <View
+            style={styles.sliderContainer}
+            accessible
+            accessibilityRole="adjustable"
+            accessibilityLabel="Bateria Social"
+            accessibilityValue={{
+              min: 0,
+              max: 100,
+              now: socialBattery,
+              text: `${socialBattery}%`,
+            }}
+          >
             <View style={styles.sliderLabels}>
               <Text style={[styles.sliderLabel, { fontSize: fontSize(14) }]}>0%</Text>
               <Text style={[styles.sliderValue, { fontSize: fontSize(24) }]}>{socialBattery}%</Text>
@@ -106,12 +142,16 @@ export default function EnergyCheckInScreen() {
               <Pressable
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.max(0, socialBattery - 10))}
+                accessibilityRole="button"
+                accessibilityLabel="Diminuir Bateria Social em 10%"
               >
                 <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>-10</Text>
               </Pressable>
               <Pressable
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.min(100, socialBattery + 10))}
+                accessibilityRole="button"
+                accessibilityLabel="Aumentar Bateria Social em 10%"
               >
                 <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>+10</Text>
               </Pressable>
@@ -135,6 +175,9 @@ export default function EnergyCheckInScreen() {
                   sensoryLoad === level && styles.levelButtonActive,
                 ]}
                 onPress={() => setSensoryLoad(level)}
+                accessibilityRole="radio"
+                accessibilityLabel={`Nível ${level}, ${LEVEL_LABELS[String(level)]}`}
+                accessibilityState={{ selected: sensoryLoad === level }}
               >
                 <Text
                   style={[
@@ -166,6 +209,9 @@ export default function EnergyCheckInScreen() {
                   physicalEnergy === level && styles.levelButtonActive,
                 ]}
                 onPress={() => setPhysicalEnergy(level)}
+                accessibilityRole="radio"
+                accessibilityLabel={`Nível ${level}, ${LEVEL_LABELS[String(level)]}`}
+                accessibilityState={{ selected: physicalEnergy === level }}
               >
                 <Text
                   style={[
@@ -189,26 +235,29 @@ export default function EnergyCheckInScreen() {
           </Text>
 
           <View style={styles.chipsContainer}>
-            {COMMON_TRIGGERS.map((trigger) => (
-              <Pressable
-                key={trigger}
-                style={[
-                  styles.chip,
-                  selectedTriggers.includes(trigger) && styles.chipSelected,
-                ]}
-                onPress={() => toggleTrigger(trigger)}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    selectedTriggers.includes(trigger) && styles.chipTextSelected,
-                    { fontSize: fontSize(14) },
-                  ]}
+            {COMMON_TRIGGERS.map((trigger) => {
+              const selected = selectedTriggers.includes(trigger);
+              return (
+                <Pressable
+                  key={trigger}
+                  style={[styles.chip, selected && styles.chipSelected]}
+                  onPress={() => toggleTrigger(trigger)}
+                  accessibilityRole="checkbox"
+                  accessibilityLabel={trigger}
+                  accessibilityState={{ checked: selected }}
                 >
-                  {trigger}
-                </Text>
-              </Pressable>
-            ))}
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selected && styles.chipTextSelected,
+                      { fontSize: fontSize(14) },
+                    ]}
+                  >
+                    {trigger}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
@@ -226,7 +275,11 @@ export default function EnergyCheckInScreen() {
 
         {/* Feedback de sucesso */}
         {showFeedback && (
-          <View style={styles.feedbackContainer}>
+          <View
+            style={styles.feedbackContainer}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
             <Text style={[styles.feedbackText, { fontSize: fontSize(16) }]}>
               Check-in registrado. Cuide-se.
             </Text>
@@ -234,7 +287,13 @@ export default function EnergyCheckInScreen() {
         )}
 
         {/* Botão Salvar */}
-        <Pressable style={styles.saveButton} onPress={handleSave}>
+        <Pressable
+          style={styles.saveButton}
+          onPress={handleSave}
+          accessibilityRole="button"
+          accessibilityLabel="Registrar check-in"
+          accessibilityHint="Salva como você está se sentindo agora"
+        >
           <Text style={[styles.saveButtonText, { fontSize: fontSize(18) }]}>Registrar</Text>
         </Pressable>
       </ScrollView>
@@ -242,153 +301,154 @@ export default function EnergyCheckInScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    gap: 32,
-  },
-  section: {
-    gap: 12,
-  },
-  sectionTitle: {
-    color: "#E8E6E3",
-    fontWeight: "600",
-  },
-  sectionDescription: {
-    color: "#8A8782",
-  },
-  sliderContainer: {
-    gap: 12,
-  },
-  sliderLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  sliderLabel: {
-    color: "#8A8782",
-  },
-  sliderValue: {
-    color: "#E8E6E3",
-    fontWeight: "600",
-  },
-  sliderTrack: {
-    height: 8,
-    backgroundColor: "#2A2F38",
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  sliderFill: {
-    height: "100%",
-    backgroundColor: "#7B9EA8",
-    borderRadius: 4,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 16,
-  },
-  adjustButton: {
-    backgroundColor: "#22262E",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  adjustButtonText: {
-    color: "#B8B5B0",
-  },
-  levelSelector: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  levelButton: {
-    flex: 1,
-    backgroundColor: "#22262E",
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  levelButtonActive: {
-    backgroundColor: "#7B9EA8",
-    borderColor: "#7B9EA8",
-  },
-  levelButtonText: {
-    color: "#B8B5B0",
-    fontWeight: "600",
-  },
-  levelButtonTextActive: {
-    color: "#1A1D23",
-  },
-  chipsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  chip: {
-    backgroundColor: "#22262E",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  chipSelected: {
-    backgroundColor: "#7B9EA8",
-    borderColor: "#7B9EA8",
-  },
-  chipText: {
-    color: "#B8B5B0",
-  },
-  chipTextSelected: {
-    color: "#1A1D23",
-  },
-  suggestionsContainer: {
-    gap: 12,
-  },
-  suggestionsTitle: {
-    color: "#B8B5B0",
-    fontWeight: "600",
-  },
-  suggestionCard: {
-    backgroundColor: "#22262E",
-    padding: 16,
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: "#8FA98F",
-  },
-  suggestionText: {
-    color: "#B8B5B0",
-    lineHeight: 20,
-  },
-  feedbackContainer: {
-    backgroundColor: "#22262E",
-    padding: 16,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  feedbackText: {
-    color: "#8FA98F",
-  },
-  saveButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 18,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: "#1A1D23",
-    fontWeight: "600",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: 24,
+      gap: 32,
+    },
+    section: {
+      gap: 12,
+    },
+    sectionTitle: {
+      color: colors.text,
+      fontWeight: "600",
+    },
+    sectionDescription: {
+      color: colors.textMuted,
+    },
+    sliderContainer: {
+      gap: 12,
+    },
+    sliderLabels: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    sliderLabel: {
+      color: colors.textMuted,
+    },
+    sliderValue: {
+      color: colors.text,
+      fontWeight: "600",
+    },
+    sliderTrack: {
+      height: 8,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: 4,
+      overflow: "hidden",
+    },
+    sliderFill: {
+      height: "100%",
+      backgroundColor: colors.accent,
+      borderRadius: 4,
+    },
+    buttonRow: {
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 16,
+    },
+    adjustButton: {
+      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    adjustButtonText: {
+      color: colors.textSecondary,
+    },
+    levelSelector: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 8,
+    },
+    levelButton: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      paddingVertical: 16,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    levelButtonActive: {
+      backgroundColor: colors.accent,
+      borderColor: colors.accent,
+    },
+    levelButtonText: {
+      color: colors.textSecondary,
+      fontWeight: "600",
+    },
+    levelButtonTextActive: {
+      color: colors.accentText,
+    },
+    chipsContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    chip: {
+      backgroundColor: colors.surface,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    chipSelected: {
+      backgroundColor: colors.accent,
+      borderColor: colors.accent,
+    },
+    chipText: {
+      color: colors.textSecondary,
+    },
+    chipTextSelected: {
+      color: colors.accentText,
+    },
+    suggestionsContainer: {
+      gap: 12,
+    },
+    suggestionsTitle: {
+      color: colors.textSecondary,
+      fontWeight: "600",
+    },
+    suggestionCard: {
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderRadius: 8,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.success,
+    },
+    suggestionText: {
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    feedbackContainer: {
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    feedbackText: {
+      color: colors.success,
+    },
+    saveButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 18,
+      borderRadius: 8,
+      alignItems: "center",
+      marginTop: 16,
+    },
+    saveButtonText: {
+      color: colors.accentText,
+      fontWeight: "600",
+    },
+  });

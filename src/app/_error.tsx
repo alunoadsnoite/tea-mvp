@@ -1,84 +1,116 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import React, { useMemo } from "react";
+import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 /**
- * Error Boundary — Tela de recuperação de erros inesperados.
+ * ErrorBoundaryScreen — Tela de recuperação de erros inesperados.
  *
- * Mostra uma mensagem discreta e oferece voltar à Home ou abrir o Cartão de Crise.
+ * Mostra uma mensagem discreta, oferece tentar novamente e mantém o acesso
+ * direto ao Cartão de Crise.
  */
-export default function ErrorBoundaryScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Algo deu errado</Text>
-      <Text style={styles.message}>
-        Ocorreu um problema inesperado. Tente novamente ou reinicie o app.
-      </Text>
+export default function ErrorBoundaryScreen({ retry }: { retry?: () => void }) {
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const router = useRouter();
 
-      <View style={styles.actions}>
-        <Link href="/" asChild>
-          <Pressable style={styles.button}>
-            <Text style={styles.buttonText}>Voltar à Home</Text>
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen options={{ headerShown: false }} />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.title}>Algo deu errado</Text>
+        <Text style={styles.message}>
+          Ocorreu um problema inesperado. Tente novamente ou volte ao início.
+        </Text>
+
+        <View style={styles.actions}>
+          {retry && (
+            <Pressable
+              style={styles.button}
+              onPress={retry}
+              accessibilityRole="button"
+              accessibilityLabel="Tentar novamente"
+            >
+              <Text style={styles.buttonText}>Tentar novamente</Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            style={styles.button}
+            onPress={() => router.replace("/")}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar ao início"
+          >
+            <Text style={styles.buttonText}>Voltar ao início</Text>
           </Pressable>
-        </Link>
-        <Link href="/crisis-card" asChild>
-          <Pressable style={styles.crisisButton}>
+
+          <Pressable
+            style={styles.crisisButton}
+            onPress={() => router.replace("/crisis-card")}
+            accessibilityRole="button"
+            accessibilityLabel="Abrir Cartão de Crise"
+          >
             <Text style={styles.crisisButtonText}>Abrir Cartão de Crise</Text>
           </Pressable>
-        </Link>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1A1D23",
-    padding: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    color: "#E8E6E3",
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  message: {
-    color: "#8A8782",
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: "center",
-    marginBottom: 40,
-  },
-  actions: {
-    gap: 12,
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "#22262E",
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#B8B5B0",
-    fontSize: 16,
-  },
-  crisisButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  crisisButtonText: {
-    color: "#1A1D23",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    content: {
+      flexGrow: 1,
+      padding: 24,
+      justifyContent: "center",
+    },
+    title: {
+      color: colors.text,
+      fontSize: 24,
+      fontWeight: "700",
+      marginBottom: 16,
+      textAlign: "center",
+    },
+    message: {
+      color: colors.textMuted,
+      fontSize: 16,
+      lineHeight: 24,
+      textAlign: "center",
+      marginBottom: 40,
+    },
+    actions: {
+      gap: 12,
+      width: "100%",
+    },
+    button: {
+      backgroundColor: colors.surface,
+      paddingVertical: 16,
+      paddingHorizontal: 32,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: colors.textSecondary,
+      fontSize: 16,
+    },
+    crisisButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 16,
+      paddingHorizontal: 32,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    crisisButtonText: {
+      color: colors.accentText,
+      fontSize: 16,
+      fontWeight: "600",
+    },
+  });

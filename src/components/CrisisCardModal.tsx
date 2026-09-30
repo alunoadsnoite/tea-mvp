@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { useCrisisStore } from "@/stores/crisisStore";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 interface ScrollViewEvent {
   nativeEvent: {
@@ -28,7 +29,7 @@ interface ScrollViewEvent {
  * - Texto centralizado na tela para fácil leitura
  * - Reage automaticamente à rotação do celular
  * - Navegação por gestos simples (swipe horizontal para alternar mensagens)
- * - Acesso ao contato de emergência
+ * - Acesso ao contato de emergência primário
  * - Sem elementos piscando ou animações complexas
  */
 export function CrisisCardModal() {
@@ -44,14 +45,23 @@ export function CrisisCardModal() {
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
   const { trigger } = useHapticFeedback();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const currentMessage = messages[currentIndex];
+  // Contato exibido e acionado: o primário quando definido, senão o primeiro.
+  const emergencyContact = useMemo(
+    () => contacts.find((c) => c.id === primaryContactId) ?? contacts[0],
+    [contacts, primaryContactId]
+  );
+
+  // Protege contra uma lista de mensagens encurtada enquanto a tela está aberta.
+  const safeIndex = Math.min(currentIndex, Math.max(0, messages.length - 1));
+  const currentMessage = messages[safeIndex];
 
   // Navegação por gesto (swipe horizontal)
   const handleScroll = (event: ScrollViewEvent) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / width);
-    if (index !== currentIndex && index >= 0 && index < messages.length) {
+    if (index !== safeIndex && index >= 0 && index < messages.length) {
       setCurrentIndex(index);
       setActiveMessage(messages[index].id);
     }
@@ -60,19 +70,17 @@ export function CrisisCardModal() {
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
     trigger("success");
-    const contact = contacts.find((c) => c.id === primaryContactId) ?? contacts[0];
-    if (contact?.phone) {
-      Linking.openURL(`tel:${contact.phone}`);
+    if (emergencyContact?.phone) {
+      Linking.openURL(`tel:${emergencyContact.phone}`);
     }
   };
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
     trigger("light");
-    const contact = contacts.find((c) => c.id === primaryContactId) ?? contacts[0];
-    if (contact?.phone) {
+    if (emergencyContact?.phone) {
       const message = encodeURIComponent(currentMessage?.content || "");
-      Linking.openURL(`sms:${contact.phone}?body=${message}`);
+      Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`);
     }
   };
 
@@ -84,7 +92,7 @@ export function CrisisCardModal() {
       {messages.length > 1 && (
         <View style={styles.pageIndicator}>
           <Text style={styles.pageIndicatorText}>
-            {currentIndex + 1} / {messages.length}
+            {safeIndex + 1} / {messages.length}
           </Text>
         </View>
       )}
@@ -110,22 +118,26 @@ export function CrisisCardModal() {
       </ScrollView>
 
       {/* Botões de emergência */}
-      {contacts[0] && (
+      {emergencyContact && (
         <View style={styles.emergencyActions}>
           <Pressable
             style={styles.emergencyButton}
             onPress={handleEmergencyCall}
-            accessibilityLabel={`Ligar para ${contacts[0].name}`}
+            accessibilityRole="button"
+            accessibilityLabel={`Ligar para ${emergencyContact.name}`}
+            accessibilityHint="Abre o telefone para discar"
           >
             <Text style={styles.emergencyButtonText}>
-              Ligar para {contacts[0].name}
+              Ligar para {emergencyContact.name}
             </Text>
           </Pressable>
 
           <Pressable
             style={styles.emergencyButtonSecondary}
             onPress={handleEmergencyMessage}
-            accessibilityLabel={`Enviar mensagem para ${contacts[0].name}`}
+            accessibilityRole="button"
+            accessibilityLabel={`Enviar mensagem para ${emergencyContact.name}`}
+            accessibilityHint="Abre o aplicativo de mensagens"
           >
             <Text style={styles.emergencyButtonSecondaryText}>
               Enviar mensagem
@@ -144,96 +156,96 @@ export function CrisisCardModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1A1D23",
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 32,
-  },
-  pageIndicator: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  pageIndicatorText: {
-    color: "#8A8782",
-    fontSize: 14,
-  },
-  messageContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    paddingHorizontal: 32,
-  },
-  messageContentWrapper: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    width: "100%",
-    paddingHorizontal: 8,
-  },
-  messageTitle: {
-    color: "#7B9EA8",
-    fontSize: 36,
-    fontWeight: "800",
-    marginBottom: 24,
-    textAlign: "left",
-    lineHeight: 44,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  divider: {
-    width: 60,
-    height: 4,
-    backgroundColor: "#7B9EA8",
-    borderRadius: 2,
-    marginBottom: 32,
-  },
-  messageContent: {
-    color: "#E8E6E3",
-    fontSize: 26,
-    lineHeight: 40,
-    textAlign: "left",
-    fontWeight: "600",
-    flexWrap: "wrap",
-    flexShrink: 1,
-  },
-  emergencyActions: {
-    gap: 12,
-    marginTop: 32,
-  },
-  emergencyButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  emergencyButtonText: {
-    color: "#1A1D23",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  emergencyButtonSecondary: {
-    backgroundColor: "transparent",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#7B9EA8",
-  },
-  emergencyButtonSecondaryText: {
-    color: "#7B9EA8",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  swipeHint: {
-    color: "#8A8782",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 16,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: 24,
+      paddingTop: 60,
+      paddingBottom: 32,
+    },
+    pageIndicator: {
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    pageIndicatorText: {
+      color: colors.textMuted,
+      fontSize: 14,
+    },
+    messageContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "flex-start",
+      paddingHorizontal: 32,
+    },
+    messageContentWrapper: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "flex-start",
+      width: "100%",
+      paddingHorizontal: 8,
+    },
+    messageTitle: {
+      color: colors.accent,
+      fontSize: 36,
+      fontWeight: "800",
+      marginBottom: 24,
+      textAlign: "left",
+      lineHeight: 44,
+      textShadowColor: colors.shadow,
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 4,
+    },
+    divider: {
+      width: 60,
+      height: 4,
+      backgroundColor: colors.accent,
+      borderRadius: 2,
+      marginBottom: 32,
+    },
+    messageContent: {
+      color: colors.text,
+      fontSize: 26,
+      lineHeight: 40,
+      textAlign: "left",
+      fontWeight: "600",
+      flexShrink: 1,
+    },
+    emergencyActions: {
+      gap: 12,
+      marginTop: 32,
+    },
+    emergencyButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 18,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    emergencyButtonText: {
+      color: colors.accentText,
+      fontSize: 18,
+      fontWeight: "700",
+    },
+    emergencyButtonSecondary: {
+      backgroundColor: "transparent",
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.accent,
+    },
+    emergencyButtonSecondaryText: {
+      color: colors.accent,
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    swipeHint: {
+      color: colors.textMuted,
+      fontSize: 14,
+      textAlign: "center",
+      marginTop: 16,
+    },
+  });

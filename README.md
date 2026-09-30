@@ -15,11 +15,11 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - **Respiração guiada reage à rotação**: Agora usa useWindowDimensions para se adaptar à orientação
 - **Contato do desenvolvedor**: Seção com e-mail (valdenorsa@proton.me) nas configurações do app e nas configurações do cartão de crise
 - **Error boundary**: Tela de recuperação para erros inesperados
-- **Retenção de histórico**: Check-ins aquide retaining apenas entradas dos últimos dias (limite configurável)
+- **Retenção de histórico**: Check-ins mantêm apenas entradas dos últimos dias (limite configurável)
 - **Acesso rápido a novos cartões**: Botão "Novo cartão personalizado" na tela de estratégias de calma
 - **Feedback háptico**: Vibração suave em botões de emergência e seleções
 - **Fonte ajustável**: Respeita configurações de acessibilidade do sistema (0.85x–1.3x)
-- **Tema claro/escuro**: Dark mode por padrão, tema claro opcional, modo automático
+- **Tema claro/escuro**: Tema persistente com seleção de escuro, claro ou automático
 - **Tela de configurações**: Seleção de tema com descrições claras
 - **Botão na Home**: Acesso rápido às configurações
 - **Haptic no cartão de crise**: Feedback sutil nos botões de ligar/mensagem
@@ -77,18 +77,19 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - Execução passo-a-passo (uma tarefa por vez)
 - Timer visual suave (sem números estressantes)
 - Rotinas pré-configuráveis e personalizáveis
-- Pausa e extensão de tempo sem penalidade
+- Pausa real (o timer congela) e extensão de tempo sem penalidade
 
-### 4. Central de Cartões of Regulação (Coping Cards)
+### 4. Central de Cartões de Regulação (Coping Cards)
 - Exercício de Ancoragem 5-4-3-2-1
 - Respiração Guiada (4-4-4-4 e 4-7-8)
-- Cartões personalizados
+- Cartões personalizados com criação e edição
+- Exclusão de cartões personalizados
 - Favoritos e categorias
 
 ## Stack Tecnológica
 
 - **Frontend**: React Native + Expo SDK 50 + TypeScript
-- **Estilização**: Tailwind CSS (NativeWind)
+- **Estilização**: `StyleSheet` do React Native (NativeWind instalado, mas não usado em massa)
 - **Estado**: Zustand + AsyncStorage (offline-first)
 - **Navegação**: Expo Router
 - **Build**: EAS Build / Gradle
@@ -98,6 +99,10 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 ```bash
 # Instalar dependências
 npm install
+
+# Validar código
+npm run lint
+npm run typecheck
 
 # Iniciar em modo desenvolvimento
 npx expo start
@@ -121,10 +126,13 @@ src/
 │   ├── interception.tsx    # Check-in
 │   ├── checkin-history.tsx # Histórico
 │   ├── routines.tsx        # Lista de Rotinas
+│   ├── routines/new.tsx    # Criação/edição de Rotina
 │   ├── routine-execution.tsx # Execução
 │   ├── regulation.tsx      # Cartões de Regulação
 │   ├── breathing-guide.tsx # Respiração Guiada
-│   └── coping-card/        # Detalhe do Cartão
+│   ├── settings.tsx        # Configurações do App
+│   ├── _error.tsx          # Tela de recuperação de erros
+│   └── coping-card/        # Detalhe e criação/edição do Cartão
 ├── components/             # Componentes reutilizáveis
 ├── features/               # Features modulares
 ├── hooks/                  # Custom hooks
@@ -137,7 +145,7 @@ src/
 
 ## Princípios de UX Neurodivergente
 
-- **Dark mode por padrão**: Reduz fadiga visual
+- **Tema claro/escuro persistente**: Escolha entre escuro, claro e automático; reduz fadiga visual no escuro
 - **Baixa carga cognitiva**: Uma ação principal por tela
 - **Sem cores agressivas**: Paleta pastel suave
 - **Sem animações piscantes**: Apenas transições suaves
@@ -148,4 +156,4 @@ src/
 
 ## Licença
 
-MIT
+GPL-3.0 — ver [LICENSE](LICENSE).

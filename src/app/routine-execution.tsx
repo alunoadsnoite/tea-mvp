@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,10 +11,11 @@ import { Stack, useRouter } from "expo-router";
 import { useRoutineStore } from "@/stores/routineStore";
 import { VisualTimerBar } from "@/components/VisualTimerBar";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 /**
  * RoutineExecutionScreen — Execução passo-a-passo
- * 
+ *
  * Princípios:
  * - Apenas uma subtarefa por vez em destaque
  * - Timer visual suave (sem números estressantes)
@@ -24,6 +25,7 @@ import { useThemeMode } from "@/hooks/useThemeMode";
 export default function RoutineExecutionScreen() {
   const router = useRouter();
   const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const execution = useRoutineStore((state) => state.execution);
   const routines = useRoutineStore((state) => state.routines);
   const completeStep = useRoutineStore((state) => state.completeStep);
@@ -33,25 +35,42 @@ export default function RoutineExecutionScreen() {
   const stopExecution = useRoutineStore((state) => state.stopExecution);
 
   const [, setTick] = useState(0);
+  const completionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Atualizar a cada segundo para o timer visual
+  // Atualiza a cada segundo apenas enquanto o passo está em andamento, para
+  // não consumir bateria em uma tela que não precisa de re-render contínuo.
   useEffect(() => {
+    if (!execution || execution.isPaused || execution.completedAt) return;
+
     const interval = setInterval(() => {
       setTick((t) => t + 1);
     }, 1000);
     return () => clearInterval(interval);
+  }, [execution]);
+
+  // Evita que a navegação agendada na conclusão dispare depois de a tela sair.
+  useEffect(() => {
+    return () => {
+      if (completionTimer.current) {
+        clearTimeout(completionTimer.current);
+        completionTimer.current = null;
+      }
+    };
   }, []);
 
   if (!execution) {
     return (
-      <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { color: colors.text }]}>Nenhuma rotina em execução</Text>
+          <Text style={styles.emptyText}>Nenhuma rotina em execução</Text>
           <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => router.replace("/routines")}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar para Minhas Rotinas"
           >
-            <Text style={[styles.backButtonText, { color: colors.text }]}>Voltar</Text>
+            <Text style={styles.backButtonText}>Voltar</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -59,17 +78,20 @@ export default function RoutineExecutionScreen() {
   }
 
   const routine = routines.find((r) => r.id === execution.routineId);
-  if (!routine) return null;
-
-  const currentStep = routine.steps[execution.currentStepIndex];
-  const isLastStep = execution.currentStepIndex === routine.steps.length - 1;
+  const currentStep = routine?.steps[execution.currentStepIndex];
+  const isLastStep =
+    routine !== undefined &&
+    execution.currentStepIndex === routine.steps.length - 1;
   const isCompleted = execution.completedAt !== null;
 
   const handleCompleteStep = () => {
+    // Trava contra toques repetidos, que agendariam navegações duplicadas.
+    if (completionTimer.current) return;
+
     completeStep();
     if (isLastStep) {
-      // Rotina concluída
-      setTimeout(() => {
+      completionTimer.current = setTimeout(() => {
+        completionTimer.current = null;
         stopExecution();
         router.replace("/routines");
       }, 1500);
@@ -81,14 +103,33 @@ export default function RoutineExecutionScreen() {
     router.back();
   };
 
+  if (!routine || !currentStep) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Rotina indisponível</Text>
+          <Pressable
+            style={styles.backButton}
+            onPress={handleStop}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar para Minhas Rotinas"
+          >
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: false, // Sem header para reduzir distrações
         }}
       />
-      
+
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Progresso geral */}
         <View style={styles.progressContainer}>
@@ -125,6 +166,8 @@ export default function RoutineExecutionScreen() {
               startTime={execution.stepStartedAt}
               endTime={execution.stepEndsAt}
               isPaused={execution.isPaused}
+              color={colors.accent}
+              trackColor={colors.surfaceAlt}
             />
             {execution.isPaused && (
               <Text style={styles.pausedText}>Pausado</Text>
@@ -147,6 +190,13 @@ export default function RoutineExecutionScreen() {
             <Pressable
               style={styles.primaryButton}
               onPress={handleCompleteStep}
+              accessibilityRole="button"
+              accessibilityLabel={isLastStep ? "Concluir Rotina" : "Próximo Passo"}
+              accessibilityHint={
+                isLastStep
+                  ? "Encerra a rotina e mostra a mensagem de conclusão"
+                  : "Marca o passo atual como concluído e avança para o seguinte"
+              }
             >
               <Text style={styles.primaryButtonText}>
                 {isLastStep ? "Concluir Rotina" : "Próximo Passo"}
@@ -158,6 +208,9 @@ export default function RoutineExecutionScreen() {
                 <Pressable
                   style={styles.secondaryButton}
                   onPress={resumeExecution}
+                  accessibilityRole="button"
+                  accessibilityLabel="Continuar rotina"
+                  accessibilityHint="Retoma a contagem do tempo deste passo"
                 >
                   <Text style={styles.secondaryButtonText}>Continuar</Text>
                 </Pressable>
@@ -165,6 +218,9 @@ export default function RoutineExecutionScreen() {
                 <Pressable
                   style={styles.secondaryButton}
                   onPress={pauseExecution}
+                  accessibilityRole="button"
+                  accessibilityLabel="Pausar rotina"
+                  accessibilityHint="Pausa a contagem do tempo deste passo"
                 >
                   <Text style={styles.secondaryButtonText}>Pausar</Text>
                 </Pressable>
@@ -173,6 +229,9 @@ export default function RoutineExecutionScreen() {
               <Pressable
                 style={styles.secondaryButton}
                 onPress={() => extendTime(5)}
+                accessibilityRole="button"
+                accessibilityLabel="Adicionar 5 minutos"
+                accessibilityHint="Estende o tempo estimado deste passo em cinco minutos"
               >
                 <Text style={styles.secondaryButtonText}>+5 min</Text>
               </Pressable>
@@ -180,6 +239,9 @@ export default function RoutineExecutionScreen() {
               <Pressable
                 style={styles.stopButton}
                 onPress={handleStop}
+                accessibilityRole="button"
+                accessibilityLabel="Encerrar rotina"
+                accessibilityHint="Interrompe a execução e volta para a lista de rotinas"
               >
                 <Text style={styles.stopButtonText}>Encerrar</Text>
               </Pressable>
@@ -191,143 +253,148 @@ export default function RoutineExecutionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    gap: 24,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  emptyText: {
-    color: "#8A8782",
-    fontSize: 16,
-    marginBottom: 24,
-  },
-  backButton: {
-    backgroundColor: "#22262E",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "#B8B5B0",
-    fontSize: 16,
-  },
-  progressContainer: {
-    gap: 8,
-  },
-  progressText: {
-    color: "#B8B5B0",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#2A2F38",
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#7B9EA8",
-    borderRadius: 3,
-  },
-  routineTitle: {
-    color: "#8A8782",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  stepCard: {
-    backgroundColor: "#22262E",
-    borderRadius: 12,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-    gap: 12,
-  },
-  stepTitle: {
-    color: "#E8E6E3",
-    fontSize: 28,
-    fontWeight: "700",
-    textAlign: "center",
-    lineHeight: 36,
-  },
-  stepDescription: {
-    color: "#B8B5B0",
-    fontSize: 16,
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  timerContainer: {
-    gap: 8,
-  },
-  pausedText: {
-    color: "#C4A882",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  completedContainer: {
-    backgroundColor: "#22262E",
-    padding: 24,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  completedText: {
-    color: "#8FA98F",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  actions: {
-    gap: 16,
-  },
-  primaryButton: {
-    backgroundColor: "#7B9EA8",
-    paddingVertical: 20,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    color: "#1A1D23",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  secondaryActions: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 12,
-  },
-  secondaryButton: {
-    backgroundColor: "#22262E",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  secondaryButtonText: {
-    color: "#B8B5B0",
-    fontSize: 14,
-  },
-  stopButton: {
-    backgroundColor: "transparent",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-  },
-  stopButtonText: {
-    color: "#8A8782",
-    fontSize: 14,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: 24,
+      gap: 24,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 24,
+    },
+    emptyText: {
+      color: colors.textMuted,
+      fontSize: 16,
+      marginBottom: 24,
+      textAlign: "center",
+    },
+    backButton: {
+      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    backButtonText: {
+      color: colors.textSecondary,
+      fontSize: 16,
+    },
+    progressContainer: {
+      gap: 8,
+    },
+    progressText: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      textAlign: "center",
+    },
+    progressBar: {
+      height: 6,
+      backgroundColor: colors.surfaceAlt,
+      borderRadius: 3,
+      overflow: "hidden",
+    },
+    progressFill: {
+      height: "100%",
+      backgroundColor: colors.accent,
+      borderRadius: 3,
+    },
+    routineTitle: {
+      color: colors.textMuted,
+      fontSize: 16,
+      textAlign: "center",
+    },
+    stepCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 32,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 12,
+    },
+    stepTitle: {
+      color: colors.text,
+      fontSize: 28,
+      fontWeight: "700",
+      textAlign: "center",
+      lineHeight: 36,
+    },
+    stepDescription: {
+      color: colors.textSecondary,
+      fontSize: 16,
+      textAlign: "center",
+      lineHeight: 22,
+    },
+    timerContainer: {
+      gap: 8,
+    },
+    pausedText: {
+      color: colors.warm,
+      fontSize: 14,
+      textAlign: "center",
+    },
+    completedContainer: {
+      backgroundColor: colors.surface,
+      padding: 24,
+      borderRadius: 12,
+      alignItems: "center",
+    },
+    completedText: {
+      color: colors.success,
+      fontSize: 18,
+      textAlign: "center",
+    },
+    actions: {
+      gap: 16,
+    },
+    primaryButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 20,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    primaryButtonText: {
+      color: colors.accentText,
+      fontSize: 18,
+      fontWeight: "600",
+    },
+    secondaryActions: {
+      flexDirection: "row",
+      justifyContent: "center",
+      flexWrap: "wrap",
+      gap: 12,
+    },
+    secondaryButton: {
+      backgroundColor: colors.surface,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    secondaryButtonText: {
+      color: colors.textSecondary,
+      fontSize: 14,
+    },
+    stopButton: {
+      backgroundColor: "transparent",
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    stopButtonText: {
+      color: colors.textMuted,
+      fontSize: 14,
+    },
+  });

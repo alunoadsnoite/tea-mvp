@@ -30,6 +30,12 @@ export interface RoutineExecutionState {
   stepStartedAt: number | null;
   stepEndsAt: number | null; // Para o timer visual
   extendedMinutes: number; // Tempo extra adicionado
+  /**
+   * Momento em que a execução foi pausada. Usado para devolver ao relógio do
+   * passo o tempo que passou enquanto pausado, evitando que a pausa consuma o
+   * tempo que o usuário ganhou.
+   */
+  pausedAt: number | null;
 }
 
 // Rotinas pré-configuradas

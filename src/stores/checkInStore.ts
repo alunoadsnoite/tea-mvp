@@ -2,20 +2,19 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CheckInEntry } from "@/types/checkin";
+import { createId } from "@/lib/id";
 
 /**
  * Store Zustand — Check-in de Bateria Social & Interocepção
- * 
+ *
  * Persistência local via AsyncStorage para histórico offline.
  */
 interface CheckInStore {
   entries: CheckInEntry[];
-  
+
   // Ações
   addEntry: (entry: Omit<CheckInEntry, "id" | "timestamp">) => void;
-  getTodayEntries: () => CheckInEntry[];
   getRecentEntries: (days: number) => CheckInEntry[];
-  getLastEntry: () => CheckInEntry | null;
   clearHistory: () => void;
 }
 
@@ -27,22 +26,12 @@ export const useCheckInStore = create<CheckInStore>()(
       addEntry: (entry) => {
         const newEntry: CheckInEntry = {
           ...entry,
-          id: `checkin-${Date.now()}`,
+          id: createId("checkin"),
           timestamp: Date.now(),
         };
         set((state) => ({
           entries: [...state.entries, newEntry],
         }));
-      },
-
-      getTodayEntries: () => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayTimestamp = today.getTime();
-        
-        return get().entries.filter(
-          (entry) => entry.timestamp >= todayTimestamp
-        );
       },
 
       getRecentEntries: (days: number) => {
@@ -52,11 +41,6 @@ export const useCheckInStore = create<CheckInStore>()(
           .sort((a, b) => b.timestamp - a.timestamp);
       },
 
-      getLastEntry: () => {
-        const entries = get().entries;
-        return entries.length > 0 ? entries[entries.length - 1] : null;
-      },
-
       clearHistory: () => {
         set({ entries: [] });
       },
@@ -64,6 +48,13 @@ export const useCheckInStore = create<CheckInStore>()(
     {
       name: "checkin-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      version: 1,
+      migrate: (persisted) => {
+        const state = persisted as Partial<CheckInStore> | undefined;
+        return {
+          entries: Array.isArray(state?.entries) ? state.entries : [],
+        };
+      },
     }
   )
 );

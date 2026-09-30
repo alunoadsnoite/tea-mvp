@@ -1,38 +1,51 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Text,
+  Pressable,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { useCheckInStore } from "@/stores/checkInStore";
+import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { ThemeColors } from "@/constants/theme";
 
 /**
  * CheckInHistoryScreen — Histórico de Check-ins
- * 
+ *
  * Visualização simples dos últimos 7 dias para identificar padrões.
  */
 export default function CheckInHistoryScreen() {
+  const { fontSize } = useFontScale();
   const getRecentEntries = useCheckInStore((state) => state.getRecentEntries);
-  const entries = getRecentEntries(7);
+  const clearHistory = useCheckInStore((state) => state.clearHistory);
+  const totalEntries = useCheckInStore((state) => state.entries.length);
   const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  const entries = getRecentEntries(7);
 
   // Agrupar por dia
-  const groupedByDay = entries.reduce((acc, entry) => {
-    const date = new Date(entry.timestamp).toLocaleDateString("pt-BR", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    });
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(entry);
-    return acc;
-  }, {} as Record<string, typeof entries>);
+  const groupedByDay = useMemo(
+    () =>
+      entries.reduce((acc, entry) => {
+        const date = new Date(entry.timestamp).toLocaleDateString("pt-BR", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        });
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(entry);
+        return acc;
+      }, {} as Record<string, typeof entries>),
+    [entries]
+  );
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("pt-BR", {
@@ -41,8 +54,19 @@ export default function CheckInHistoryScreen() {
     });
   };
 
+  const handleClearHistory = () => {
+    Alert.alert(
+      "Limpar histórico",
+      "Todos os check-ins registrados serão apagados definitivamente. Deseja continuar?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Apagar tudo", style: "destructive", onPress: clearHistory },
+      ]
+    );
+  };
+
   return (
-    <SafeAreaView style={StyleSheet.flatten([styles.container, { backgroundColor: colors.background }])}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -51,125 +75,151 @@ export default function CheckInHistoryScreen() {
           headerTintColor: colors.text,
         }}
       />
-      
+
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        {Object.keys(groupedByDay).length === 0 ? (
-          <Text style={styles.emptyText}>
+        {entries.length === 0 ? (
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>
             Nenhum check-in nos últimos 7 dias
           </Text>
         ) : (
-          Object.entries(groupedByDay).map(([date, dayEntries]) => (
-            <View key={date} style={styles.daySection}>
-              <Text style={styles.dayTitle}>{date}</Text>
-              
-              {dayEntries.map((entry) => (
-                <View key={entry.id} style={styles.entryCard}>
-                  <Text style={styles.entryTime}>{formatTime(entry.timestamp)}</Text>
-                  
-                  <View style={styles.metrics}>
-                    <View style={styles.metric}>
-                      <Text style={styles.metricLabel}>Bateria Social</Text>
-                      <Text style={styles.metricValue}>{entry.socialBattery}%</Text>
-                    </View>
-                    
-                    <View style={styles.metric}>
-                      <Text style={styles.metricLabel}>Carga Sensorial</Text>
-                      <Text style={styles.metricValue}>{entry.sensoryLoad}/5</Text>
-                    </View>
-                    
-                    <View style={styles.metric}>
-                      <Text style={styles.metricLabel}>Energia Física</Text>
-                      <Text style={styles.metricValue}>{entry.physicalEnergy}/5</Text>
-                    </View>
-                  </View>
+          <>
+            {Object.entries(groupedByDay).map(([date, dayEntries]) => (
+              <View key={date} style={styles.daySection}>
+                <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>{date}</Text>
 
-                  {entry.triggers.length > 0 && (
-                    <View style={styles.triggers}>
-                      {entry.triggers.map((trigger, index) => (
-                        <View key={index} style={styles.triggerChip}>
-                          <Text style={styles.triggerText}>{trigger}</Text>
-                        </View>
-                      ))}
+                {dayEntries.map((entry) => (
+                  <View key={entry.id} style={styles.entryCard}>
+                    <Text style={[styles.entryTime, { fontSize: fontSize(14) }]}>
+                      {formatTime(entry.timestamp)}
+                    </Text>
+
+                    <View style={styles.metrics}>
+                      <View style={styles.metric}>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Bateria Social</Text>
+                        <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.socialBattery}%</Text>
+                      </View>
+
+                      <View style={styles.metric}>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Carga Sensorial</Text>
+                        <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.sensoryLoad}/5</Text>
+                      </View>
+
+                      <View style={styles.metric}>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Energia Física</Text>
+                        <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.physicalEnergy}/5</Text>
+                      </View>
                     </View>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))
+
+                    {entry.triggers.length > 0 && (
+                      <View style={styles.triggers}>
+                        {entry.triggers.map((trigger, index) => (
+                          <View key={`${entry.id}-${trigger}-${index}`} style={styles.triggerChip}>
+                            <Text style={[styles.triggerText, { fontSize: fontSize(12) }]}>{trigger}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            ))}
+
+            {/* Apagar histórico — os check-ins registram dados pessoais sensíveis */}
+            {totalEntries > 0 && (
+              <Pressable
+                style={styles.clearButton}
+                onPress={handleClearHistory}
+                accessibilityRole="button"
+                accessibilityLabel="Limpar histórico de check-ins"
+                accessibilityHint="Apaga definitivamente todos os check-ins registrados"
+              >
+                <Text style={[styles.clearButtonText, { fontSize: fontSize(15) }]}>
+                  Limpar histórico
+                </Text>
+              </Pressable>
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    gap: 24,
-  },
-  emptyText: {
-    color: "#8A8782",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 32,
-  },
-  daySection: {
-    gap: 12,
-  },
-  dayTitle: {
-    color: "#B8B5B0",
-    fontSize: 16,
-    fontWeight: "600",
-    textTransform: "capitalize",
-  },
-  entryCard: {
-    backgroundColor: "#22262E",
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#3A3F47",
-    gap: 12,
-  },
-  entryTime: {
-    color: "#8A8782",
-    fontSize: 14,
-  },
-  metrics: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  metric: {
-    alignItems: "center",
-  },
-  metricLabel: {
-    color: "#8A8782",
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  metricValue: {
-    color: "#E8E6E3",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  triggers: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  triggerChip: {
-    backgroundColor: "#2A2F38",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-  },
-  triggerText: {
-    color: "#B8B5B0",
-    fontSize: 12,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: 24,
+      gap: 24,
+    },
+    emptyText: {
+      color: colors.textMuted,
+      textAlign: "center",
+      marginTop: 32,
+    },
+    daySection: {
+      gap: 12,
+    },
+    dayTitle: {
+      color: colors.textSecondary,
+      fontWeight: "600",
+      textTransform: "capitalize",
+    },
+    entryCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 12,
+    },
+    entryTime: {
+      color: colors.textMuted,
+    },
+    metrics: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+    },
+    metric: {
+      alignItems: "center",
+    },
+    metricLabel: {
+      color: colors.textMuted,
+      marginBottom: 4,
+    },
+    metricValue: {
+      color: colors.text,
+      fontWeight: "600",
+    },
+    triggers: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    triggerChip: {
+      backgroundColor: colors.surfaceAlt,
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 16,
+    },
+    triggerText: {
+      color: colors.textSecondary,
+    },
+    clearButton: {
+      backgroundColor: "transparent",
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.warm,
+      marginTop: 8,
+    },
+    clearButtonText: {
+      color: colors.warm,
+    },
+  });
