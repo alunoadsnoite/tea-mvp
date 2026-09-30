@@ -13,6 +13,7 @@ import { useCheckInStore } from "@/stores/checkInStore";
 import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { ThemeColors } from "@/constants/theme";
+import { CheckInEntry } from "@/types/checkin";
 
 /**
  * CheckInHistoryScreen — Histórico de Check-ins
@@ -23,29 +24,29 @@ export default function CheckInHistoryScreen() {
   const { fontSize } = useFontScale();
   const getRecentEntries = useCheckInStore((state) => state.getRecentEntries);
   const clearHistory = useCheckInStore((state) => state.clearHistory);
-  const totalEntries = useCheckInStore((state) => state.entries.length);
+  // Referência estável do store: usar `entries.length` criaria um array novo a
+  // cada render e invalidaria o memo de agrupamento.
+  const allEntries = useCheckInStore((state) => state.entries);
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const entries = getRecentEntries(7);
-
-  // Agrupar por dia
-  const groupedByDay = useMemo(
-    () =>
-      entries.reduce((acc, entry) => {
-        const date = new Date(entry.timestamp).toLocaleDateString("pt-BR", {
-          weekday: "short",
-          day: "numeric",
-          month: "short",
-        });
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-        acc[date].push(entry);
-        return acc;
-      }, {} as Record<string, typeof entries>),
-    [entries]
-  );
+  // Filtrar e agrupar por dia. A dependência é a referência do store, então o
+  // memo só recalcula quando um check-in é adicionado ou removido.
+  const groupedByDay = useMemo(() => {
+    const entries = getRecentEntries(7);
+    return entries.reduce((acc, entry) => {
+      const date = new Date(entry.timestamp).toLocaleDateString("pt-BR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      });
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(entry);
+      return acc;
+    }, {} as Record<string, CheckInEntry[]>);
+  }, [allEntries, getRecentEntries]);
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("pt-BR", {
@@ -77,7 +78,7 @@ export default function CheckInHistoryScreen() {
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        {entries.length === 0 ? (
+        {Object.keys(groupedByDay).length === 0 ? (
           <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>
             Nenhum check-in nos últimos 7 dias
           </Text>
@@ -125,7 +126,7 @@ export default function CheckInHistoryScreen() {
             ))}
 
             {/* Apagar histórico — os check-ins registram dados pessoais sensíveis */}
-            {totalEntries > 0 && (
+            {allEntries.length > 0 && (
               <Pressable
                 style={styles.clearButton}
                 onPress={handleClearHistory}

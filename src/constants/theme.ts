@@ -58,7 +58,7 @@ export const darkTheme: ThemeColors = {
   borderSubtle: "#2A2F38",
   text: "#E8E6E3",
   textSecondary: "#B8B5B0",
-  textMuted: "#8A8782",
+  textMuted: "#9A968F",
   accent: "#7B9EA8",
   accentText: "#1A1D23",
   accentSoft: "rgba(123, 158, 168, 0.16)",
@@ -66,7 +66,7 @@ export const darkTheme: ThemeColors = {
   warmSurface: "rgba(196, 168, 130, 0.20)",
   success: "#8FA98F",
   input: "#1A1D23",
-  placeholder: "#8A8782",
+  placeholder: "#9A968F",
   shadow: "rgba(0, 0, 0, 0.5)",
 };
 
