@@ -2,9 +2,16 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.5
+## Versão Atual: 1.0.6
 
 ### Changelog
+
+#### v1.0.6 (2026-10-01)
+- **Acessibilidade: botão SOS centralizado** — o botão flutuante sai do canto direito e passa ao centro da tela, facilitando o alcance para destros e canhotos
+- **Cartão de crise: instrução de deslize acima das mensagens** — "Deslize para ver mais mensagens" aparece antes das mensagens, e não depois dos botões de emergência
+- **Correção: Cartão de crise** — as mensagens eram exibidas deslocadas para a direita e cortadas na borda. As páginas do carrossel usavam a largura total da tela em vez da área visível (o container tem `paddingHorizontal: 24`); agora a largura real da viewport é medida via `onLayout` e usada tanto nas páginas quanto no cálculo da paginação, que também estava dessincronizada
+- **Cartão de crise: bloco de texto centralizado** — a coluna ficou centralizada na tela, com margens laterais simétricas e `maxWidth: 560` para não esticar em paisagem/tablet. O texto em si permanece alinhado à esquerda dentro do bloco
+- **Cartão de crise: grupo posicionado mais alto** — `paddingTop` reduzido de 60 para 24 e `ScrollView` com `flex: 1`, alinhando o layout ao do app infantil
 
 #### v1.0.5 (2026-09-28)
 - **Contato primário de emergência**: Permite escolher qual contato usar no cartão de crise

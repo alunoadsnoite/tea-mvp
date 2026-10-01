@@ -48,8 +48,8 @@ Description: |
 RepoType: git
 Repo: https://github.com/alunoadsnoite/tea-mvp
 Builds:
-  - versionName: 1.0.5
-    versionCode: 5
+  - versionName: 1.0.6
+    versionCode: 6
     commit: b05fcb6
     subdir: android
     gradle:

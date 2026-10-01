@@ -40,7 +40,7 @@ const createStyles = (colors: ThemeColors) =>
     fab: {
       position: "absolute",
       bottom: 32,
-      right: 24,
+      alignSelf: "center",
       width: 56,
       height: 56,
       borderRadius: 28,

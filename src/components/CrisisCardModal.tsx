@@ -44,6 +44,7 @@ export function CrisisCardModal() {
 
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
+  const [viewportWidth, setViewportWidth] = useState(width);
   const { trigger } = useHapticFeedback();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
@@ -60,7 +61,7 @@ export function CrisisCardModal() {
   // Navegação por gesto (swipe horizontal)
   const handleScroll = (event: ScrollViewEvent) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / width);
+    const index = Math.round(contentOffsetX / viewportWidth);
     if (index !== safeIndex && index >= 0 && index < messages.length) {
       setCurrentIndex(index);
       setActiveMessage(messages[index].id);
@@ -97,17 +98,26 @@ export function CrisisCardModal() {
         </View>
       )}
 
+      {/* Instrução de navegação sutil */}
+      {messages.length > 1 && (
+        <Text style={styles.swipeHint}>
+          Deslize para ver mais mensagens
+        </Text>
+      )}
+
       {/* Mensagens com navegação por gesto */}
       <ScrollView
         ref={scrollViewRef}
+        style={styles.scrollView}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleScroll}
+        onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
         scrollEventThrottle={16}
       >
         {messages.map((message) => (
-          <View key={message.id} style={[styles.messageContainer, { width }]}>
+          <View key={message.id} style={[styles.messageContainer, { width: viewportWidth }]}>
             <View style={styles.messageContentWrapper}>
               <Text style={styles.messageTitle}>{message.title}</Text>
               <View style={styles.divider} />
@@ -145,13 +155,6 @@ export function CrisisCardModal() {
           </Pressable>
         </View>
       )}
-
-      {/* Instrução de navegação sutil */}
-      {messages.length > 1 && (
-        <Text style={styles.swipeHint}>
-          Deslize para ver mais mensagens
-        </Text>
-      )}
     </View>
   );
 }
@@ -162,8 +165,11 @@ const createStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
       paddingHorizontal: 24,
-      paddingTop: 60,
+      paddingTop: 24,
       paddingBottom: 32,
+    },
+    scrollView: {
+      flex: 1,
     },
     pageIndicator: {
       alignItems: "center",
@@ -176,14 +182,14 @@ const createStyles = (colors: ThemeColors) =>
     messageContainer: {
       flex: 1,
       justifyContent: "center",
-      alignItems: "flex-start",
-      paddingHorizontal: 32,
+      alignItems: "center",
     },
     messageContentWrapper: {
       flex: 1,
       justifyContent: "center",
       alignItems: "flex-start",
       width: "100%",
+      maxWidth: 560,
       paddingHorizontal: 8,
     },
     messageTitle: {
@@ -246,6 +252,6 @@ const createStyles = (colors: ThemeColors) =>
       color: colors.textMuted,
       fontSize: 14,
       textAlign: "center",
-      marginTop: 16,
+      marginBottom: 16,
     },
   });

@@ -2,7 +2,7 @@
   "expo": {
     "name": "TEA Autonomia",
     "slug": "tea-mvp",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "default",
     "scheme": "tea",
     "userInterfaceStyle": "automatic",
