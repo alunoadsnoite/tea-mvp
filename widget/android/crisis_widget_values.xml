@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Espelha os tokens de `src/constants/theme.ts` (tema escuro):
+      #1A1D23 sobre #E8E6E3 = 13.5:1 e #1A1D23 sobre #B8B5B0 = 8.3:1.
+
+      O widget é sempre escuro, independente do tema do app, porque o Cartão de
+      Crise prioriza alto contraste e o launcher pode renderizá-lo sobre qualquer
+      papel de parede. Se a paleta mudar, atualizar este arquivo.
+    -->
+    <color name="crisis_widget_background">#1A1D23</color>
+    <color name="crisis_widget_stroke">#3A3F47</color>
+    <color name="crisis_widget_text">#E8E6E3</color>
+    <color name="crisis_widget_text_secondary">#B8B5B0</color>
+
+    <string name="crisis_widget_title">Cartão de Crise</string>
+    <string name="crisis_widget_subtitle">Toque para abrir</string>
+    <string name="crisis_widget_description">Cartão de Crise. Toque para abrir direto na tela de crise.</string>
+
+</resources>

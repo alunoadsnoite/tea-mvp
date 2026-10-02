@@ -2,9 +2,14 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.6
+## Versão Atual: 1.0.7
 
 ### Changelog
+
+#### v1.0.7 (2026-10-02)
+- **Widget do Cartão de Crise no Android** — as fontes do widget (`widget/android/`), que o config plugin `plugins/withCrisisWidget.js` copia a cada `expo prebuild`, estavam ausentes do repositório: o plugin era registrado em `app.json` mas quebrava o prebuild com `ENOENT`. Agora o `CrisisWidgetProvider.kt`, o layout, o drawable de fundo, o `appwidget-provider` e as cores/strings existem versionados, e um toque no widget abre `/crisis-card` pelo deep link `tea://crisis-card`
+- **Acessibilidade do widget** — `contentDescription` no elemento raiz e cores com contraste de 13.5:1 (título) e 8.3:1 (legenda), espelhando `src/constants/theme.ts`. O widget é estático e não expõe contatos nem mensagens
+- **`versionCode` 7** — `android/app/build.gradle` e `app.json` volta a ter o mesmo `versionCode`, corrigindo o dessincronismo introduzido na v1.0.6 (5 no `app.json`, 6 no Gradle)
 
 #### v1.0.6 (2026-10-01)
 - **Acessibilidade: botão SOS centralizado** — o botão flutuante sai do canto direito e passa ao centro da tela, facilitando o alcance para destros e canhotos

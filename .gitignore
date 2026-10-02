@@ -7,8 +7,10 @@ dist/
 web-build/
 
 # Native
-android/
-ios/
+# Ancorado na raiz: sem a barra inicial, `android/` também ignoraria
+# `widget/android/`, que é a pasta versionada dos fontes do widget.
+/android/
+/ios/
 
 # Build
 *.apk
