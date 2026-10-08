@@ -1,13 +1,14 @@
 {
   "name": "tea-mvp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.21.0",
@@ -19,22 +20,35 @@
     "expo-splash-screen": "~0.26.5",
     "expo-status-bar": "~1.11.0",
     "expo-system-ui": "~2.9.4",
-    "nativewind": "^2.0.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
-    "tailwindcss": "^3.4.0",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@eslint/js": "^10.0.1",
+    "@types/jest": "^29.5.14",
     "@types/react": "~18.2.0",
     "babel-plugin-module-resolver": "^5.0.3",
     "eslint": "^10.11.0",
+    "jest": "^29.7.0",
+    "jest-expo": "~50.0.0",
     "typescript": "~5.3.0",
     "typescript-eslint": "^8.70.1"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/",
+      "/android/",
+      "/ios/"
+    ]
   }
 }

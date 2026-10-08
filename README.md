@@ -116,7 +116,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 ## Stack Tecnológica
 
 - **Frontend**: React Native + Expo SDK 50 + TypeScript
-- **Estilização**: `StyleSheet` do React Native (NativeWind instalado, mas não usado em massa)
+- **Estilização**: `StyleSheet` do React Native
 - **Estado**: Zustand + AsyncStorage (offline-first)
 - **Navegação**: Expo Router
 - **Build**: EAS Build / Gradle
@@ -130,6 +130,7 @@ npm install
 # Validar código
 npm run lint
 npm run typecheck
+npm test
 
 # Iniciar em modo desenvolvimento
 npx expo start

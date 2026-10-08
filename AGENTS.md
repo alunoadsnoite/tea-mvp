@@ -13,6 +13,7 @@
 npm install
 npm run lint
 npm run typecheck
+npm test
 npx expo start
 npx expo export --platform android   # valida o bundle de todas as rotas
 npm run android
@@ -20,7 +21,7 @@ npm run ios
 npx eas build -p android --profile preview
 ```
 
-Não há runner de testes configurado atualmente. Para qualquer alteração, execute pelo menos `npm run lint` e `npm run typecheck`.
+Para qualquer alteração, execute `npm run lint`, `npm run typecheck` e `npm test`. Os testes (jest-expo) cobrem os stores em `src/stores/__tests__/`; quando mudar regra de domínio num store, estenda o teste correspondente.
 
 O projeto é **managed workflow**: não existe pasta `ios/` versionada e `android/` está no `.gitignore` (só `android/app/build.gradle` é rastreado, para o `versionCode` do F-Droid). Portanto `npm run android`, `npm run ios` e qualquer comando Gradle exigem gerar a pasta nativa antes:
 
@@ -42,14 +43,14 @@ Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild`
 - `src/components/`: componentes de UI reutilizáveis e interações compartilhadas.
 - `src/stores/`: estado de domínio e persistência local. Stores atuais cobrem check-ins, crise, rotinas e cartões de regulação.
 - `src/types/`: tipos e dados padrão do domínio.
-- `src/hooks/`, `src/lib/`, `src/services/`, `src/features/` e `src/constants/`: extensões da arquitetura; mantenha a lógica fora das telas quando ela deixar de ser específica da apresentação.
+- `src/hooks/`, `src/lib/` e `src/constants/`: extensões da arquitetura; mantenha a lógica fora das telas quando ela deixar de ser específica da apresentação.
 - O fluxo existente é predominantemente `app -> components -> stores -> types`; não introduza uma camada de rede ou repositório sem necessidade concreta.
 
 ## Convenções de implementação
 
 - Use os aliases `@/...` definidos em `tsconfig.json` para imports dentro de `src`.
 - Siga Expo Router: use `useRouter` para navegação imperativa e `useLocalSearchParams` em rotas dinâmicas como `src/app/coping-card/[id].tsx`.
-- Prefira `StyleSheet` e os padrões visuais já presentes nas telas. NativeWind está instalado e configurado, mas não substitua estilos existentes em massa.
+- Prefira `StyleSheet` e os padrões visuais já presentes nas telas (o projeto não usa CSS-in-JS nem utilitários de estilo).
 - Para estado persistido, siga o padrão dos stores existentes: `create`, `persist`, `createJSONStorage` e `AsyncStorage`, com um nome de storage estável.
 - Não mutile o estado dos stores. Mantenha ações de domínio no store e trate regras como mensagens padrão não excluíveis no próprio store.
 - Adicione `accessibilityLabel`, `accessibilityHint` e estado semântico a controles interativos, especialmente ações de crise, seleção de níveis e favoritos.
@@ -69,4 +70,4 @@ Só faça isso quando a tarefa realmente exigir build nativo — `expo prebuild`
 1. Leia a tela, componente, store e tipo diretamente envolvidos antes de editar.
 2. Mantenha a mudança pequena e preserve APIs públicas e comportamento offline.
 3. Atualize documentação somente quando o comportamento ou o setup realmente mudar.
-4. Execute lint e typecheck após a alteração; inclua a limitação de testes automatizados no relatório quando relevante.
+4. Execute lint, typecheck e testes após a alteração.
