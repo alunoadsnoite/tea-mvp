@@ -28,7 +28,7 @@
         "backgroundImage": "./assets/adaptive-icon.png"
       },
       "package": "com.teamvp.app",
-      "versionCode": 7
+      "versionCode": 8
     },
     "plugins": [
       "expo-router",
