@@ -113,18 +113,7 @@ export default function EnergyCheckInScreen() {
             Disposição para interação interpessoal
           </Text>
 
-          <View
-            style={styles.sliderContainer}
-            accessible
-            accessibilityRole="adjustable"
-            accessibilityLabel="Bateria Social"
-            accessibilityValue={{
-              min: 0,
-              max: 100,
-              now: socialBattery,
-              text: `${socialBattery}%`,
-            }}
-          >
+          <View style={styles.sliderContainer}>
             <View style={styles.sliderLabels}>
               <Text style={[styles.sliderLabel, { fontSize: fontSize(14) }]}>0%</Text>
               <Text style={[styles.sliderValue, { fontSize: fontSize(24) }]}>{socialBattery}%</Text>
@@ -312,6 +301,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 32,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     section: {
       gap: 12,

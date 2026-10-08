@@ -24,8 +24,8 @@ export default function CheckInHistoryScreen() {
   const { fontSize } = useFontScale();
   const getRecentEntries = useCheckInStore((state) => state.getRecentEntries);
   const clearHistory = useCheckInStore((state) => state.clearHistory);
-  // Referência estável do store: usar `entries.length` criaria um array novo a
-  // cada render e invalidaria o memo de agrupamento.
+  // Referência estável do store: usar `getRecentEntries().length` criaria um
+  // array novo a cada render e invalidaria o memo de agrupamento.
   const allEntries = useCheckInStore((state) => state.entries);
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -124,22 +124,24 @@ export default function CheckInHistoryScreen() {
                 ))}
               </View>
             ))}
-
-            {/* Apagar histórico — os check-ins registram dados pessoais sensíveis */}
-            {allEntries.length > 0 && (
-              <Pressable
-                style={styles.clearButton}
-                onPress={handleClearHistory}
-                accessibilityRole="button"
-                accessibilityLabel="Limpar histórico de check-ins"
-                accessibilityHint="Apaga definitivamente todos os check-ins registrados"
-              >
-                <Text style={[styles.clearButtonText, { fontSize: fontSize(15) }]}>
-                  Limpar histórico
-                </Text>
-              </Pressable>
-            )}
           </>
+        )}
+
+        {/* Apagar histórico — os check-ins registram dados pessoais sensíveis.
+            Fica fora do branch de lista vazia: registros anteriores a 7 dias
+            não aparecem no grupo, mas ainda precisam ser apagáveis. */}
+        {allEntries.length > 0 && (
+          <Pressable
+            style={styles.clearButton}
+            onPress={handleClearHistory}
+            accessibilityRole="button"
+            accessibilityLabel="Limpar histórico de check-ins"
+            accessibilityHint="Apaga definitivamente todos os check-ins registrados"
+          >
+            <Text style={[styles.clearButtonText, { fontSize: fontSize(15) }]}>
+              Limpar histórico
+            </Text>
+          </Pressable>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -157,6 +159,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     emptyText: {
       color: colors.textMuted,

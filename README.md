@@ -2,9 +2,25 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.7
+## Versão Atual: 1.0.8
 
 ### Changelog
+
+#### v1.0.8 (2026-10-08)
+- **Acessibilidade: controle de Bateria Social operável no TalkBack** — o container do check-in declarava `accessible` + `adjustable` sem `onAccessibilityAction`, agrupando os botões "-10"/"+10" num único elemento e tornando-os inoperáveis pelo leitor de tela; agora os botões são focáveis individualmente
+- **Correção: descrições invisíveis no tema escuro** — os textos de descrição da tela de Configurações não definiam cor e renderizavam preto sobre `#22262E` (contraste 1.4:1)
+- **Correção: carrossel do Cartão de Crise dessincronizado** — o índice persistido não era reposicionado no `ScrollView`, fazendo o indicador de página divergir da página visível, o SMS enviar o texto da mensagem errada e a rotação deixar o conteúdo desalinhado; háptico agora só dispara quando há contato, e `Linking.openURL` trata falha
+- **Correção: EmergencyFab cobrindo a ação principal** — `paddingBottom: 80` em todas as telas com conteúdo final interativo (salvar, encerrar, registrar, limpar etc.)
+- **Correção: "Limpar histórico" acessível com registros antigos** — o botão ficava preso no branch de lista vazia e sumia quando todos os check-ins tinham mais de 7 dias
+- **Retenção de histórico implementada** — o `addEntry` agora descarta entradas com mais de 90 dias (o README prometia isso desde a v1.0.5)
+- **Formulários com feedback de validação** — salvar com campo vazio exibia erro silencioso; agora há mensagem inline acessível nos 4 formulários
+- **Formulários de edição ressincronizam com a store** — em deep link/abertura fria a hidratação assíncrona deixava o formulário vazio com o cabeçalho "Editar"
+- **Error boundary registrado** — o `_error.tsx` não correspondia a nenhuma convenção do Expo Router e nunca era exibido; agora é exportado como `ErrorBoundary` pelo `_layout.tsx`
+- **Respiração guiada** — barra de progresso inicia em 0% (antes nascia em 6-8%), a fase "0s" do 4-7-8 não é mais exibida, e as dependências do efeito ficaram completas
+- **"Check-in de hoje" não fica defasado após a meia-noite**
+- **Háptico sem unhandled rejection** — `Haptics.*` retorna Promise e o `try/catch` síncrono não capturava a falha
+- **"Restaurar padrões" avisa que os contatos de emergência também serão apagados**
+- **Removido `setInterval` inútil na execução de rotina** — re-render de 1 em 1 segundo sem nada dependente do tempo
 
 #### v1.0.7 (2026-10-02)
 - **Widget do Cartão de Crise no Android** — as fontes do widget (`widget/android/`), que o config plugin `plugins/withCrisisWidget.js` copia a cada `expo prebuild`, estavam ausentes do repositório: o plugin era registrado em `app.json` mas quebrava o prebuild com `ENOENT`. Agora o `CrisisWidgetProvider.kt`, o layout, o drawable de fundo, o `appwidget-provider` e as cores/strings existem versionados, e um toque no widget abre `/crisis-card` pelo deep link `tea://crisis-card`
@@ -22,12 +38,11 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - **Contato primário de emergência**: Permite escolher qual contato usar no cartão de crise
 - **Criação de rotinas personalizadas**: Nova tela para criar rotinas com passos e tempo estimado
 - **Criação de cartões de coping personalizados**: Nova tela para criar cartões com título, descrição, categoria e passos
-- **Ícone atualizado**: Usa a imagem peca.png como ícone do app
-- **Font scale em todas as telas**: Ajuste de fonte aplicado em home, check-in, configurações do cartão e configurações do app
-- **Respiração guiada reage à rotação**: Agora usa useWindowDimensions para se adaptar à orientação
-- **Contato do desenvolvedor**: Seção com e-mail (valdenorsa@proton.me) nas configurações do app e nas configurações do cartão de crise
-- **Error boundary**: Tela de recuperação para erros inesperados
-- **Retenção de histórico**: Check-ins mantêm apenas entradas dos últimos dias (limite configurável)
+- **Ícone atualizado**: Usa a imagem do puzzle (`assets/icon.png`) como ícone do app
+- **Font scale nas telas principais**: Ajuste de fonte aplicado em home, check-in, configurações do cartão e configurações do app (não aplicado em respiração guiada, execução de rotina e cartão de crise)
+- **Contato do desenvolvedor**: Seção com e-mail (valdenorsa@proton.me) nas configurações do app
+- **Error boundary**: Tela de recuperação para erros inesperados (registro efetivo do `ErrorBoundary` adicionado na v1.0.8)
+- **Retenção de histórico**: Check-ins mantêm apenas entradas dos últimos 90 dias (implementada na v1.0.8)
 - **Acesso rápido a novos cartões**: Botão "Novo cartão personalizado" na tela de estratégias de calma
 - **Feedback háptico**: Vibração suave em botões de emergência e seleções
 - **Fonte ajustável**: Respeita configurações de acessibilidade do sistema (0.85x–1.3x)
@@ -162,13 +177,10 @@ src/
 │   ├── regulation.tsx      # Cartões de Regulação
 │   ├── breathing-guide.tsx # Respiração Guiada
 │   ├── settings.tsx        # Configurações do App
-│   ├── _error.tsx          # Tela de recuperação de erros
 │   └── coping-card/        # Detalhe e criação/edição do Cartão
-├── components/             # Componentes reutilizáveis
-├── features/               # Features modulares
+├── components/             # Componentes reutilizáveis (inclui RouteErrorBoundary)
 ├── hooks/                  # Custom hooks
 ├── lib/                    # Utilitários
-├── services/               # Serviços (API, etc)
 ├── stores/                 # Stores Zustand
 ├── types/                  # Schemas TypeScript
 └── constants/              # Constantes

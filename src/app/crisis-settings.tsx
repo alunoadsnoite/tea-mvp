@@ -43,15 +43,21 @@ export default function CrisisSettingsScreen() {
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
   const [messageTitle, setMessageTitle] = useState("");
   const [messageContent, setMessageContent] = useState("");
+  const [messageError, setMessageError] = useState<string | null>(null);
 
   const [editingContact, setEditingContact] = useState<string | null>(null);
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactRelationship, setContactRelationship] = useState("");
+  const [contactError, setContactError] = useState<string | null>(null);
 
   // Salvar mensagem
   const handleSaveMessage = () => {
-    if (!messageTitle.trim() || !messageContent.trim()) return;
+    if (!messageTitle.trim() || !messageContent.trim()) {
+      setMessageError("Preencha o título e o conteúdo da mensagem para salvar.");
+      return;
+    }
+    setMessageError(null);
 
     if (editingMessage) {
       updateMessage(editingMessage, {
@@ -78,6 +84,7 @@ export default function CrisisSettingsScreen() {
     setEditingMessage(id);
     setMessageTitle(message.title);
     setMessageContent(message.content);
+    setMessageError(null);
   };
 
   const handleDeleteMessage = (id: string, title: string) => {
@@ -93,7 +100,11 @@ export default function CrisisSettingsScreen() {
 
   // Salvar contato
   const handleSaveContact = () => {
-    if (!contactName.trim() || !contactPhone.trim()) return;
+    if (!contactName.trim() || !contactPhone.trim()) {
+      setContactError("Preencha o nome e o telefone do contato para salvar.");
+      return;
+    }
+    setContactError(null);
 
     if (editingContact) {
       updateContact(editingContact, {
@@ -124,6 +135,7 @@ export default function CrisisSettingsScreen() {
     setContactName(contact.name);
     setContactPhone(contact.phone);
     setContactRelationship(contact.relationship);
+    setContactError(null);
   };
 
   const handleDeleteContact = (id: string, name: string) => {
@@ -141,7 +153,7 @@ export default function CrisisSettingsScreen() {
   const handleReset = () => {
     Alert.alert(
       "Restaurar padrões",
-      "Isso irá restaurar as mensagens padrão e remover todas as personalizações. Deseja continuar?",
+      "Isso irá restaurar as mensagens padrão, remover todas as personalizações e apagar os contatos de emergência cadastrados. Deseja continuar?",
       [
         { text: "Cancelar", style: "cancel" },
         { text: "Restaurar", style: "destructive", onPress: resetToDefaults },
@@ -205,12 +217,25 @@ export default function CrisisSettingsScreen() {
               {editingMessage ? "Editar mensagem" : "Nova mensagem"}
             </Text>
 
+            {messageError && (
+              <Text
+                style={styles.formError}
+                accessibilityRole="alert"
+                accessibilityLiveRegion="polite"
+              >
+                {messageError}
+              </Text>
+            )}
+
             <TextInput
               style={[styles.input, { fontSize: fontSize(16) }]}
               placeholder="Título"
               placeholderTextColor={colors.placeholder}
               value={messageTitle}
-              onChangeText={setMessageTitle}
+              onChangeText={(text) => {
+                setMessageTitle(text);
+                setMessageError(null);
+              }}
               accessibilityLabel="Título da mensagem"
             />
 
@@ -219,7 +244,10 @@ export default function CrisisSettingsScreen() {
               placeholder="Conteúdo da mensagem"
               placeholderTextColor={colors.placeholder}
               value={messageContent}
-              onChangeText={setMessageContent}
+              onChangeText={(text) => {
+                setMessageContent(text);
+                setMessageError(null);
+              }}
               multiline
               numberOfLines={4}
               accessibilityLabel="Conteúdo da mensagem"
@@ -233,6 +261,7 @@ export default function CrisisSettingsScreen() {
                     setEditingMessage(null);
                     setMessageTitle("");
                     setMessageContent("");
+                    setMessageError(null);
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Cancelar edição da mensagem"
@@ -329,12 +358,25 @@ export default function CrisisSettingsScreen() {
               {editingContact ? "Editar contato" : "Novo contato"}
             </Text>
 
+            {contactError && (
+              <Text
+                style={styles.formError}
+                accessibilityRole="alert"
+                accessibilityLiveRegion="polite"
+              >
+                {contactError}
+              </Text>
+            )}
+
             <TextInput
               style={[styles.input, { fontSize: fontSize(16) }]}
               placeholder="Nome"
               placeholderTextColor={colors.placeholder}
               value={contactName}
-              onChangeText={setContactName}
+              onChangeText={(text) => {
+                setContactName(text);
+                setContactError(null);
+              }}
               accessibilityLabel="Nome do contato"
             />
 
@@ -343,7 +385,10 @@ export default function CrisisSettingsScreen() {
               placeholder="Telefone"
               placeholderTextColor={colors.placeholder}
               value={contactPhone}
-              onChangeText={setContactPhone}
+              onChangeText={(text) => {
+                setContactPhone(text);
+                setContactError(null);
+              }}
               keyboardType="phone-pad"
               accessibilityLabel="Telefone do contato"
             />
@@ -366,6 +411,7 @@ export default function CrisisSettingsScreen() {
                     setContactName("");
                     setContactPhone("");
                     setContactRelationship("");
+                    setContactError(null);
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Cancelar edição do contato"
@@ -411,6 +457,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 32,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     section: {
       gap: 16,
@@ -490,6 +537,10 @@ const createStyles = (colors: ThemeColors) =>
     formTitle: {
       color: colors.text,
       fontWeight: "600",
+    },
+    formError: {
+      color: colors.warm,
+      lineHeight: 18,
     },
     input: {
       backgroundColor: colors.input,

@@ -4,13 +4,22 @@ import { Stack, useRouter } from "expo-router";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { ThemeColors } from "@/constants/theme";
 
+interface RouteErrorBoundaryProps {
+  error?: Error;
+  retry?: () => void;
+}
+
 /**
- * ErrorBoundaryScreen — Tela de recuperação de erros inesperados.
+ * RouteErrorBoundary — Tela de recuperação de erros inesperados.
+ *
+ * Exportada como `ErrorBoundary` pelo `_layout.tsx`, que é o registro que o
+ * Expo Router reconhece (o antigo `src/app/_error.tsx` não correspondia a
+ * nenhuma convenção e nunca era exibido).
  *
  * Mostra uma mensagem discreta, oferece tentar novamente e mantém o acesso
  * direto ao Cartão de Crise.
  */
-export default function ErrorBoundaryScreen({ retry }: { retry?: () => void }) {
+export function RouteErrorBoundary({ retry }: RouteErrorBoundaryProps) {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const router = useRouter();

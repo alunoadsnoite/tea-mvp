@@ -92,7 +92,7 @@ export default function BreathingGuideScreen() {
         clearTimeout(intervalRef.current);
       }
     };
-  }, [isActive, currentPhase, selectedExercise]);
+  }, [isActive, currentPhase, selectedExercise, cycleCount]);
 
   const handleStart = () => {
     setIsActive(true);
@@ -108,10 +108,13 @@ export default function BreathingGuideScreen() {
   };
 
   const currentPhaseLabel = phaseLabels[currentPhase % pattern.length];
-  const progress = Math.min(
-    100,
-    ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100
-  );
+  // Antes de começar não há progresso; a fórmula cheia daria 6-8% no mount.
+  const progress = isActive
+    ? Math.min(
+        100,
+        ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100
+      )
+    : 0;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -196,7 +199,10 @@ export default function BreathingGuideScreen() {
         <View style={styles.patternContainer}>
           <Text style={styles.patternLabel}>Padrão:</Text>
           <View style={styles.patternSteps}>
-            {pattern.map((seconds, index) => (
+            {pattern.map((seconds, index) => {
+              // Fases com duração 0 não existem no exercício (ex.: 4ª do 4-7-8)
+              if (seconds === 0) return null;
+              return (
               <View
                 key={index}
                 style={[
@@ -221,7 +227,8 @@ export default function BreathingGuideScreen() {
                   {seconds}s
                 </Text>
               </View>
-            ))}
+              );
+            })}
           </View>
         </View>
 
@@ -255,6 +262,7 @@ const createStyles = (colors: ThemeColors) =>
       flex: 1,
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     exerciseSelector: {
       gap: 12,

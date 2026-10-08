@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -34,19 +34,7 @@ export default function RoutineExecutionScreen() {
   const extendTime = useRoutineStore((state) => state.extendTime);
   const stopExecution = useRoutineStore((state) => state.stopExecution);
 
-  const [, setTick] = useState(0);
   const completionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Atualiza a cada segundo apenas enquanto o passo está em andamento, para
-  // não consumir bateria em uma tela que não precisa de re-render contínuo.
-  useEffect(() => {
-    if (!execution || execution.isPaused || execution.completedAt) return;
-
-    const interval = setInterval(() => {
-      setTick((t) => t + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [execution]);
 
   // Evita que a navegação agendada na conclusão dispare depois de a tela sair.
   useEffect(() => {
@@ -264,6 +252,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     emptyContainer: {
       flex: 1,

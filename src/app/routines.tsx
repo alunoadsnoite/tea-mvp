@@ -137,6 +137,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 16,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     routineCard: {
       backgroundColor: colors.surface,

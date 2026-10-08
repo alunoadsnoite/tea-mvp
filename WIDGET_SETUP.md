@@ -62,7 +62,7 @@ obrigatório o release.
   secundário `#B8B5B0` = 8.3:1. O widget é sempre escuro, independente do tema
   do app, porque o Cartão de Crise prioriza alto contraste e o launcher pode
   renderizá-lo sobre qualquer papel de parede. Se a paleta mudar, atualizar
-  `widget/android/crisis_widget.xml`.
+  `widget/android/crisis_widget_values.xml`.
 - **Tamanho 1x1.** O widget é um único botão; torná-lo maior apenas repetiria
   o texto.
 - **`PendingIntent.FLAG_IMMUTABLE`** é obrigatório a partir do Android 12

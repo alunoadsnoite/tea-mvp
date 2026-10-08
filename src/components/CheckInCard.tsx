@@ -23,13 +23,16 @@ export function CheckInCard() {
 
   // Apenas o registro de hoje: o texto do estado vazio diz "hoje", então
   // mostrar o último registro de qualquer dia seria inconsistente.
-  const todayEntry = useMemo(() => {
-    const since = startOfToday();
-    for (let i = entries.length - 1; i >= 0; i--) {
-      if (entries[i].timestamp >= since) return entries[i];
+  // Calculado sem memo para que a virada de meia-noite seja observada em
+  // qualquer re-render (o memo só dependia de `entries` e ficava defasado).
+  const since = startOfToday();
+  let todayEntry: (typeof entries)[number] | null = null;
+  for (let i = entries.length - 1; i >= 0; i--) {
+    if (entries[i].timestamp >= since) {
+      todayEntry = entries[i];
+      break;
     }
-    return null;
-  }, [entries]);
+  }
 
   if (!todayEntry) {
     return (

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -68,20 +68,44 @@ export function CrisisCardModal() {
     }
   };
 
+  // Sincroniza o índice com a mensagem ativa persistida (reabertura da tela).
+  useEffect(() => {
+    if (!activeMessageId || messages.length === 0) return;
+    const index = messages.findIndex((m) => m.id === activeMessageId);
+    if (index >= 0) {
+      setCurrentIndex((prev) => (prev === index ? prev : index));
+    }
+  }, [activeMessageId, messages]);
+
+  // Mantém o scroll na página correta quando o viewport muda (montagem e rotação).
+  useEffect(() => {
+    const node = scrollViewRef.current;
+    if (!node || viewportWidth === 0 || messages.length === 0) return;
+    const index = Math.min(
+      currentIndex,
+      Math.max(0, messages.length - 1)
+    );
+    node.scrollTo({ x: index * viewportWidth, animated: false });
+    // Reposiciona só na mudança de viewport (montagem/rotação); currentIndex
+    // é recalculado aqui dentro de propósito para acompanhar o offset exibido.
+  }, [viewportWidth, messages.length]);
+
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
-    trigger("success");
     if (emergencyContact?.phone) {
-      Linking.openURL(`tel:${emergencyContact.phone}`);
+      trigger("success");
+      Linking.openURL(`tel:${emergencyContact.phone}`).catch(() => {});
     }
   };
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
-    trigger("light");
     if (emergencyContact?.phone) {
+      trigger("light");
       const message = encodeURIComponent(currentMessage?.content || "");
-      Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`);
+      Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`).catch(
+        () => {}
+      );
     }
   };
 
@@ -114,7 +138,6 @@ export function CrisisCardModal() {
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleScroll}
         onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
-        scrollEventThrottle={16}
       >
         {messages.map((message) => (
           <View key={message.id} style={[styles.messageContainer, { width: viewportWidth }]}>

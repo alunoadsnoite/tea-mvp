@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -38,15 +38,28 @@ export default function NovaCartaScreen() {
     existingCard?.category ?? "custom"
   );
   const [steps, setSteps] = useState<string[]>(existingCard?.steps ?? [""]);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // A store é hidratada de forma assíncrona: em deep link ou abertura fria o
+  // primeiro render não encontra o cartão. Ressincroniza quando ele chega
+  // (ou quando o id editado muda), para não exibir um formulário vazio.
+  useEffect(() => {
+    if (!existingCard) return;
+    setTitle(existingCard.title);
+    setDescription(existingCard.description);
+    setCategory(existingCard.category);
+    setSteps(existingCard.steps);
+    setFormError(null);
+    // Ressincroniza apenas quando o id editado muda (ou a store hidrata)
+    // para não sobrescrever o que o usuário já digitou.
+  }, [existingCard?.id]);
 
   const handleAddStep = () => {
     setSteps((prev) => [...prev, ""]);
   };
 
   const handleRemoveStep = (index: number) => {
-    if (steps.length > 1) {
-      setSteps(steps.filter((_, i) => i !== index));
-    }
+    setSteps((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
   };
 
   const handleUpdateStep = (index: number, text: string) => {
@@ -59,7 +72,13 @@ export default function NovaCartaScreen() {
 
   const handleSave = () => {
     const filteredSteps = steps.map((s) => s.trim()).filter((s) => s !== "");
-    if (!title.trim() || !description.trim() || filteredSteps.length === 0) return;
+    if (!title.trim() || !description.trim() || filteredSteps.length === 0) {
+      setFormError(
+        "Preencha o título, a descrição e pelo menos um passo para salvar."
+      );
+      return;
+    }
+    setFormError(null);
 
     if (isEditing && existingCard) {
       updateCard(existingCard.id, {
@@ -102,7 +121,10 @@ export default function NovaCartaScreen() {
             placeholder="Ex: Respirar fundo"
             placeholderTextColor={colors.placeholder}
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(text) => {
+              setTitle(text);
+              setFormError(null);
+            }}
             accessibilityLabel="Título do cartão"
           />
         </View>
@@ -115,7 +137,10 @@ export default function NovaCartaScreen() {
             placeholder="Descreva para que serve este cartão"
             placeholderTextColor={colors.placeholder}
             value={description}
-            onChangeText={setDescription}
+            onChangeText={(text) => {
+              setDescription(text);
+              setFormError(null);
+            }}
             multiline
             numberOfLines={3}
             accessibilityLabel="Descrição do cartão"
@@ -186,6 +211,15 @@ export default function NovaCartaScreen() {
         </View>
 
         {/* Salvar */}
+        {formError && (
+          <Text
+            style={styles.formError}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            {formError}
+          </Text>
+        )}
         <Pressable
           style={styles.saveButton}
           onPress={handleSave}
@@ -212,6 +246,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     field: {
       gap: 12,
@@ -219,6 +254,10 @@ const createStyles = (colors: ThemeColors) =>
     fieldLabel: {
       color: colors.text,
       fontWeight: "600",
+    },
+    formError: {
+      color: colors.warm,
+      lineHeight: 20,
     },
     input: {
       backgroundColor: colors.input,

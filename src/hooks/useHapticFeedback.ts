@@ -13,27 +13,29 @@ export type HapticType = "light" | "medium" | "heavy" | "success" | "warning";
 
 export function useHapticFeedback() {
   const trigger = (type: HapticType = "light") => {
-    try {
+    // Haptics retorna Promise: o try/catch síncrono não capturava a
+    // rejeição (ex.: dispositivo sem motor háptico), gerando unhandled
+    // rejection. Trata o erro de forma silenciosa — o háptico é opcional.
+    const feedback = ((): Promise<void> | null => {
       switch (type) {
         case "light":
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          break;
+          return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         case "medium":
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          break;
+          return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         case "heavy":
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-          break;
+          return Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         case "success":
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          break;
+          return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         case "warning":
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          break;
+          return Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        default:
+          return null;
       }
-    } catch {
+    })();
+
+    feedback?.catch(() => {
       // Silenciosamente falha se haptics não estiver disponível
-    }
+    });
   };
 
   return { trigger };

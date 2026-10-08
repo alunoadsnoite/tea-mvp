@@ -9,6 +9,13 @@ import { createId } from "@/lib/id";
  *
  * Persistência local via AsyncStorage para histórico offline.
  */
+
+// Retenção do histórico: entradas mais antigas que isto são descartadas na
+// gravação, para o array não crescer indefinidamente (README: "limite
+// configurável"). Ajuste aqui se o app passar a expor a configuração na UI.
+const RETENTION_DAYS = 90;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 interface CheckInStore {
   entries: CheckInEntry[];
 
@@ -24,18 +31,20 @@ export const useCheckInStore = create<CheckInStore>()(
       entries: [],
 
       addEntry: (entry) => {
+        const now = Date.now();
+        const cutoff = now - RETENTION_DAYS * DAY_MS;
         const newEntry: CheckInEntry = {
           ...entry,
           id: createId("checkin"),
-          timestamp: Date.now(),
+          timestamp: now,
         };
         set((state) => ({
-          entries: [...state.entries, newEntry],
+          entries: [...state.entries.filter((e) => e.timestamp >= cutoff), newEntry],
         }));
       },
 
       getRecentEntries: (days: number) => {
-        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - days * DAY_MS;
         return get()
           .entries.filter((entry) => entry.timestamp >= cutoff)
           .sort((a, b) => b.timestamp - a.timestamp);

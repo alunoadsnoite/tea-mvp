@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -37,6 +37,20 @@ export default function NovaRotinaScreen() {
       { id: createId("step"), title: "", description: "", estimatedMinutes: 5 },
     ]
   );
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // A store é hidratada de forma assíncrona: em deep link ou abertura fria o
+  // primeiro render não encontra a rotina. Ressincroniza quando ela chega
+  // (ou quando o id editado muda), para não exibir um formulário vazio.
+  useEffect(() => {
+    if (!existingRoutine) return;
+    setName(existingRoutine.name);
+    setDescription(existingRoutine.description ?? "");
+    setSteps(existingRoutine.steps);
+    setFormError(null);
+    // Ressincroniza apenas quando o id editado muda (ou a store hidrata)
+    // para não sobrescrever o que o usuário já digitou.
+  }, [existingRoutine?.id]);
 
   const handleAddStep = () => {
     setSteps((prev) => [
@@ -46,9 +60,7 @@ export default function NovaRotinaScreen() {
   };
 
   const handleRemoveStep = (index: number) => {
-    if (steps.length > 1) {
-      setSteps(steps.filter((_, i) => i !== index));
-    }
+    setSteps((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
   };
 
   const handleUpdateStep = (index: number, updates: Partial<RoutineStep>) => {
@@ -63,7 +75,11 @@ export default function NovaRotinaScreen() {
     const validSteps = steps
       .filter((s) => s.title.trim() !== "")
       .map((s) => ({ ...s, title: s.title.trim() }));
-    if (!name.trim() || validSteps.length === 0) return;
+    if (!name.trim() || validSteps.length === 0) {
+      setFormError("Preencha o nome e pelo menos um passo com título para salvar.");
+      return;
+    }
+    setFormError(null);
 
     if (isEditing && existingRoutine) {
       updateRoutine(existingRoutine.id, {
@@ -104,7 +120,10 @@ export default function NovaRotinaScreen() {
             placeholder="Ex: Preparação matinal"
             placeholderTextColor={colors.placeholder}
             value={name}
-            onChangeText={setName}
+            onChangeText={(text) => {
+              setName(text);
+              setFormError(null);
+            }}
             accessibilityLabel="Nome da rotina"
           />
         </View>
@@ -206,6 +225,15 @@ export default function NovaRotinaScreen() {
         </View>
 
         {/* Salvar */}
+        {formError && (
+          <Text
+            style={styles.formError}
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
+            {formError}
+          </Text>
+        )}
         <Pressable
           style={styles.saveButton}
           onPress={handleSave}
@@ -232,6 +260,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     field: {
       gap: 12,
@@ -239,6 +268,10 @@ const createStyles = (colors: ThemeColors) =>
     fieldLabel: {
       color: colors.text,
       fontWeight: "600",
+    },
+    formError: {
+      color: colors.warm,
+      lineHeight: 20,
     },
     input: {
       backgroundColor: colors.input,

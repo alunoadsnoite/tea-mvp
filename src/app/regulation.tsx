@@ -275,6 +275,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 16,
       gap: 12,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     emptyText: {
       color: colors.textMuted,

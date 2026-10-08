@@ -226,6 +226,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     description: {
       color: colors.textSecondary,

@@ -161,15 +161,6 @@ export const useRoutineStore = create<RoutineStore>()(
 
           // Avança para o próximo passo
           const nextStep = routine.steps[nextIndex];
-          if (!nextStep) {
-            return {
-              execution: {
-                ...state.execution,
-                isRunning: false,
-                completedAt: Date.now(),
-              },
-            };
-          }
 
           const now = Date.now();
 

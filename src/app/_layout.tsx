@@ -7,6 +7,10 @@ import { EmergencyFab } from "@/components/EmergencyFab";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { View } from "react-native";
 
+// Registro do error boundary de rota: o Expo Router só reconhece um export
+// nomeado `ErrorBoundary` em layout/rota (o antigo `_error.tsx` era ignorado).
+export { RouteErrorBoundary as ErrorBoundary } from "@/components/RouteErrorBoundary";
+
 // Mantém o splash screen até que o tema salvo seja lido do armazenamento
 void SplashScreen.preventAutoHideAsync();
 

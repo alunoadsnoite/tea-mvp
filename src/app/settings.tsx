@@ -40,7 +40,11 @@ export default function SettingsScreen() {
   ];
 
   const handleContactDeveloper = () => {
-    Linking.openURL(`mailto:${DEVELOPER_EMAIL}?subject=TEA%20Autonomia%20-%20Feedback`);
+    Linking.openURL(
+      `mailto:${DEVELOPER_EMAIL}?subject=TEA%20Autonomia%20-%20Feedback`
+    ).catch(() => {
+      // Sem app de e-mail disponível: nada a abrir (o botão não é crítico)
+    });
   };
 
   return (
@@ -145,6 +149,7 @@ const createStyles = (colors: ThemeColors) =>
     content: {
       padding: 24,
       gap: 24,
+      paddingBottom: 80, // Espaço para o EmergencyFab
     },
     section: {
       backgroundColor: colors.surface,
@@ -159,6 +164,7 @@ const createStyles = (colors: ThemeColors) =>
       fontWeight: "600",
     },
     sectionDescription: {
+      color: colors.textMuted,
       marginBottom: 8,
     },
     optionButton: {
@@ -179,6 +185,7 @@ const createStyles = (colors: ThemeColors) =>
       fontWeight: "600",
     },
     optionDescription: {
+      color: colors.textMuted,
       marginTop: 2,
     },
     checkmark: {
@@ -186,6 +193,7 @@ const createStyles = (colors: ThemeColors) =>
       fontWeight: "700",
     },
     aboutText: {
+      color: colors.textSecondary,
       lineHeight: 20,
     },
     developerName: {
