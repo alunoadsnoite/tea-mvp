@@ -22,10 +22,10 @@ export default tseslint.config(
       '.expo/',
       'android/',
       'ios/',
-      'nativewind.config.js',
-      'tailwind.config.js',
       'babel.config.js',
       'metro.config.js',
+      // Setup do Jest roda em ambiente de teste, fora do escopo do app
+      'jest.setup.js',
       // Config plugins do Expo rodam em Node/CommonJS, fora do escopo do app
       'plugins/',
     ],

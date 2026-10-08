@@ -23,13 +23,10 @@ export interface Routine {
 export interface RoutineExecutionState {
   routineId: string;
   currentStepIndex: number;
-  isRunning: boolean;
   isPaused: boolean;
-  startedAt: number | null;
   completedAt: number | null;
   stepStartedAt: number | null;
   stepEndsAt: number | null; // Para o timer visual
-  extendedMinutes: number; // Tempo extra adicionado
   /**
    * Momento em que a execução foi pausada. Usado para devolver ao relógio do
    * passo o tempo que passou enquanto pausado, evitando que a pausa consuma o

@@ -19,7 +19,7 @@ interface RoutineStore {
   deleteRoutine: (id: string) => void;
 
   // Ações para execução
-  startExecution: (routineId: string) => void;
+  startExecution: (routineId: string) => boolean;
   pauseExecution: () => void;
   resumeExecution: () => void;
   completeStep: () => void;
@@ -76,7 +76,7 @@ export const useRoutineStore = create<RoutineStore>()(
       // === EXECUÇÃO ===
       startExecution: (routineId) => {
         const routine = get().routines.find((r) => r.id === routineId);
-        if (!routine || routine.steps.length === 0) return;
+        if (!routine || routine.steps.length === 0) return false;
 
         const now = Date.now();
         const firstStep = routine.steps[0];
@@ -85,16 +85,14 @@ export const useRoutineStore = create<RoutineStore>()(
           execution: {
             routineId,
             currentStepIndex: 0,
-            isRunning: true,
             isPaused: false,
-            startedAt: now,
             completedAt: null,
             stepStartedAt: now,
             stepEndsAt: now + firstStep.estimatedMinutes * 60 * 1000,
-            extendedMinutes: 0,
             pausedAt: null,
           },
         });
+        return true;
       },
 
       pauseExecution: () => {
@@ -153,7 +151,6 @@ export const useRoutineStore = create<RoutineStore>()(
             return {
               execution: {
                 ...state.execution,
-                isRunning: false,
                 completedAt: Date.now(),
               },
             };
@@ -170,7 +167,6 @@ export const useRoutineStore = create<RoutineStore>()(
               currentStepIndex: nextIndex,
               stepStartedAt: now,
               stepEndsAt: now + nextStep.estimatedMinutes * 60 * 1000,
-              extendedMinutes: 0,
             },
           };
         });
@@ -187,7 +183,6 @@ export const useRoutineStore = create<RoutineStore>()(
             execution: {
               ...state.execution,
               stepEndsAt: newEndTime,
-              extendedMinutes: state.execution.extendedMinutes + minutes,
             },
           };
         });

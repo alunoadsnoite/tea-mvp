@@ -15,9 +15,6 @@ export interface CheckInEntry {
   
   // Gatilhos selecionados
   triggers: string[];
-  
-  // Nota opcional (não obrigatória)
-  note?: string;
 }
 
 // Gatilhos pré-definidos

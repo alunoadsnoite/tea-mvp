@@ -40,7 +40,6 @@ export const useCrisisStore = create<CrisisStore>()(
       messages: defaultMessages(),
       contacts: [],
       activeMessageId: DEFAULT_MESSAGES[0]?.id ?? null,
-      isLoading: false,
       primaryContactId: null,
 
       // === MENSAGENS ===
@@ -165,7 +164,6 @@ export const useCrisisStore = create<CrisisStore>()(
           contacts,
           activeMessageId,
           primaryContactId,
-          isLoading: false,
         };
       },
     }
