@@ -11,6 +11,7 @@ import { Stack, useRouter } from "expo-router";
 import { useRoutineStore } from "@/stores/routineStore";
 import { VisualTimerBar } from "@/components/VisualTimerBar";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
 
 /**
@@ -25,7 +26,8 @@ import { ThemeColors } from "@/constants/theme";
 export default function RoutineExecutionScreen() {
   const router = useRouter();
   const { colors } = useThemeMode();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { fontSize } = useFontScale();
+  const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
   const execution = useRoutineStore((state) => state.execution);
   const routines = useRoutineStore((state) => state.routines);
   const completeStep = useRoutineStore((state) => state.completeStep);
@@ -241,7 +243,7 @@ export default function RoutineExecutionScreen() {
   );
 }
 
-const createStyles = (colors: ThemeColors) =>
+const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -262,7 +264,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     emptyText: {
       color: colors.textMuted,
-      fontSize: 16,
+      fontSize: fontSize(16),
       marginBottom: 24,
       textAlign: "center",
     },
@@ -276,14 +278,14 @@ const createStyles = (colors: ThemeColors) =>
     },
     backButtonText: {
       color: colors.textSecondary,
-      fontSize: 16,
+      fontSize: fontSize(16),
     },
     progressContainer: {
       gap: 8,
     },
     progressText: {
       color: colors.textSecondary,
-      fontSize: 14,
+      fontSize: fontSize(14),
       textAlign: "center",
     },
     progressBar: {
@@ -299,7 +301,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     routineTitle: {
       color: colors.textMuted,
-      fontSize: 16,
+      fontSize: fontSize(16),
       textAlign: "center",
     },
     stepCard: {
@@ -312,23 +314,23 @@ const createStyles = (colors: ThemeColors) =>
     },
     stepTitle: {
       color: colors.text,
-      fontSize: 28,
+      fontSize: fontSize(28),
       fontWeight: "700",
       textAlign: "center",
-      lineHeight: 36,
+      lineHeight: fontSize(36),
     },
     stepDescription: {
       color: colors.textSecondary,
-      fontSize: 16,
+      fontSize: fontSize(16),
       textAlign: "center",
-      lineHeight: 22,
+      lineHeight: fontSize(22),
     },
     timerContainer: {
       gap: 8,
     },
     pausedText: {
       color: colors.warm,
-      fontSize: 14,
+      fontSize: fontSize(14),
       textAlign: "center",
     },
     completedContainer: {
@@ -339,7 +341,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     completedText: {
       color: colors.success,
-      fontSize: 18,
+      fontSize: fontSize(18),
       textAlign: "center",
     },
     actions: {
@@ -353,7 +355,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     primaryButtonText: {
       color: colors.accentText,
-      fontSize: 18,
+      fontSize: fontSize(18),
       fontWeight: "600",
     },
     secondaryActions: {
@@ -372,7 +374,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     secondaryButtonText: {
       color: colors.textSecondary,
-      fontSize: 14,
+      fontSize: fontSize(14),
     },
     stopButton: {
       backgroundColor: "transparent",
@@ -384,6 +386,6 @@ const createStyles = (colors: ThemeColors) =>
     },
     stopButtonText: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
     },
   });

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 interface VisualTimerBarProps {
@@ -18,6 +18,11 @@ interface VisualTimerBarProps {
  * A barra sempre parte da fração de tempo restante real. Isso faz a pausa
  * congelar a barra no ponto em que ela estava (sem voltar a 100%) e a
  * retomada continuar de onde parou, em vez de reiniciar o passo.
+ *
+ * A animação usa `transform` (scaleX + translateX) no driver nativo: antes
+ * animava `width` no driver JS, que consome CPU por frame durante o passo
+ * inteiro (até 30 min). Como o scale tem origem no centro, o translateX
+ * compensa para a barra encher sempre da esquerda.
  */
 export function VisualTimerBar({
   startTime,
@@ -28,6 +33,7 @@ export function VisualTimerBar({
 }: VisualTimerBarProps) {
   const progress = useRef(new Animated.Value(1)).current;
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
 
   useEffect(() => {
     // Ao pausar, apenas congela a animação onde ela está.
@@ -53,7 +59,7 @@ export function VisualTimerBar({
     animationRef.current = Animated.timing(progress, {
       toValue: 0,
       duration: remaining,
-      useNativeDriver: false,
+      useNativeDriver: true,
     });
 
     animationRef.current.start();
@@ -63,18 +69,25 @@ export function VisualTimerBar({
     };
   }, [startTime, endTime, isPaused, progress]);
 
+  // progress=1 → scaleX 1, translateX 0 (barra cheia, esquerda em 0);
+  // progress=0 → scaleX 0, translateX -W/2 (zero largura, esquerda em 0).
+  const translateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-trackWidth / 2, 0],
+  });
+
   return (
     <View style={styles.container}>
-      <View style={[styles.track, { backgroundColor: trackColor }]}>
+      <View
+        style={[styles.track, { backgroundColor: trackColor }]}
+        onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+      >
         <Animated.View
           style={[
             styles.fill,
             {
               backgroundColor: color,
-              width: progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: ["0%", "100%"],
-              }),
+              transform: [{ translateX }, { scaleX: progress }],
             },
           ]}
         />
@@ -94,6 +107,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   fill: {
+    width: "100%",
     height: "100%",
     borderRadius: 4,
   },

@@ -28,6 +28,7 @@ export default function CopingCardsScreen() {
   const cards = useCopingCardsStore((state) => state.cards);
   const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
   const deleteCard = useCopingCardsStore((state) => state.deleteCard);
+  const resetToDefaults = useCopingCardsStore((state) => state.resetToDefaults);
 
   const [selectedCategory, setSelectedCategory] = useState<CopingCardCategory | "all">("all");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -39,18 +40,20 @@ export default function CopingCardsScreen() {
     { key: "custom", label: "Personalizados" },
   ];
 
-  const filteredCards = cards.filter((card) => {
-    const categoryMatch = selectedCategory === "all" || card.category === selectedCategory;
-    const favoriteMatch = !showFavoritesOnly || card.isFavorite;
-    return categoryMatch && favoriteMatch;
-  });
+  const filteredCards = useMemo(() => {
+    const matches = cards.filter((card) => {
+      const categoryMatch = selectedCategory === "all" || card.category === selectedCategory;
+      const favoriteMatch = !showFavoritesOnly || card.isFavorite;
+      return categoryMatch && favoriteMatch;
+    });
 
-  // Ordenar: favoritos primeiro
-  const sortedCards = [...filteredCards].sort((a, b) => {
-    if (a.isFavorite && !b.isFavorite) return -1;
-    if (!a.isFavorite && b.isFavorite) return 1;
-    return 0;
-  });
+    // Ordenar: favoritos primeiro
+    return [...matches].sort((a, b) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      return 0;
+    });
+  }, [cards, selectedCategory, showFavoritesOnly]);
 
   const handleDeleteCard = (id: string, title: string) => {
     Alert.alert(
@@ -59,6 +62,17 @@ export default function CopingCardsScreen() {
       [
         { text: "Cancelar", style: "cancel" },
         { text: "Excluir", style: "destructive", onPress: () => deleteCard(id) },
+      ]
+    );
+  };
+
+  const handleReset = () => {
+    Alert.alert(
+      "Restaurar padrões",
+      "Isso irá remover os cartões personalizados e restaurar os cartões padrão. Seus favoritos são mantidos. Deseja continuar?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Restaurar", style: "destructive", onPress: resetToDefaults },
       ]
     );
   };
@@ -123,12 +137,12 @@ export default function CopingCardsScreen() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        {sortedCards.length === 0 ? (
+        {filteredCards.length === 0 ? (
           <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>
             Nenhum cartão encontrado
           </Text>
         ) : (
-          sortedCards.map((card) => (
+          filteredCards.map((card) => (
             <View key={card.id} style={styles.card}>
               <View style={styles.cardHeader}>
                 {/* A área textual é o alvo de navegação; o favorito é irmão,
@@ -211,6 +225,17 @@ export default function CopingCardsScreen() {
           <Text style={[styles.newCardButtonText, { fontSize: fontSize(16) }]}>
             + Novo cartão personalizado
           </Text>
+        </Pressable>
+
+        {/* Reset */}
+        <Pressable
+          style={styles.resetButton}
+          onPress={handleReset}
+          accessibilityRole="button"
+          accessibilityLabel="Restaurar cartões padrão"
+          accessibilityHint="Remove cartões personalizados e volta aos cartões padrão, mantendo favoritos"
+        >
+          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>Restaurar padrões</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -361,5 +386,17 @@ const createStyles = (colors: ThemeColors) =>
     newCardButtonText: {
       color: colors.accent,
       fontWeight: "600",
+    },
+    resetButton: {
+      backgroundColor: "transparent",
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.warm,
+      marginTop: 8,
+    },
+    resetButtonText: {
+      color: colors.warm,
     },
   });

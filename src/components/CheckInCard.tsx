@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useCheckInStore } from "@/stores/checkInStore";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
 
 function startOfToday(): number {
@@ -19,7 +20,8 @@ function startOfToday(): number {
 export function CheckInCard() {
   const entries = useCheckInStore((state) => state.entries);
   const { colors } = useThemeMode();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { fontSize } = useFontScale();
+  const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
 
   // Apenas o registro de hoje: o texto do estado vazio diz "hoje", então
   // mostrar o último registro de qualquer dia seria inconsistente.
@@ -75,7 +77,7 @@ export function CheckInCard() {
   );
 }
 
-const createStyles = (colors: ThemeColors) =>
+const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
     container: {
       backgroundColor: colors.surface,
@@ -87,7 +89,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     title: {
       color: colors.textSecondary,
-      fontSize: 14,
+      fontSize: fontSize(14),
       marginBottom: 16,
       textAlign: "center",
     },
@@ -101,22 +103,22 @@ const createStyles = (colors: ThemeColors) =>
     },
     metricLabel: {
       color: colors.textMuted,
-      fontSize: 12,
+      fontSize: fontSize(12),
       marginBottom: 4,
     },
     metricValue: {
       color: colors.text,
-      fontSize: 20,
+      fontSize: fontSize(20),
       fontWeight: "600",
     },
     timestamp: {
       color: colors.textMuted,
-      fontSize: 12,
+      fontSize: fontSize(12),
       textAlign: "center",
     },
     emptyText: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
       textAlign: "center",
     },
   });

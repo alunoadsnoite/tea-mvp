@@ -28,10 +28,13 @@ export default function RoutinesListScreen() {
   const routines = useRoutineStore((state) => state.routines);
   const startExecution = useRoutineStore((state) => state.startExecution);
   const deleteRoutine = useRoutineStore((state) => state.deleteRoutine);
+  const resetToDefaults = useRoutineStore((state) => state.resetToDefaults);
 
   const handleStartRoutine = (routineId: string) => {
-    startExecution(routineId);
-    router.push("/routine-execution");
+    // Só navega se a execução realmente iniciou (rotina existente com passos).
+    if (startExecution(routineId)) {
+      router.push("/routine-execution");
+    }
   };
 
   const handleDeleteRoutine = (id: string, name: string) => {
@@ -41,6 +44,17 @@ export default function RoutinesListScreen() {
       [
         { text: "Cancelar", style: "cancel" },
         { text: "Excluir", style: "destructive", onPress: () => deleteRoutine(id) },
+      ]
+    );
+  };
+
+  const handleReset = () => {
+    Alert.alert(
+      "Restaurar padrões",
+      "Isso irá remover todas as rotinas personalizadas e restaurar as rotinas padrão. Deseja continuar?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Restaurar", style: "destructive", onPress: resetToDefaults },
       ]
     );
   };
@@ -121,6 +135,17 @@ export default function RoutinesListScreen() {
             )}
           </View>
         ))}
+
+        {/* Reset */}
+        <Pressable
+          style={styles.resetButton}
+          onPress={handleReset}
+          accessibilityRole="button"
+          accessibilityLabel="Restaurar rotinas padrão"
+          accessibilityHint="Remove rotinas personalizadas e volta às rotinas padrão"
+        >
+          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>Restaurar padrões</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -202,6 +227,17 @@ const createStyles = (colors: ThemeColors) =>
       color: colors.accent,
     },
     manageButtonTextDelete: {
+      color: colors.warm,
+    },
+    resetButton: {
+      backgroundColor: "transparent",
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.warm,
+    },
+    resetButtonText: {
       color: colors.warm,
     },
   });

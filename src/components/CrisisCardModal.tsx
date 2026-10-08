@@ -11,6 +11,7 @@ import {
 import { useCrisisStore } from "@/stores/crisisStore";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
 
 interface ScrollViewEvent {
@@ -46,7 +47,8 @@ export function CrisisCardModal() {
   const { width } = useWindowDimensions();
   const [viewportWidth, setViewportWidth] = useState(width);
   const { trigger } = useHapticFeedback();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { fontSize } = useFontScale();
+  const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
 
   // Contato exibido e acionado: o primário quando definido, senão o primeiro.
   const emergencyContact = useMemo(
@@ -182,7 +184,7 @@ export function CrisisCardModal() {
   );
 }
 
-const createStyles = (colors: ThemeColors) =>
+const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -200,7 +202,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     pageIndicatorText: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
     },
     messageContainer: {
       flex: 1,
@@ -217,11 +219,11 @@ const createStyles = (colors: ThemeColors) =>
     },
     messageTitle: {
       color: colors.accent,
-      fontSize: 36,
+      fontSize: fontSize(36),
       fontWeight: "800",
       marginBottom: 24,
       textAlign: "left",
-      lineHeight: 44,
+      lineHeight: fontSize(44),
       textShadowColor: colors.shadow,
       textShadowOffset: { width: 0, height: 2 },
       textShadowRadius: 4,
@@ -235,8 +237,8 @@ const createStyles = (colors: ThemeColors) =>
     },
     messageContent: {
       color: colors.text,
-      fontSize: 26,
-      lineHeight: 40,
+      fontSize: fontSize(26),
+      lineHeight: fontSize(40),
       textAlign: "left",
       fontWeight: "600",
       flexShrink: 1,
@@ -254,7 +256,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     emergencyButtonText: {
       color: colors.accentText,
-      fontSize: 18,
+      fontSize: fontSize(18),
       fontWeight: "700",
     },
     emergencyButtonSecondary: {
@@ -268,12 +270,12 @@ const createStyles = (colors: ThemeColors) =>
     },
     emergencyButtonSecondaryText: {
       color: colors.accent,
-      fontSize: 16,
+      fontSize: fontSize(16),
       fontWeight: "600",
     },
     swipeHint: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
       textAlign: "center",
       marginBottom: 16,
     },

@@ -30,23 +30,35 @@ export default function CheckInHistoryScreen() {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  // Filtrar e agrupar por dia. A dependência é a referência do store, então o
-  // memo só recalcula quando um check-in é adicionado ou removido.
+  // Filtrar e agrupar por dia civil. A chave é uma data ISO (YYYY-MM-DD),
+  // independente de locale — o rótulo pt-BR é derivado dela só na exibição.
+  // A dependência é a referência do store, então o memo só recalcula quando um
+  // check-in é adicionado ou removido.
   const groupedByDay = useMemo(() => {
     const entries = getRecentEntries(7);
     return entries.reduce((acc, entry) => {
-      const date = new Date(entry.timestamp).toLocaleDateString("pt-BR", {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-      });
-      if (!acc[date]) {
-        acc[date] = [];
+      const date = new Date(entry.timestamp);
+      const key = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0"),
+      ].join("-");
+      if (!acc[key]) {
+        acc[key] = [];
       }
-      acc[date].push(entry);
+      acc[key].push(entry);
       return acc;
     }, {} as Record<string, CheckInEntry[]>);
   }, [allEntries, getRecentEntries]);
+
+  const formatDayTitle = (isoDate: string) => {
+    const [year, month, day] = isoDate.split("-").map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString("pt-BR", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  };
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("pt-BR", {
@@ -86,7 +98,9 @@ export default function CheckInHistoryScreen() {
           <>
             {Object.entries(groupedByDay).map(([date, dayEntries]) => (
               <View key={date} style={styles.daySection}>
-                <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>{date}</Text>
+                <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
+                  {formatDayTitle(date)}
+                </Text>
 
                 {dayEntries.map((entry) => (
                   <View key={entry.id} style={styles.entryCard}>

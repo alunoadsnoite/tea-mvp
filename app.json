@@ -2,7 +2,7 @@
   "expo": {
     "name": "TEA Autonomia",
     "slug": "tea-mvp",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "default",
     "scheme": "tea",
     "userInterfaceStyle": "automatic",
@@ -24,11 +24,10 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#1A1D23",
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundImage": "./assets/adaptive-icon.png"
+        "foregroundImage": "./assets/adaptive-icon.png"
       },
       "package": "com.teamvp.app",
-      "versionCode": 8
+      "versionCode": 9
     },
     "plugins": [
       "expo-router",

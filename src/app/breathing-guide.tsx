@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
 
 /**
@@ -20,7 +21,8 @@ import { ThemeColors } from "@/constants/theme";
  */
 export default function BreathingGuideScreen() {
   const { colors } = useThemeMode();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { fontSize } = useFontScale();
+  const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
 
   const [selectedExercise, setSelectedExercise] = useState<BreathingExerciseConfig>(
     BREATHING_EXERCISES[0]
@@ -253,7 +255,7 @@ export default function BreathingGuideScreen() {
   );
 }
 
-const createStyles = (colors: ThemeColors) =>
+const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -280,7 +282,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     exerciseButtonText: {
       color: colors.text,
-      fontSize: 16,
+      fontSize: fontSize(16),
       fontWeight: "600",
     },
     exerciseButtonTextActive: {
@@ -288,7 +290,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     exerciseDescription: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
       marginTop: 4,
     },
     circleContainer: {
@@ -307,12 +309,12 @@ const createStyles = (colors: ThemeColors) =>
     },
     phaseLabel: {
       color: colors.accentText,
-      fontSize: 24,
+      fontSize: fontSize(24),
       fontWeight: "700",
     },
     cycleLabel: {
       color: colors.accentText,
-      fontSize: 16,
+      fontSize: fontSize(16),
       marginTop: 8,
     },
     progressContainer: {
@@ -334,7 +336,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     patternLabel: {
       color: colors.textMuted,
-      fontSize: 14,
+      fontSize: fontSize(14),
       textAlign: "center",
     },
     patternSteps: {
@@ -359,14 +361,14 @@ const createStyles = (colors: ThemeColors) =>
     },
     patternStepText: {
       color: colors.textSecondary,
-      fontSize: 12,
+      fontSize: fontSize(12),
     },
     patternStepTextActive: {
       color: colors.accentText,
     },
     patternSeconds: {
       color: colors.textMuted,
-      fontSize: 18,
+      fontSize: fontSize(18),
       fontWeight: "600",
       marginTop: 4,
     },
@@ -384,7 +386,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     controlButtonText: {
       color: colors.accentText,
-      fontSize: 18,
+      fontSize: fontSize(18),
       fontWeight: "600",
     },
   });
