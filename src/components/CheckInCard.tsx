@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useCheckInStore } from "@/stores/checkInStore";
 import { useThemeMode } from "@/hooks/useThemeMode";
@@ -22,11 +22,23 @@ export function CheckInCard() {
   const { colors } = useThemeMode();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
+  const [dayRefresh, setDayRefresh] = useState(0);
+
+  useEffect(() => {
+    const nextMidnight = new Date();
+    nextMidnight.setDate(nextMidnight.getDate() + 1);
+    nextMidnight.setHours(0, 0, 0, 0);
+
+    const timer = setTimeout(
+      () => setDayRefresh((refresh) => refresh + 1),
+      Math.max(0, nextMidnight.getTime() - Date.now()) + 50
+    );
+    return () => clearTimeout(timer);
+  }, [dayRefresh]);
 
   // Apenas o registro de hoje: o texto do estado vazio diz "hoje", então
-  // mostrar o último registro de qualquer dia seria inconsistente.
-  // Calculado sem memo para que a virada de meia-noite seja observada em
-  // qualquer re-render (o memo só dependia de `entries` e ficava defasado).
+  // mostrar o último registro de qualquer dia seria inconsistente. O timer
+  // acima agenda uma renderização na próxima meia-noite, mesmo sem interação.
   const since = startOfToday();
   let todayEntry: (typeof entries)[number] | null = null;
   for (let i = entries.length - 1; i >= 0; i--) {

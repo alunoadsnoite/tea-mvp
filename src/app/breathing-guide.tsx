@@ -12,6 +12,7 @@ import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
+import { getBreathingProgress } from "@/lib/breathingProgress";
 
 /**
  * BreathingGuideScreen — Exercício de Respiração Guiada
@@ -110,11 +111,12 @@ export default function BreathingGuideScreen() {
   };
 
   const currentPhaseLabel = phaseLabels[currentPhase % pattern.length];
-  // Antes de começar não há progresso; a fórmula cheia daria 6-8% no mount.
   const progress = isActive
-    ? Math.min(
-        100,
-        ((cycleCount + (currentPhase + 1) / pattern.length) / selectedExercise.cycles) * 100
+    ? getBreathingProgress(
+        pattern,
+        currentPhase,
+        cycleCount,
+        selectedExercise.cycles
       )
     : 0;
 

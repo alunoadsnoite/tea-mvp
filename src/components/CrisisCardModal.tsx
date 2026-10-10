@@ -49,6 +49,7 @@ export function CrisisCardModal() {
   const { trigger } = useHapticFeedback();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Contato exibido e acionado: o primário quando definido, senão o primeiro.
   const emergencyContact = useMemo(
@@ -92,11 +93,22 @@ export function CrisisCardModal() {
     // é recalculado aqui dentro de propósito para acompanhar o offset exibido.
   }, [viewportWidth, messages.length]);
 
+  const openEmergencyLink = async (url: string, action: string) => {
+    setActionError(null);
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setActionError(
+        `Não foi possível abrir ${action}. Verifique se há um aplicativo disponível.`
+      );
+    }
+  };
+
   // Ligar para contato de emergência
   const handleEmergencyCall = () => {
     if (emergencyContact?.phone) {
       trigger("success");
-      Linking.openURL(`tel:${emergencyContact.phone}`).catch(() => {});
+      void openEmergencyLink(`tel:${emergencyContact.phone}`, "o telefone");
     }
   };
 
@@ -105,8 +117,9 @@ export function CrisisCardModal() {
     if (emergencyContact?.phone) {
       trigger("light");
       const message = encodeURIComponent(currentMessage?.content || "");
-      Linking.openURL(`sms:${emergencyContact.phone}?body=${message}`).catch(
-        () => {}
+      void openEmergencyLink(
+        `sms:${emergencyContact.phone}?body=${message}`,
+        "o aplicativo de mensagens"
       );
     }
   };
@@ -151,6 +164,16 @@ export function CrisisCardModal() {
           </View>
         ))}
       </ScrollView>
+
+      {actionError && (
+        <Text
+          style={styles.actionError}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {actionError}
+        </Text>
+      )}
 
       {/* Botões de emergência */}
       {emergencyContact && (
@@ -278,5 +301,12 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       fontSize: fontSize(14),
       textAlign: "center",
       marginBottom: 16,
+    },
+    actionError: {
+      color: colors.warm,
+      fontSize: fontSize(14),
+      lineHeight: fontSize(20),
+      textAlign: "center",
+      marginTop: 12,
     },
   });
