@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { View, StyleSheet, Animated, Easing } from "react-native";
 
 interface VisualTimerBarProps {
   startTime: number;
@@ -56,6 +56,7 @@ export function VisualTimerBar({
     animationRef.current = Animated.timing(progress, {
       toValue: 0,
       duration: remaining,
+      easing: Easing.linear,
       useNativeDriver: true,
     });
 
