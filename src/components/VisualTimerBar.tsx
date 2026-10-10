@@ -5,6 +5,7 @@ interface VisualTimerBarProps {
   startTime: number;
   endTime: number;
   isPaused: boolean;
+  pausedAt?: number | null;
   color: string;
   trackColor: string;
 }
@@ -28,6 +29,7 @@ export function VisualTimerBar({
   startTime,
   endTime,
   isPaused,
+  pausedAt,
   color,
   trackColor,
 }: VisualTimerBarProps) {
@@ -36,25 +38,20 @@ export function VisualTimerBar({
   const [trackWidth, setTrackWidth] = useState(0);
 
   useEffect(() => {
-    // Ao pausar, apenas congela a animação onde ela está.
-    if (isPaused) {
-      animationRef.current?.stop();
-      return;
-    }
-
     const totalDuration = endTime - startTime;
     if (totalDuration <= 0) {
       progress.setValue(0);
       return;
     }
 
-    const remaining = Math.max(0, endTime - Date.now());
+    const now = isPaused ? pausedAt ?? Date.now() : Date.now();
+    const remaining = Math.max(0, endTime - now);
     const fromValue = Math.min(Math.max(remaining / totalDuration, 0), 1);
 
     // Parte do que realmente resta do passo — evita salto visual ao retomar.
     progress.setValue(fromValue);
 
-    if (remaining === 0) return;
+    if (isPaused || remaining === 0) return;
 
     animationRef.current = Animated.timing(progress, {
       toValue: 0,
@@ -67,7 +64,7 @@ export function VisualTimerBar({
     return () => {
       animationRef.current?.stop();
     };
-  }, [startTime, endTime, isPaused, progress]);
+  }, [startTime, endTime, isPaused, pausedAt, progress]);
 
   // progress=1 → scaleX 1, translateX 0 (barra cheia, esquerda em 0);
   // progress=0 → scaleX 0, translateX -W/2 (zero largura, esquerda em 0).

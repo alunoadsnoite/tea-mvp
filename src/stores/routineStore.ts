@@ -97,7 +97,7 @@ export const useRoutineStore = create<RoutineStore>()(
 
       pauseExecution: () => {
         set((state) => {
-          if (!state.execution || state.execution.isPaused) return state;
+          if (!state.execution || state.execution.isPaused || state.execution.completedAt !== null) return state;
           return {
             execution: {
               ...state.execution,
@@ -111,7 +111,7 @@ export const useRoutineStore = create<RoutineStore>()(
       resumeExecution: () => {
         set((state) => {
           const execution = state.execution;
-          if (!execution || !execution.isPaused) return state;
+          if (!execution || !execution.isPaused || execution.completedAt !== null) return state;
 
           const now = Date.now();
           const routine = get().routines.find((r) => r.id === execution.routineId);
@@ -137,7 +137,7 @@ export const useRoutineStore = create<RoutineStore>()(
 
       completeStep: () => {
         set((state) => {
-          if (!state.execution) return state;
+          if (!state.execution || state.execution.completedAt !== null) return state;
 
           const routine = get().routines.find(
             (r) => r.id === state.execution!.routineId
@@ -167,17 +167,21 @@ export const useRoutineStore = create<RoutineStore>()(
               currentStepIndex: nextIndex,
               stepStartedAt: now,
               stepEndsAt: now + nextStep.estimatedMinutes * 60 * 1000,
+              pausedAt: state.execution.isPaused ? now : null,
             },
           };
         });
       },
 
       extendTime: (minutes) => {
+        if (!Number.isFinite(minutes) || minutes <= 0) return;
         set((state) => {
-          if (!state.execution) return state;
+          if (!state.execution || state.execution.completedAt !== null) return state;
 
-          const now = Date.now();
-          const newEndTime = (state.execution.stepEndsAt ?? now) + minutes * 60 * 1000;
+          // Durante a pausa o relógio de referência permanece congelado.
+          // Se o prazo acabou, os minutos novos começam agora.
+          const now = state.execution.pausedAt ?? Date.now();
+          const newEndTime = Math.max(state.execution.stepEndsAt ?? now, now) + minutes * 60 * 1000;
 
           return {
             execution: {

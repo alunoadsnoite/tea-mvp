@@ -8,7 +8,7 @@ export function getBreathingProgress(
   if (activePhases === 0 || totalCycles <= 0) return 0;
 
   const completedPhaseCount = pattern
-    .slice(0, currentPhase + 1)
+    .slice(0, currentPhase)
     .filter((duration) => duration > 0).length;
   const safeCompletedCycles = Math.min(
     Math.max(completedCycles, 0),

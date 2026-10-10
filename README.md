@@ -2,9 +2,20 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.8
+## Versão Atual: 1.0.10 (candidata)
 
 ### Changelog
+
+#### v1.0.10 (2026-10-10, candidata)
+- Rotinas: avançar enquanto pausado mantém o tempo correto do próximo passo.
+- Rotinas: adicionar minutos após o prazo acabar concede o tempo completo.
+- Rotinas: ações não modificam execuções concluídas; reabrir a tela concluída volta à lista.
+- Timer visual: restaura a fração correta durante uma pausa e atualiza extensões sem retomar.
+- Cartão de crise: carrossel acompanha a mensagem ativa após hidratação do armazenamento.
+- Respiração: progresso começa em 0% e não indica conclusão antes da última fase.
+- Respiração: controles acessíveis por rolagem em telas baixas/paisagem e animação interrompida ao parar/sair.
+- Receita candidata para F-Droid: gera o projeto nativo antes do build, usa release e preserva dependências necessárias. A versão ainda precisa de build e revisão no F-Droid.
+
 
 #### v1.0.8 (2026-10-08)
 - **Acessibilidade: controle de Bateria Social operável no TalkBack** — o container do check-in declarava `accessible` + `adjustable` sem `onAccessibilityAction`, agrupando os botões "-10"/"+10" num único elemento e tornando-os inoperáveis pelo leitor de tela; agora os botões são focáveis individualmente

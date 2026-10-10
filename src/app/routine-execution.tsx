@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -36,17 +36,15 @@ export default function RoutineExecutionScreen() {
   const extendTime = useRoutineStore((state) => state.extendTime);
   const stopExecution = useRoutineStore((state) => state.stopExecution);
 
-  const completionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Evita que a navegação agendada na conclusão dispare depois de a tela sair.
+  // Trata também uma conclusão restaurada do armazenamento após reabrir o app.
   useEffect(() => {
-    return () => {
-      if (completionTimer.current) {
-        clearTimeout(completionTimer.current);
-        completionTimer.current = null;
-      }
-    };
-  }, []);
+    if (!execution || execution.completedAt === null) return;
+    const timer = setTimeout(() => {
+      stopExecution();
+      router.replace("/routines");
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [execution, stopExecution, router]);
 
   if (!execution) {
     return (
@@ -75,17 +73,7 @@ export default function RoutineExecutionScreen() {
   const isCompleted = execution.completedAt !== null;
 
   const handleCompleteStep = () => {
-    // Trava contra toques repetidos, que agendariam navegações duplicadas.
-    if (completionTimer.current) return;
-
     completeStep();
-    if (isLastStep) {
-      completionTimer.current = setTimeout(() => {
-        completionTimer.current = null;
-        stopExecution();
-        router.replace("/routines");
-      }, 1500);
-    }
   };
 
   const handleStop = () => {
@@ -156,6 +144,7 @@ export default function RoutineExecutionScreen() {
               startTime={execution.stepStartedAt}
               endTime={execution.stepEndsAt}
               isPaused={execution.isPaused}
+              pausedAt={execution.pausedAt}
               color={colors.accent}
               trackColor={colors.surfaceAlt}
             />

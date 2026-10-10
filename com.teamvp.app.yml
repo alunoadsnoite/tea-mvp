@@ -6,7 +6,7 @@ WebSite: https://github.com/alunoadsnoite/tea-mvp
 SourceCode: https://github.com/alunoadsnoite/tea-mvp
 IssueTracker: https://github.com/alunoadsnoite/tea-mvp/issues
 AutoName: TEA Autonomia
-Summary: Aplicativo offline para adultos no Espectro Autista focado em autonomia, previsibilidade e gerenciamento de crises
+Summary: Apoio offline à autonomia e regulação de adultos autistas
 Description: |
   TEA Autonomia é um aplicativo Android para adultos no Espectro Autista (TEA)
   que funciona totalmente offline e oferece ferramentas de apoio para
@@ -47,14 +47,24 @@ Description: |
   Licença: GPL-3.0-or-later
 RepoType: git
 Repo: https://github.com/alunoadsnoite/tea-mvp
+# Receita candidata: requer validação com fdroid lint/build e revisão do scanner.
+# A tag só deve ser criada após um build de release bem-sucedido.
 Builds:
-  - versionName: 1.0.9
-    versionCode: 9
-    commit: adb5505
+  - versionName: 1.0.10
+    versionCode: 10
+    commit: v1.0.10
     subdir: android
+    sudo:
+      - apt-get update
+      - apt-get install -y nodejs npm openjdk-17-jdk-headless
+    init:
+      - npm ci
+      - npx expo prebuild --platform android --no-install
     gradle:
-      - ./gradlew assembleDebug
-    buildToolsVersion: "34.0.0"
-    ndk: "25.1.8937393"
-    scandelete:
-      - node_modules
+      - yes
+    ndk: 25.1.8937393
+
+AutoUpdateMode: None
+UpdateCheckMode: None
+CurrentVersion: 1.0.10
+CurrentVersionCode: 10

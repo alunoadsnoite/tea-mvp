@@ -95,6 +95,58 @@ describe("routineStore", () => {
     ).toBeUndefined();
   });
 
+  it("avançar durante a pausa preserva a duração completa do próximo passo", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-01-01T10:00:00Z"));
+    useRoutineStore.getState().startExecution("default-work");
+    useRoutineStore.getState().pauseExecution();
+    jest.setSystemTime(new Date("2026-01-01T10:10:00Z"));
+    useRoutineStore.getState().completeStep();
+    expect(useRoutineStore.getState().execution?.pausedAt).toBe(Date.now());
+    jest.setSystemTime(new Date("2026-01-01T10:12:00Z"));
+    useRoutineStore.getState().resumeExecution();
+    expect(useRoutineStore.getState().execution?.stepEndsAt).toBe(Date.now() + 3 * 60_000);
+  });
+
+  it("estender um passo vencido adiciona minutos a partir de agora", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-01-01T10:00:00Z"));
+    useRoutineStore.getState().startExecution("default-work");
+    jest.setSystemTime(new Date("2026-01-01T10:20:00Z"));
+    useRoutineStore.getState().extendTime(5);
+    expect(useRoutineStore.getState().execution?.stepEndsAt).toBe(Date.now() + 5 * 60_000);
+  });
+
+  it("estender durante a pausa não conta o tempo transcorrido pausado", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-01-01T10:00:00Z"));
+    useRoutineStore.getState().startExecution("default-work");
+    useRoutineStore.getState().pauseExecution();
+    jest.setSystemTime(new Date("2026-01-01T10:20:00Z"));
+    useRoutineStore.getState().extendTime(5);
+    useRoutineStore.getState().resumeExecution();
+    expect(useRoutineStore.getState().execution?.stepEndsAt).toBe(Date.now() + 10 * 60_000);
+  });
+
+  it("ações não alteram uma execução já concluída", () => {
+    useRoutineStore.getState().startExecution("default-work");
+    for (let i = 0; i < 3; i++) useRoutineStore.getState().completeStep();
+    const completed = useRoutineStore.getState().execution;
+    useRoutineStore.getState().completeStep();
+    useRoutineStore.getState().pauseExecution();
+    useRoutineStore.getState().extendTime(5);
+    expect(useRoutineStore.getState().execution).toBe(completed);
+  });
+
+  it("ignora extensões inválidas", () => {
+    useRoutineStore.getState().startExecution("default-work");
+    const execution = useRoutineStore.getState().execution;
+    for (const minutes of [0, -5, NaN, Infinity]) {
+      useRoutineStore.getState().extendTime(minutes);
+    }
+    expect(useRoutineStore.getState().execution).toBe(execution);
+  });
+
   it("rotinas padrão não podem ser excluídas", () => {
     useRoutineStore.getState().deleteRoutine("default-work");
     expect(

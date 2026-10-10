@@ -5,6 +5,7 @@ import {
   Pressable,
   StyleSheet,
   Animated,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
@@ -91,11 +92,12 @@ export default function BreathingGuideScreen() {
     }, phaseDuration);
 
     return () => {
+      scaleAnim.stopAnimation();
       if (intervalRef.current) {
         clearTimeout(intervalRef.current);
       }
     };
-  }, [isActive, currentPhase, selectedExercise, cycleCount]);
+  }, [isActive, currentPhase, selectedExercise, cycleCount, scaleAnim, pattern]);
 
   const handleStart = () => {
     setIsActive(true);
@@ -131,7 +133,7 @@ export default function BreathingGuideScreen() {
         }}
       />
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         {/* Seleção de exercício */}
         <View style={styles.exerciseSelector}>
           {BREATHING_EXERCISES.map((exercise) => (
@@ -252,7 +254,7 @@ export default function BreathingGuideScreen() {
             {isActive ? "Parar" : "Começar"}
           </Text>
         </Pressable>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -263,7 +265,7 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       flex: 1,
     },
     content: {
-      flex: 1,
+      flexGrow: 1,
       padding: 24,
       gap: 24,
       paddingBottom: 80, // Espaço para o EmergencyFab

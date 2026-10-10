@@ -1,0 +1,1 @@
+Corrige o tempo ao avançar rotinas pausadas e adicionar minutos após o prazo. Restaura corretamente a barra de tempo pausada. Evita alterações em rotinas concluídas e retorna à lista ao reabrir uma conclusão. Sincroniza a mensagem do cartão de crise após carregar os dados. Permite rolar a respiração em telas baixas e interrompe a animação ao sair.

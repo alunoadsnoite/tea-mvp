@@ -2,7 +2,7 @@
   "expo": {
     "name": "TEA Autonomia",
     "slug": "tea-mvp",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "default",
     "scheme": "tea",
     "userInterfaceStyle": "automatic",
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "package": "com.teamvp.app",
-      "versionCode": 9
+      "versionCode": 10
     },
     "plugins": [
       "expo-router",

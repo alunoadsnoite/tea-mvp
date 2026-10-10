@@ -89,9 +89,8 @@ export function CrisisCardModal() {
       Math.max(0, messages.length - 1)
     );
     node.scrollTo({ x: index * viewportWidth, animated: false });
-    // Reposiciona só na mudança de viewport (montagem/rotação); currentIndex
-    // é recalculado aqui dentro de propósito para acompanhar o offset exibido.
-  }, [viewportWidth, messages.length]);
+    // Também acompanha a hidratação da mensagem ativa na abertura fria.
+  }, [viewportWidth, messages.length, currentIndex]);
 
   const openEmergencyLink = async (url: string, action: string) => {
     setActionError(null);
