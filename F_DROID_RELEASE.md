@@ -4,8 +4,10 @@ A versão 1.0.10 / versionCode 10 é candidata. O arquivo
 `com.teamvp.app.yml` é uma receita para submissão, não uma publicação no
 catálogo. O arquivo foi validado com `fdroid lint`, usando as categorias
 atuais do repositório oficial. A receita passou no scanner de fontes numa
-cópia temporária do código e dependências. O build completo e a revisão da
-equipe ainda são necessários.
+cópia temporária do código e dependências. A receita também foi normalizada com `fdroid rewritemeta`. O APK release local foi gerado e sua versão foi conferida com `aapt`.
+No CI do F-Droid, o Gradle compilou, mas a coleta do APK falhou; a receita
+agora informa explicitamente o caminho do APK não assinado. Uma nova execução
+completa e a revisão da equipe ainda são necessárias.
 
 ## Validação e release
 
@@ -21,7 +23,7 @@ equipe ainda são necessários.
 4. Valide o APK em aparelho Android, incluindo abertura offline, widget,
    rotação do cartão de crise, pausa/retomada e extensão das rotinas.
 5. Opcionalmente, crie e publique a tag `v1.0.10` após validar o release.
-   A receita atual fixa o commit `45a207ba3f95443b89053d6227bd16906c3b67ef`,
+   A receita atual fixa o commit `9186ad298a279b44577e6bc8e88993d204bbff33`,
    que contém o código corrigido e já está publicado no GitHub.
 
 O release gerado pelo Expo usa a configuração de assinatura debug do template.
@@ -35,8 +37,13 @@ O pacote é `com.teamvp.app`. A consulta a
 A submissão [!50479](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/50479)
 foi atualizada para a versão 1.0.10 e reaberta em 2026-10-10. Ela havia sido
 fechada pelo autor em 2026-09-28. A branch de origem é `add-tea-mvp` no fork
-`alunoadsnoite/fdroiddata`. A inclusão no catálogo depende do build e da revisão
-dos mantenedores; a merge request aberta não significa publicação concluída.
+`alunoadsnoite/fdroiddata`. A branch foi atualizada por rebase autorizado e a receita do TEA Kids, que
+estava misturada à submissão anterior, foi retirada desta merge request;
+ela continua recuperável no histórico do fork. Em 2026-10-11, um mantenedor encerrou a submissão por falta do modelo de
+descrição exigido. A descrição precisa seguir o template, incluindo capturas
+de tela reais. Não há aparelho conectado nem emulador neste ambiente.
+A inclusão no catálogo depende
+do build e da revisão dos mantenedores; a submissão não significa publicação concluída.
 
 Com uma conta autenticada no GitLab:
 
@@ -50,10 +57,18 @@ Com uma conta autenticada no GitLab:
    no catálogo. `scandelete: node_modules` remove os arquivos apontados pelo
    scanner, preservando os fontes e o compilador necessário ao build.
    Distribuições Windows/macOS não usadas são removidas no prebuild.
+   O init muda de `android/` para a raiz antes de gerar o projeto Expo.
+   O JDK 17 vem do repositório Debian Bookworm, seguindo receitas oficiais,
+   pois a imagem atual do F-Droid usa Debian Trixie.
 4. Abra ou atualize a merge request no GitLab e acompanhe a revisão da equipe.
 
 Os textos do aplicativo e changelog estão em
-`fastlane/metadata/android/pt-BR/` para importação pelo F-Droid.
+`fastlane/metadata/android/pt-BR/` e `fastlane/metadata/android/en-US/`
+para importação pelo F-Droid. A interface continua em português.
+
+A atualização automática está desativada durante esta primeira submissão,
+pois ainda não há release Android de produção com assinatura estável e
+reprodutibilidade verificada. O F-Droid fará sua própria assinatura.
 
 Referências oficiais:
 - https://f-droid.org/en/docs/Submitting_to_F-Droid_Quick_Start_Guide/

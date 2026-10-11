@@ -2,22 +2,13 @@ Categories:
   - Mental Health
   - Task
 License: GPL-3.0-or-later
+AuthorName: Valdenor Tavares
+AuthorEmail: valdenorsa@proton.me
 WebSite: https://github.com/alunoadsnoite/tea-mvp
 SourceCode: https://github.com/alunoadsnoite/tea-mvp
 IssueTracker: https://github.com/alunoadsnoite/tea-mvp/issues
 
 AutoName: TEA Autonomia
-Description: |
-  TEA Autonomia oferece ferramentas offline para adultos no Espectro Autista.
-
-  Inclui cartão de comunicação de crise, contatos de emergência, check-in de
-  bateria social e carga sensorial, rotinas visuais, cartões de regulação e
-  respiração guiada.
-
-  Os dados são armazenados no aparelho. Oferece temas claro e escuro, fonte
-  ajustável e widget Android para abrir o cartão de crise.
-
-  Contato do desenvolvedor: valdenorsa@proton.me
 
 RepoType: git
 Repo: https://github.com/alunoadsnoite/tea-mvp
@@ -25,17 +16,22 @@ Repo: https://github.com/alunoadsnoite/tea-mvp
 Builds:
   - versionName: 1.0.10
     versionCode: 10
-    commit: 45a207ba3f95443b89053d6227bd16906c3b67ef
+    commit: 9186ad298a279b44577e6bc8e88993d204bbff33
     subdir: android
     sudo:
       - apt-get update
-      - apt-get install -y nodejs npm openjdk-17-jdk-headless
+      - apt-get install -y nodejs npm
+      - echo "deb https://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list
+      - apt-get update
+      - apt-get install -y -t bookworm openjdk-17-jdk-headless
+      - update-java-alternatives -s java-1.17.0-openjdk-amd64
     init:
       - cd ..
       - npm ci
       - npx expo prebuild --platform android --no-install
     gradle:
       - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
     prebuild:
       - sed -i '/signingConfig /d' app/build.gradle
       - rm -rf ../node_modules/react-native/sdks/hermesc/win64-bin ../node_modules/react-native/sdks/hermesc/osx-bin
