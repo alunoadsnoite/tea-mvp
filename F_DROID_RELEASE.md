@@ -6,8 +6,8 @@ catálogo. O arquivo foi validado com `fdroid lint`, usando as categorias
 atuais do repositório oficial. A receita passou no scanner de fontes numa
 cópia temporária do código e dependências. A receita também foi normalizada com `fdroid rewritemeta`. O APK release local foi gerado e sua versão foi conferida com `aapt`.
 No CI do F-Droid, o Gradle compilou, mas a coleta do APK falhou; a receita
-agora informa explicitamente o caminho do APK não assinado. Uma nova execução
-completa e a revisão da equipe ainda são necessárias.
+agora informa explicitamente o caminho do APK não assinado. O pipeline corrigido concluiu todas as nove tarefas com sucesso, incluindo
+`fdroid build` e `check apk`. A revisão da equipe ainda é necessária.
 
 ## Validação e release
 
@@ -40,8 +40,11 @@ fechada pelo autor em 2026-09-28. A branch de origem é `add-tea-mvp` no fork
 `alunoadsnoite/fdroiddata`. A branch foi atualizada por rebase autorizado e a receita do TEA Kids, que
 estava misturada à submissão anterior, foi retirada desta merge request;
 ela continua recuperável no histórico do fork. Em 2026-10-11, um mantenedor encerrou a submissão por falta do modelo de
-descrição exigido. A descrição precisa seguir o template, incluindo capturas
-de tela reais. Não há aparelho conectado nem emulador neste ambiente.
+descrição exigido. A descrição foi atualizada com o template oficial e a submissão foi reaberta
+em 2026-10-11. A receita corrigida está no commit `0c7cae4f` do fork, com
+[novo pipeline](https://gitlab.com/alunoadsnoite/fdroiddata/-/pipelines/2935472676).
+Capturas de tela reais continuam pendentes: não há aparelho conectado nem
+emulador neste ambiente.
 A inclusão no catálogo depende
 do build e da revisão dos mantenedores; a submissão não significa publicação concluída.
 
@@ -51,7 +54,7 @@ Com uma conta autenticada no GitLab:
 2. Faça um fork desse repositório e coloque a receita em
    `metadata/com.teamvp.app.yml`.
 3. Execute `fdroid lint com.teamvp.app` e `fdroid build com.teamvp.app:10` no
-   ambiente de build do F-Droid. O build completo ainda precisa passar.
+   ambiente de build do F-Droid. O pipeline #2935472676 passou no build completo e na análise do APK.
    As exceções do scanner cobrem arquivos Gradle com repositórios locais
    verificados e o compilador Hermes Linux, seguindo receitas Expo existentes
    no catálogo. `scandelete: node_modules` remove os arquivos apontados pelo
@@ -73,3 +76,16 @@ reprodutibilidade verificada. O F-Droid fará sua própria assinatura.
 Referências oficiais:
 - https://f-droid.org/en/docs/Submitting_to_F-Droid_Quick_Start_Guide/
 - https://f-droid.org/en/docs/Build_Metadata_Reference/
+
+## Resultado da validação em 2026-10-11
+
+O [pipeline #2935472676](https://gitlab.com/alunoadsnoite/fdroiddata/-/pipelines/2935472676)
+aprovou todas as nove tarefas. A receita gerou o APK não assinado a partir
+do commit publicado `9186ad298a279b44577e6bc8e88993d204bbff33`.
+A merge request permanece aberta para revisão; o aplicativo ainda não está
+publicado no catálogo.
+
+O relatório do APK contém avisos de permissões herdadas dos manifests do
+Expo/React Native, tamanho do pacote universal (~63 MB) e R8 desativado.
+As explicações foram registradas na descrição da submissão. Capturas de
+tela reais e revisão de divisão por ABI continuam pendentes.
