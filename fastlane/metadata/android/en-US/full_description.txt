@@ -1,0 +1,3 @@
+TEA Autonomia provides offline tools for autistic adults: a crisis communication card, emergency contacts, social battery and sensory load check-ins, visual routines, regulation cards and guided breathing.
+
+Data is stored on your device. The app includes light and dark themes, adjustable text size and an Android widget that opens the crisis card. The app interface is currently in Portuguese.

@@ -1,0 +1,1 @@
+Fixes advancing paused routines and adding time after a timer expires. Restores paused timer progress correctly. Prevents changes to completed routines and returns to the list when reopening a completed routine. Synchronizes the crisis message after loading saved data. Makes breathing controls scrollable on short screens and stops the animation when leaving.
