@@ -43,8 +43,10 @@ ela continua recuperável no histórico do fork. Em 2026-10-11, um mantenedor en
 descrição exigido. A descrição foi atualizada com o template oficial e a submissão foi reaberta
 em 2026-10-11. A receita corrigida está no commit `0c7cae4f` do fork, com
 [novo pipeline](https://gitlab.com/alunoadsnoite/fdroiddata/-/pipelines/2935472676).
-Capturas de tela reais continuam pendentes: não há aparelho conectado nem
-emulador neste ambiente.
+As capturas reais da tela inicial e das estratégias de calma foram recebidas
+do autor em 2026-10-11 e publicadas nos metadados Fastlane, junto ao ícone
+existente do aplicativo. A captura de configurações foi omitida por mostrar
+a versão 1.0.8.
 A inclusão no catálogo depende
 do build e da revisão dos mantenedores; a submissão não significa publicação concluída.
 
@@ -87,5 +89,9 @@ publicado no catálogo.
 
 O relatório do APK contém avisos de permissões herdadas dos manifests do
 Expo/React Native, tamanho do pacote universal (~63 MB) e R8 desativado.
-As explicações foram registradas na descrição da submissão. Capturas de
-tela reais e revisão de divisão por ABI continuam pendentes.
+As explicações foram registradas na descrição da submissão. A revisão de divisão por ABI continua pendente.
+
+A receita agora fixa `c4c2d71073da9028f7d63fc3c2c505c5222f698c`, que inclui
+as duas capturas reais e o ícone em pt-BR e en-US. Essa alteração apenas
+acrescenta imagens e documentação ao código já validado; o novo pipeline
+da submissão deverá confirmar o build desse commit.
