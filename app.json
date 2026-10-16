@@ -31,7 +31,8 @@
     },
     "plugins": [
       "expo-router",
-      "./plugins/withCrisisWidget"
+      "./plugins/withCrisisWidget",
+      "./plugins/withReleaseOptimization"
     ],
     "extra": {
       "router": {

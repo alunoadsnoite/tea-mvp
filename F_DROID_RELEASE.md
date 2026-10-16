@@ -95,3 +95,11 @@ A receita agora fixa `76885f40ec8134971d5eb2987742a366b318153b`, que inclui
 as quatro capturas reais e o ícone em pt-BR e en-US. Essa alteração apenas
 acrescenta imagens e documentação ao código já validado; o novo pipeline
 da submissão deverá confirmar o build desse commit.
+
+## Otimização de release
+
+O plugin `plugins/withReleaseOptimization.js` ativa R8 e a remoção de recursos
+não utilizados em cada `expo prebuild`. As propriedades geradas são
+`android.enableProguardInReleaseBuilds=true` e
+`android.enableShrinkResourcesInReleaseBuilds=true`. O APK universal ainda inclui
+bibliotecas nativas de várias arquiteturas, que não são reduzidas pelo R8.
