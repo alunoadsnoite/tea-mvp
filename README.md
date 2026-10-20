@@ -2,7 +2,12 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.10 (candidata)
+## Versão Atual: 1.0.10
+
+F-Droid em 20/10/2026: receita por quatro arquiteturas aprovada no CI, com R8,
+permissões desnecessárias removidas e atualização por tags habilitada.
+Revisão funcional e aprovação dos mantenedores continuam pendentes.
+Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
 
 ### Changelog
 
@@ -14,7 +19,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - Cartão de crise: carrossel acompanha a mensagem ativa após hidratação do armazenamento.
 - Respiração: progresso começa em 0% e não indica conclusão antes da última fase.
 - Respiração: controles acessíveis por rolagem em telas baixas/paisagem e animação interrompida ao parar/sair.
-- Receita candidata para F-Droid: gera o projeto nativo antes do build, usa release e preserva dependências necessárias. O build e a análise do APK passaram no F-Droid em 2026-10-11. A inclusão no catálogo ainda depende de capturas de tela e revisão dos mantenedores; veja [F_DROID_RELEASE.md](F_DROID_RELEASE.md).
+- Receita candidata para F-Droid: gera o projeto nativo antes do build, usa release e preserva dependências necessárias. O build e a análise do APK passaram no F-Droid em 2026-10-11. As capturas já foram fornecidas; a inclusão no catálogo ainda depende de revisão funcional e aprovação dos mantenedores; veja [F_DROID_RELEASE.md](F_DROID_RELEASE.md).
 
 
 #### v1.0.8 (2026-10-08)
