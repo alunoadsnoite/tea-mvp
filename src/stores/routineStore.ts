@@ -54,11 +54,34 @@ export const useRoutineStore = create<RoutineStore>()(
       },
 
       updateRoutine: (id, updates) => {
-        set((state) => ({
-          routines: state.routines.map((r) =>
-            r.id === id ? { ...r, ...updates } : r
-          ),
-        }));
+        set((state) => {
+          const routine = state.routines.find((r) => r.id === id);
+          if (!routine || updates.steps?.length === 0) return state;
+          let execution = state.execution;
+          if (updates.steps && execution?.routineId === id) {
+            const currentStep = routine.steps[execution.currentStepIndex];
+            const preservedIndex = updates.steps.findIndex((step) => step.id === currentStep?.id);
+            const currentStepIndex = preservedIndex >= 0
+              ? preservedIndex
+              : Math.min(execution.currentStepIndex, updates.steps.length - 1);
+            execution = { ...execution, currentStepIndex };
+            // Se o passo atual foi removido, o substituto recebe seu próprio
+            // prazo. Uma execução pausada continua pausada, sem consumir tempo.
+            if (preservedIndex < 0 && execution.completedAt === null) {
+              const now = Date.now();
+              execution = {
+                ...execution,
+                stepStartedAt: now,
+                stepEndsAt: now + updates.steps[currentStepIndex].estimatedMinutes * 60_000,
+                pausedAt: execution.isPaused ? now : null,
+              };
+            }
+          }
+          return {
+            routines: state.routines.map((r) => r.id === id ? { ...r, ...updates } : r),
+            execution,
+          };
+        });
       },
 
       deleteRoutine: (id) => {
