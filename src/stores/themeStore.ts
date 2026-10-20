@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,6 +15,10 @@ interface ThemeStore {
   setMode: (mode: ThemeMode) => void;
 }
 
+// A tentativa de leitura pode terminar com erro antes de o layout montar.
+// Esse sinal não é persistido e libera a abertura também nesse caso.
+const useThemeLoadingStore = create<{ finished: boolean }>()(() => ({ finished: false }));
+
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
@@ -26,29 +29,19 @@ export const useThemeStore = create<ThemeStore>()(
       name: "theme-storage",
       storage: createJSONStorage(() => AsyncStorage),
       version: 1,
+      onRehydrateStorage: () => () => {
+        useThemeLoadingStore.setState({ finished: true });
+      },
     }
   )
 );
 
 /**
- * Indica se a leitura do tema salvo no armazenamento já terminou.
+ * Indica se a tentativa de leitura do tema salvo já terminou.
  *
- * Usado pelo layout raiz para manter o splash screen até que a paleta correta
- * esteja disponível, evitando um flash com as cores do tema errado.
+ * Usado pelo layout raiz para aguardar o tema salvo. Em caso de falha,
+ * libera o splash com o tema escuro padrão, mantendo o app acessível.
  */
 export function useThemeHydrated() {
-  const [hydrated, setHydrated] = useState(() => useThemeStore.persist.hasHydrated());
-
-  useEffect(() => {
-    if (useThemeStore.persist.hasHydrated()) {
-      setHydrated(true);
-      return;
-    }
-    const unsubscribe = useThemeStore.persist.onFinishHydration(() => {
-      setHydrated(true);
-    });
-    return unsubscribe;
-  }, []);
-
-  return hydrated;
+  return useThemeLoadingStore((state) => state.finished);
 }
