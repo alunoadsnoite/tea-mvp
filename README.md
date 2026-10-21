@@ -2,7 +2,7 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.10
+## Versão Atual: 1.0.11
 
 F-Droid em 20/10/2026: receita por quatro arquiteturas aprovada no CI, com R8,
 permissões desnecessárias removidas e atualização por tags habilitada.
@@ -10,6 +10,14 @@ Revisão funcional e aprovação dos mantenedores continuam pendentes.
 Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
 
 ### Changelog
+
+#### v1.0.11 (2026-10-21)
+- Voltar à rotina salva preserva a pausa, o passo e os horários.
+- Cartões de crise com rolagem vertical e seleção sincronizada pelo ID ativo.
+- SOS separado do viewport das telas, sem sobrepor os controles.
+- Widget recria a tarefa com a intenção de crise e aguarda o navegador montar.
+- As correções relacionadas ao relatório do TEA Kids e os limites da validação estão em [docs/JYRI_SHARED_FIXES.md](docs/JYRI_SHARED_FIXES.md).
+
 
 #### v1.0.10 (2026-10-10, candidata)
 - Rotinas: avançar enquanto pausado mantém o tempo correto do próximo passo.

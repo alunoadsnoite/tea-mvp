@@ -37,11 +37,8 @@ export function CrisisCardModal() {
   const { messages, contacts, activeMessageId, setActiveMessage, primaryContactId } =
     useCrisisStore();
   const { colors } = useThemeMode();
-  const [currentIndex, setCurrentIndex] = useState(() => {
-    if (!activeMessageId || messages.length === 0) return 0;
-    const index = messages.findIndex((m) => m.id === activeMessageId);
-    return index >= 0 ? index : 0;
-  });
+  const selectedIndex = messages.findIndex((message) => message.id === activeMessageId);
+  const currentIndex = Math.max(0, selectedIndex);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
@@ -66,19 +63,9 @@ export function CrisisCardModal() {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / viewportWidth);
     if (index !== safeIndex && index >= 0 && index < messages.length) {
-      setCurrentIndex(index);
       setActiveMessage(messages[index].id);
     }
   };
-
-  // Sincroniza o índice com a mensagem ativa persistida (reabertura da tela).
-  useEffect(() => {
-    if (!activeMessageId || messages.length === 0) return;
-    const index = messages.findIndex((m) => m.id === activeMessageId);
-    if (index >= 0) {
-      setCurrentIndex((prev) => (prev === index ? prev : index));
-    }
-  }, [activeMessageId, messages]);
 
   // Mantém o scroll na página correta quando o viewport muda (montagem e rotação).
   useEffect(() => {
@@ -148,19 +135,23 @@ export function CrisisCardModal() {
         ref={scrollViewRef}
         style={styles.scrollView}
         horizontal
+        contentOffset={{ x: safeIndex * viewportWidth, y: 0 }}
+        onContentSizeChange={() => scrollViewRef.current?.scrollTo({ x: safeIndex * viewportWidth, animated: false })}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleScroll}
         onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
       >
         {messages.map((message) => (
-          <View key={message.id} style={[styles.messageContainer, { width: viewportWidth }]}>
+          <ScrollView key={message.id} style={{ width: viewportWidth }}
+            contentContainerStyle={styles.messageContainer} nestedScrollEnabled
+            showsVerticalScrollIndicator accessibilityLabel={`Cartão ${message.title}`}>
             <View style={styles.messageContentWrapper}>
               <Text style={styles.messageTitle}>{message.title}</Text>
               <View style={styles.divider} />
               <Text style={styles.messageContent}>{message.content}</Text>
             </View>
-          </View>
+          </ScrollView>
         ))}
       </ScrollView>
 
@@ -227,12 +218,12 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       fontSize: fontSize(14),
     },
     messageContainer: {
-      flex: 1,
+      flexGrow: 1,
+      paddingVertical: 12,
       justifyContent: "center",
       alignItems: "center",
     },
     messageContentWrapper: {
-      flex: 1,
       justifyContent: "center",
       alignItems: "flex-start",
       width: "100%",
@@ -263,7 +254,6 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       lineHeight: fontSize(40),
       textAlign: "left",
       fontWeight: "600",
-      flexShrink: 1,
     },
     emergencyActions: {
       gap: 12,

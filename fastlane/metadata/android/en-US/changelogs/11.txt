@@ -1,0 +1,1 @@
+Fix cold widget launch, preserve saved routine execution, allow vertical help-card scrolling and keep SOS separate from controls.
