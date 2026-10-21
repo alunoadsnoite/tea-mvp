@@ -88,3 +88,7 @@ Para criar o widget no iOS é preciso, no macOS:
 
 Não há como validar isso por script, e o `ios/` não é versionado — cada pessoa
 que quiser o widget no iOS precisa criar o target.
+
+O atalho do widget usa uma tarefa de navegação nova (NEW_TASK/CLEAR_TASK),
+para receber o URI de crise mesmo após o processo anterior encerrar. A navegação
+anterior pode ser reiniciada; os dados persistidos não são apagados.

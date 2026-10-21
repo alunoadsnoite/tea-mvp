@@ -26,13 +26,14 @@ export default function RoutinesListScreen() {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const routines = useRoutineStore((state) => state.routines);
+  const execution = useRoutineStore((state) => state.execution);
   const startExecution = useRoutineStore((state) => state.startExecution);
   const deleteRoutine = useRoutineStore((state) => state.deleteRoutine);
   const resetToDefaults = useRoutineStore((state) => state.resetToDefaults);
 
   const handleStartRoutine = (routineId: string) => {
-    // Só navega se a execução realmente iniciou (rotina existente com passos).
-    if (startExecution(routineId)) {
+    // Reopening a saved execution preserves the current step and paused timer.
+    if (execution?.routineId === routineId || startExecution(routineId)) {
       router.push("/routine-execution");
     }
   };
@@ -106,10 +107,10 @@ export default function RoutinesListScreen() {
               style={styles.startButton}
               onPress={() => handleStartRoutine(routine.id)}
               accessibilityRole="button"
-              accessibilityLabel={`Iniciar rotina ${routine.name}`}
+              accessibilityLabel={execution?.routineId === routine.id ? `Voltar à rotina ${routine.name}` : `Iniciar rotina ${routine.name}`}
               accessibilityHint="Começa a execução passo a passo desta rotina"
             >
-              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>Iniciar Rotina</Text>
+              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>{execution?.routineId === routine.id ? "Voltar à rotina" : "Iniciar Rotina"}</Text>
             </Pressable>
 
             {/* Editar/excluir apenas nas rotinas criadas pelo usuário */}
