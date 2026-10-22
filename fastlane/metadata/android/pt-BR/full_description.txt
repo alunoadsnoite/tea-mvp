@@ -1,3 +1,3 @@
 TEA Autonomia oferece ferramentas offline para adultos no Espectro Autista: cartão de comunicação de crise, contatos de emergência, check-in de bateria social e carga sensorial, rotinas visuais, cartões de regulação e respiração guiada.
 
-Os dados são armazenados no aparelho. Inclui temas claro e escuro, texto nas telas principais que acompanha o tamanho de fonte do sistema entre 85% e 130% (sem ajuste separado no app) e widget Android para abrir o cartão de crise.
+Os dados são armazenados no aparelho. Inclui temas claro e escuro, texto nas telas principais que acompanha o tamanho de fonte do sistema (sem ajuste separado no app) e widget Android para abrir o cartão de crise.

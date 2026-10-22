@@ -1,5 +1,14 @@
 # Publicação no F-Droid
 
+## Estado em 22/10/2026 — versão 1.0.12
+
+A submissão ativa permanece [!50479](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/50479), aberta. O PR #4 foi integrado. A versão 1.0.12 inclui o retorno à lista anterior após concluir rotinas e repara uma alteração posterior que havia truncado a tela de rotinas e removido as ações do cartão de crise. Mensagens ocultas são respeitadas, ligação continua disponível com todas ocultas e SMS vazio fica desabilitado. O texto segue a escala nativa do sistema; a descrição antiga de limite em 130% foi removida.
+
+Lint, TypeScript e 54 testes passaram na preparação desta versão. Reteste físico Android continua pendente. Códigos previstos na receita F-Droid: 121/122/123/124. Os APKs locais de teste e os APKs assinados pelo F-Droid têm assinaturas distintas. A aprovação no CI não confirma inclusão no catálogo.
+
+## Referência anterior (20/10/2026; superada)
+
+
 ## Estado em 20/10/2026
 
 A submissão ativa é [!50479](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/50479). A versão 1.0.10 está marcada pela tag `v1.0.10`; a receita fixa a fonte `7b1edde61b412b2f2700ff35a137a28b198489d6` e habilita atualização por tags.
