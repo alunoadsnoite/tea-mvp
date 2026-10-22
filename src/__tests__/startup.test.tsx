@@ -1,3 +1,4 @@
+jest.mock("@/hooks/useReducedMotion", () => ({ useReducedMotion: () => false }));
 import React from "react";
 import renderer, { act } from "react-test-renderer";
 import { Linking, View } from "react-native";

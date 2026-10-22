@@ -17,7 +17,9 @@ import { ThemeColors } from "@/constants/theme";
 
 interface ScrollViewEvent {
   nativeEvent: {
-    contentOffset: { x: number };
+    contentOffset: {
+      x: number;
+    };
   };
 }
 
@@ -76,54 +78,159 @@ export function CrisisCardModal() {
       Math.max(0, messages.length - 1)
     );
     node.scrollTo({ x: index * viewportWidth, animated: false });
-  }, [currentIndex, messages.length, node, viewportWidth]);
+    // Também acompanha a hidratação da mensagem ativa na abertura fria.
+  }, [viewportWidth, messages.length, currentIndex]);
+
+  const openEmergencyLink = async (url: string, action: string) => {
+    setActionError(null);
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setActionError(
+        `Não foi possível abrir ${action}. Verifique se há um aplicativo disponível.`
+      );
+    }
+  };
+
+  // Ligar para contato de emergência
+  const handleEmergencyCall = () => {
+    if (emergencyContact?.phone) {
+      trigger("success");
+      void openEmergencyLink(`tel:${emergencyContact.phone}`, "o telefone");
+    }
+  };
+
+  // Enviar mensagem para contato de emergência
+  const handleEmergencyMessage = () => {
+    if (emergencyContact?.phone && currentMessage) {
+      trigger("light");
+      const message = encodeURIComponent(currentMessage?.content || "");
+      void openEmergencyLink(
+        `sms:${emergencyContact.phone}?body=${message}`,
+        "o aplicativo de mensagens"
+      );
+    }
+  };
+
+
 
   return (
     <View style={styles.container}>
+      {!currentMessage && (
+        <View>
+          <Text style={styles.messageTitle}>Nenhuma mensagem visível</Text>
+          <Link href="/crisis-settings" asChild>
+            <Pressable accessibilityRole="button" accessibilityLabel="Escolher mensagens do cartão">
+              <Text style={styles.emergencyButtonText}>Escolher mensagens do cartão</Text>
+            </Pressable>
+          </Link>
+        </View>
+      )}
+      {/* Indicador de página sutil */}
+      {messages.length > 1 && (
+        <View style={styles.pageIndicator}>
+          <Text style={styles.pageIndicatorText}>
+            {safeIndex + 1} / {messages.length}
+          </Text>
+        </View>
+      )}
+
+      {/* Instrução de navegação sutil */}
+      {messages.length > 1 && (
+        <Text style={styles.swipeHint}>
+          Deslize para ver mais mensagens
+        </Text>
+      )}
+
+      {/* Mensagens com navegação por gesto */}
       <ScrollView
         ref={scrollViewRef}
+        style={styles.scrollView}
         horizontal
+        contentOffset={{ x: safeIndex * viewportWidth, y: 0 }}
+        onContentSizeChange={() => scrollViewRef.current?.scrollTo({ x: safeIndex * viewportWidth, animated: false })}
+        pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        contentContainerStyle={styles.scrollContent}
-        nestedScrollEnabled
+        onMomentumScrollEnd={handleScroll}
+        onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
       >
-        {messages.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>Nenhuma mensagem</Text>
-            <Text style={styles.emptyDescription}>
-              Não há mensagens disponíveis no momento.
-            </Text>
-          </View>
-        ) : (
-          messages.map((message, index) => (
-            <View key={message.id} style={styles.messageContainer}>
+        {messages.map((message) => (
+          <ScrollView key={message.id} style={{ width: viewportWidth }}
+            contentContainerStyle={styles.messageContainer} nestedScrollEnabled
+            showsVerticalScrollIndicator accessibilityLabel={`Cartão ${message.title}`}>
+            <View style={styles.messageContentWrapper}>
               <Text style={styles.messageTitle}>{message.title}</Text>
-              <View style={styles.messageContentWrapper}>
-                <Text style={styles.messageContent}>{message.text}</Text>
-              </View>
+              <View style={styles.divider} />
+              <Text style={styles.messageContent}>{message.content}</Text>
             </View>
-          ))
-        )}
+          </ScrollView>
+        ))}
       </ScrollView>
+
+      {actionError && (
+        <Text
+          style={styles.actionError}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {actionError}
+        </Text>
+      )}
+
+      {/* Botões de emergência */}
+      {emergencyContact && (
+        <View style={styles.emergencyActions}>
+          <Pressable
+            style={styles.emergencyButton}
+            onPress={handleEmergencyCall}
+            accessibilityRole="button"
+            accessibilityLabel={`Ligar para ${emergencyContact.name}`}
+            accessibilityHint="Abre o telefone para discar"
+          >
+            <Text style={styles.emergencyButtonText}>
+              Ligar para {emergencyContact.name}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.emergencyButtonSecondary}
+            onPress={handleEmergencyMessage}
+            disabled={!currentMessage}
+            accessibilityState={{ disabled: !currentMessage }}
+            accessibilityRole="button"
+            accessibilityLabel={`Enviar mensagem para ${emergencyContact.name}`}
+            accessibilityHint="Abre o aplicativo de mensagens"
+          >
+            <Text style={styles.emergencyButtonSecondaryText}>
+              Enviar mensagem
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
 
-const createStyles = (colors: ThemeColors, fontSize: number) =>
+const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      paddingHorizontal: 24,
+      paddingTop: 24,
+      paddingBottom: 32,
     },
-    scrollContent: {
-      flexGrow: 1,
-      paddingVertical: 12,
-      justifyContent: "center",
+    scrollView: {
+      flex: 1,
+    },
+    pageIndicator: {
       alignItems: "center",
+      marginBottom: 16,
     },
-    emptyState: { gap: 16 },
+    pageIndicatorText: {
+      color: colors.textMuted,
+      fontSize: fontSize(14),
+    },
     messageContainer: {
       flexGrow: 1,
       paddingVertical: 12,
@@ -140,10 +247,69 @@ const createStyles = (colors: ThemeColors, fontSize: number) =>
     messageTitle: {
       color: colors.accent,
       fontSize: fontSize(36),
+      fontWeight: "800",
+      marginBottom: 24,
+      textAlign: "left",
+      lineHeight: fontSize(44),
+      textShadowColor: colors.shadow,
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 4,
+    },
+    divider: {
+      width: 60,
+      height: 4,
+      backgroundColor: colors.accent,
+      borderRadius: 2,
+      marginBottom: 32,
     },
     messageContent: {
       color: colors.text,
+      fontSize: fontSize(26),
+      lineHeight: fontSize(40),
+      textAlign: "left",
+      fontWeight: "600",
+    },
+    emergencyActions: {
+      gap: 12,
+      marginTop: 32,
+    },
+    emergencyButton: {
+      backgroundColor: colors.accent,
+      paddingVertical: 18,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    emergencyButtonText: {
+      color: colors.accentText,
+      fontSize: fontSize(18),
+      fontWeight: "700",
+    },
+    emergencyButtonSecondary: {
+      backgroundColor: "transparent",
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.accent,
+    },
+    emergencyButtonSecondaryText: {
+      color: colors.accent,
       fontSize: fontSize(16),
-      lineHeight: fontSize(22),
+      fontWeight: "600",
+    },
+    swipeHint: {
+      color: colors.textMuted,
+      fontSize: fontSize(14),
+      textAlign: "center",
+      marginBottom: 16,
+    },
+    actionError: {
+      color: colors.warm,
+      fontSize: fontSize(14),
+      lineHeight: fontSize(20),
+      textAlign: "center",
+      marginTop: 12,
     },
   });
