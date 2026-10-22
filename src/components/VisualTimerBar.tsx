@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Easing } from "react-native";
 
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
 interface VisualTimerBarProps {
   startTime: number;
   endTime: number;
@@ -33,6 +35,7 @@ export function VisualTimerBar({
   color,
   trackColor,
 }: VisualTimerBarProps) {
+  const reduceMotion = useReducedMotion();
   const progress = useRef(new Animated.Value(1)).current;
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
@@ -53,6 +56,13 @@ export function VisualTimerBar({
 
     if (isPaused || remaining === 0) return;
 
+    if (reduceMotion) {
+      const timer = setInterval(() => {
+        progress.setValue(Math.min(1, Math.max(0, (endTime - Date.now()) / totalDuration)));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+
     animationRef.current = Animated.timing(progress, {
       toValue: 0,
       duration: remaining,
@@ -65,7 +75,7 @@ export function VisualTimerBar({
     return () => {
       animationRef.current?.stop();
     };
-  }, [startTime, endTime, isPaused, pausedAt, progress]);
+  }, [startTime, endTime, isPaused, pausedAt, progress, reduceMotion]);
 
   // progress=1 → scaleX 1, translateX 0 (barra cheia, esquerda em 0);
   // progress=0 → scaleX 0, translateX -W/2 (zero largura, esquerda em 0).

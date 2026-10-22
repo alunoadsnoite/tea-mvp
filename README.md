@@ -56,7 +56,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - **Retenção de histórico**: Check-ins mantêm apenas entradas dos últimos 90 dias (implementada na v1.0.8)
 - **Acesso rápido a novos cartões**: Botão "Novo cartão personalizado" na tela de estratégias de calma
 - **Feedback háptico**: Vibração suave em botões de emergência e seleções
-- **Fonte ajustável**: Respeita configurações de acessibilidade do sistema (0.85x–1.3x)
+- **Fonte ajustável**: Respeita o tamanho de fonte escolhido no sistema
 - **Tema claro/escuro**: Tema persistente com seleção de escuro, claro ou automático
 - **Tela de configurações**: Seleção de tema com descrições claras
 - **Botão na Home**: Acesso rápido às configurações
@@ -92,6 +92,16 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - Rotinas Visuais Sequenciais
 - Central de Cartões de Regulação (Coping Cards)
 - Respiração Guiada (4-4-4-4 e 4-7-8)
+
+## Melhorias locais em validação
+
+- Rotinas em andamento oferecem Continuar e preservam passo, pausa e tempo. Iniciar outra rotina pede confirmação.
+- A Home permite rolagem; o histórico fica no check-in e a edição do cartão fica em Configurações.
+- Preferências locais: vibração (desligada por padrão), redução de movimento e prévia opcional Agora / Depois.
+- Redução de movimento respeita também o sistema, mantém o círculo de respiração estático e atualiza o timer sem interpolação contínua.
+- Texto acompanha a escala de acessibilidade do sistema sem limite artificial de 130%.
+- Mensagens do cartão podem ser ocultadas individualmente, inclusive as padrão; contatos continuam disponíveis se todas forem ocultadas.
+- Novas instalações usam mensagens sem afirmar ausência de perigo ou condição de fala. Textos já salvos são preservados; podem ser editados nas configurações.
 
 ## Principais Funcionalidades
 

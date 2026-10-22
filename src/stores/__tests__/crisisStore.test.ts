@@ -39,6 +39,33 @@ describe("crisisStore", () => {
     );
   });
 
+  it("ocultar a mensagem ativa seleciona uma visível", () => {
+    const [first, second] = useCrisisStore.getState().messages;
+    useCrisisStore.getState().setMessageHidden(first.id, true);
+    expect(useCrisisStore.getState().activeMessageId).toBe(second.id);
+    useCrisisStore.getState().setActiveMessage(first.id);
+    expect(useCrisisStore.getState().activeMessageId).toBe(second.id);
+  });
+
+  it("ocultar todas preserva contatos e reexibir restaura uma mensagem ativa", () => {
+    useCrisisStore.getState().addContact({ name: "Contato", phone: "123", relationship: "" });
+    const messages = useCrisisStore.getState().messages;
+    messages.forEach((message) => useCrisisStore.getState().setMessageHidden(message.id, true));
+    expect(useCrisisStore.getState().activeMessageId).toBeNull();
+    expect(useCrisisStore.getState().contacts).toHaveLength(1);
+    useCrisisStore.getState().setMessageHidden(messages[0].id, false);
+    expect(useCrisisStore.getState().activeMessageId).toBe(messages[0].id);
+  });
+
+  it("excluir a mensagem ativa não seleciona uma mensagem oculta", () => {
+    useCrisisStore.getState().messages.forEach((message) => useCrisisStore.getState().setMessageHidden(message.id, true));
+    useCrisisStore.getState().addMessage({ title: "Minha mensagem", content: "Preciso de espaço" });
+    const id = useCrisisStore.getState().activeMessageId!;
+    expect(id).not.toBeNull();
+    useCrisisStore.getState().deleteMessage(id);
+    expect(useCrisisStore.getState().activeMessageId).toBeNull();
+  });
+
   it("primeiro contato adicionado vira o primário", () => {
     useCrisisStore.getState().addContact({
       name: "Ana",

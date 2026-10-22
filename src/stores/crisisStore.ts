@@ -17,6 +17,7 @@ interface CrisisStore extends CrisisCardState {
   updateMessage: (id: string, updates: Partial<CrisisMessage>) => void;
   deleteMessage: (id: string) => void;
   setActiveMessage: (id: string) => void;
+  setMessageHidden: (id: string, hidden: boolean) => void;
 
   // Ações para contatos
   addContact: (contact: Omit<EmergencyContact, "id">) => void;
@@ -51,6 +52,7 @@ export const useCrisisStore = create<CrisisStore>()(
         };
         set((state) => ({
           messages: [...state.messages, newMessage],
+          activeMessageId: state.activeMessageId ?? newMessage.id,
         }));
       },
 
@@ -71,20 +73,27 @@ export const useCrisisStore = create<CrisisStore>()(
           const remaining = state.messages.filter((msg) => msg.id !== id);
           // Mantém a mensagem ativa apenas se ela ainda existir na lista.
           const activeStillExists = remaining.some(
-            (msg) => msg.id === state.activeMessageId
+            (msg) => msg.id === state.activeMessageId && !msg.hidden
           );
 
           return {
             messages: remaining,
             activeMessageId: activeStillExists
               ? state.activeMessageId
-              : remaining[0]?.id ?? null,
+              : remaining.find((message) => !message.hidden)?.id ?? null,
           };
         });
       },
 
+      setMessageHidden: (id, hidden) => {
+        set((state) => {
+          const messages = state.messages.map((message) => message.id === id ? { ...message, hidden } : message);
+          const active = messages.find((message) => message.id === state.activeMessageId && !message.hidden);
+          return { messages, activeMessageId: active?.id ?? messages.find((message) => !message.hidden)?.id ?? null };
+        });
+      },
       setActiveMessage: (id) => {
-        set({ activeMessageId: id });
+        if (get().messages.some((message) => message.id === id && !message.hidden)) set({ activeMessageId: id });
       },
 
       // === CONTATOS ===

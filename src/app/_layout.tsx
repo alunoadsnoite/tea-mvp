@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { EmergencyFab } from "@/components/EmergencyFab";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { View } from "react-native";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 // Registro do error boundary de rota: o Expo Router só reconhece um export
 // nomeado `ErrorBoundary` em layout/rota (o antigo `_error.tsx` era ignorado).
@@ -15,6 +16,7 @@ export { RouteErrorBoundary as ErrorBoundary } from "@/components/RouteErrorBoun
 void SplashScreen.preventAutoHideAsync();
 
 function ThemedStack() {
+  const reduceMotion = useReducedMotion();
   const { colors, isDark } = useThemeMode();
 
   return (
@@ -24,7 +26,7 @@ function ThemedStack() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
-          animation: "fade", // Animação suave, sem elementos piscando
+          animation: reduceMotion ? "none" : "fade", // Animação suave, sem elementos piscando
         }}
       />
       {/* Botão flutuante de emergência em todas as telas (exceto o próprio cartão de crise) */}

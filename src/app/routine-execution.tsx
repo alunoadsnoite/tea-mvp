@@ -12,6 +12,7 @@ import { useRoutineStore } from "@/stores/routineStore";
 import { VisualTimerBar } from "@/components/VisualTimerBar";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useFontScale } from "@/hooks/useFontScale";
+import { usePreferencesStore } from "@/stores/preferencesStore";
 import { ThemeColors } from "@/constants/theme";
 
 /**
@@ -25,6 +26,7 @@ import { ThemeColors } from "@/constants/theme";
  */
 export default function RoutineExecutionScreen() {
   const router = useRouter();
+  const showNextStep = usePreferencesStore((state) => state.showNextStep);
   const { colors } = useThemeMode();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
@@ -131,12 +133,19 @@ export default function RoutineExecutionScreen() {
 
         {/* Passo atual em destaque */}
         <View style={styles.stepCard}>
+          {showNextStep && <Text style={styles.progressText}>Agora</Text>}
           <Text style={styles.stepTitle}>{currentStep.title}</Text>
           {currentStep.description && (
             <Text style={styles.stepDescription}>{currentStep.description}</Text>
           )}
         </View>
 
+        {showNextStep && !isCompleted && (
+          <View style={styles.nextStepCard}>
+            <Text style={styles.progressText}>Depois</Text>
+            <Text style={styles.stepDescription}>{routine.steps[execution.currentStepIndex + 1]?.title ?? "Rotina concluída"}</Text>
+          </View>
+        )}
         {/* Timer visual suave */}
         {execution.stepStartedAt && execution.stepEndsAt && !isCompleted && (
           <View style={styles.timerContainer}>
@@ -301,6 +310,7 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       borderColor: colors.border,
       gap: 12,
     },
+    nextStepCard: { padding: 16, borderRadius: 12, backgroundColor: colors.surface, gap: 8 },
     stepTitle: {
       color: colors.text,
       fontSize: fontSize(28),

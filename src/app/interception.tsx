@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
+import { Stack, Link } from "expo-router";
 import { useCheckInStore } from "@/stores/checkInStore";
 import { COMMON_TRIGGERS, REGULATION_SUGGESTIONS } from "@/types/checkin";
 import { useFontScale } from "@/hooks/useFontScale";
@@ -106,6 +106,11 @@ export default function EnergyCheckInScreen() {
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        <Link href="/checkin-history" asChild>
+          <Pressable style={styles.adjustButton} accessibilityRole="button" accessibilityLabel="Ver histórico de check-ins">
+            <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>Ver histórico</Text>
+          </Pressable>
+        </Link>
         {/* Bateria Social */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Bateria Social</Text>
@@ -357,11 +362,13 @@ const createStyles = (colors: ThemeColors) =>
     },
     levelSelector: {
       flexDirection: "row",
-      justifyContent: "space-between",
+      flexWrap: "wrap",
       gap: 8,
     },
     levelButton: {
-      flex: 1,
+      flexGrow: 1,
+      flexBasis: "25%",
+      minWidth: 48,
       backgroundColor: colors.surface,
       paddingVertical: 16,
       borderRadius: 8,

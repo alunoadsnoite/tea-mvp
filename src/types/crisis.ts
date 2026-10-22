@@ -8,6 +8,7 @@ export interface CrisisMessage {
   id: string;
   title: string;
   content: string;
+  hidden?: boolean;
   isDefault: boolean; // Mensagens pré-configuradas não podem ser excluídas
 }
 
@@ -32,14 +33,14 @@ export const DEFAULT_MESSAGES: CrisisMessage[] = [
     id: "default-1",
     title: "Sou autista",
     content:
-      "Estou em sobrecarga sensorial e temporariamente não-verbal. Preciso de alguns minutos em um local calmo.",
+      "Estou em sobrecarga sensorial. Preciso de alguns minutos em um local calmo.",
     isDefault: true,
   },
   {
     id: "default-2",
     title: "Por favor, evite",
     content:
-      "Evite tocar em mim ou fazer sons altos. Não estou em perigo, apenas me autorregulando.",
+      "Por favor, evite tocar em mim ou fazer sons altos. Dê-me tempo para comunicar o que preciso.",
     isDefault: true,
   },
 ];

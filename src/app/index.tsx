@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CheckInCard } from "@/components/CheckInCard";
@@ -24,7 +24,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content}>
         {/* Ação principal — Cartão de Crise */}
         <Link href="/crisis-card" asChild>
           <Pressable
@@ -56,18 +56,6 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </Link>
-          <Link href="/checkin-history" asChild>
-            <Pressable
-              style={styles.secondaryButton}
-              accessibilityRole="button"
-              accessibilityLabel="Histórico"
-              accessibilityHint="Consulta os check-ins dos últimos 7 dias"
-            >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Histórico
-              </Text>
-            </Pressable>
-          </Link>
           <Link href="/routines" asChild>
             <Pressable
               style={styles.secondaryButton}
@@ -92,24 +80,12 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </Link>
-          <Link href="/crisis-settings" asChild>
-            <Pressable
-              style={styles.secondaryButton}
-              accessibilityRole="button"
-              accessibilityLabel="Configurar cartão"
-              accessibilityHint="Edita as mensagens e contatos do cartão de crise"
-            >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Configurar cartão
-              </Text>
-            </Pressable>
-          </Link>
           <Link href="/settings" asChild>
             <Pressable
               style={styles.secondaryButton}
               accessibilityRole="button"
               accessibilityLabel="Configurações"
-              accessibilityHint="Ajusta o tema do aplicativo"
+              accessibilityHint="Ajusta preferências e configura o cartão de comunicação"
             >
               <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
                 Configurações
@@ -117,7 +93,7 @@ export default function HomeScreen() {
             </Pressable>
           </Link>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -128,7 +104,8 @@ const createStyles = (colors: ThemeColors) =>
       flex: 1,
     },
     content: {
-      flex: 1,
+      flexGrow: 1,
+      paddingTop: 24,
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 24,

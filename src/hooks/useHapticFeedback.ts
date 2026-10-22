@@ -1,4 +1,5 @@
 import * as Haptics from "expo-haptics";
+import { usePreferencesStore } from "@/stores/preferencesStore";
 
 /**
  * Hook para feedback háptico sutil
@@ -13,6 +14,7 @@ export type HapticType = "light" | "medium" | "heavy" | "success" | "warning";
 
 export function useHapticFeedback() {
   const trigger = (type: HapticType = "light") => {
+    if (!usePreferencesStore.persist.hasHydrated() || !usePreferencesStore.getState().hapticsEnabled) return;
     // Haptics retorna Promise: o try/catch síncrono não capturava a
     // rejeição (ex.: dispositivo sem motor háptico), gerando unhandled
     // rejection. Trata o erro de forma silenciosa — o háptico é opcional.

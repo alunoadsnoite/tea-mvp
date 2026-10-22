@@ -6,14 +6,17 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
+import { Stack, Link } from "expo-router";
 import Constants from "expo-constants";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
+
+import { usePreferencesStore } from "@/stores/preferencesStore";
 
 const DEVELOPER_EMAIL = "valdenorsa@proton.me";
 
@@ -30,6 +33,13 @@ export default function SettingsScreen() {
   const { trigger } = useHapticFeedback();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors), [colors]);
+
+  const preferences = usePreferencesStore();
+  const options = [
+    { label: "Vibração", description: "Permitir feedback por vibração nas interações.", value: preferences.hapticsEnabled, onChange: preferences.setHapticsEnabled },
+    { label: "Reduzir movimento", description: "Desativar transições e a expansão do círculo de respiração. A preferência do sistema também é respeitada.", value: preferences.reduceMotion, onChange: preferences.setReduceMotion },
+    { label: "Mostrar próximo passo", description: "Exibir Agora / Depois durante as rotinas.", value: preferences.showNextStep, onChange: preferences.setShowNextStep },
+  ];
 
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
@@ -99,6 +109,24 @@ export default function SettingsScreen() {
             );
           })}
         </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Preferências</Text>
+          {options.map((option) => (
+            <View key={option.label} style={styles.preferenceRow}>
+              <View style={styles.optionContent}>
+                <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>{option.label}</Text>
+                <Text style={[styles.optionDescription, { fontSize: fontSize(14) }]}>{option.description}</Text>
+              </View>
+              <Switch value={option.value} onValueChange={option.onChange} accessibilityLabel={option.label} accessibilityHint={option.description} />
+            </View>
+          ))}
+        </View>
+        <Link href="/crisis-settings" asChild>
+          <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel="Configurar cartão de comunicação">
+            <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>Configurar cartão de comunicação</Text>
+          </Pressable>
+        </Link>
 
         {/* Sobre */}
         <View style={styles.section}>
@@ -177,6 +205,7 @@ const createStyles = (colors: ThemeColors) =>
       borderColor: colors.borderStrong,
       marginBottom: 8,
     },
+    preferenceRow: { flexDirection: "row", alignItems: "center", gap: 12 },
     optionContent: {
       flex: 1,
     },

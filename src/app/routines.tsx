@@ -25,16 +25,24 @@ export default function RoutinesListScreen() {
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const execution = useRoutineStore((state) => state.execution);
   const routines = useRoutineStore((state) => state.routines);
   const startExecution = useRoutineStore((state) => state.startExecution);
   const deleteRoutine = useRoutineStore((state) => state.deleteRoutine);
   const resetToDefaults = useRoutineStore((state) => state.resetToDefaults);
 
   const handleStartRoutine = (routineId: string) => {
-    // Só navega se a execução realmente iniciou (rotina existente com passos).
-    if (startExecution(routineId)) {
-      router.push("/routine-execution");
+    const current = useRoutineStore.getState().execution;
+    if (current && current.completedAt === null && current.routineId !== routineId) {
+      Alert.alert("Substituir rotina em andamento?", "O progresso da rotina atual será encerrado para iniciar a outra.", [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Substituir", style: "destructive", onPress: () => {
+          if (startExecution(routineId, true)) router.push("/routine-execution");
+        } },
+      ]);
+      return;
     }
+    if (startExecution(routineId)) router.push("/routine-execution");
   };
 
   const handleDeleteRoutine = (id: string, name: string) => {
@@ -106,10 +114,10 @@ export default function RoutinesListScreen() {
               style={styles.startButton}
               onPress={() => handleStartRoutine(routine.id)}
               accessibilityRole="button"
-              accessibilityLabel={`Iniciar rotina ${routine.name}`}
-              accessibilityHint="Começa a execução passo a passo desta rotina"
+              accessibilityLabel={`${execution?.routineId === routine.id && execution.completedAt === null ? "Continuar" : "Iniciar"} rotina ${routine.name}`}
+              accessibilityHint="Abre a execução passo a passo, preservando o progresso de uma rotina em andamento"
             >
-              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>Iniciar Rotina</Text>
+              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>{execution?.routineId === routine.id && execution.completedAt === null ? "Continuar rotina" : "Iniciar rotina"}</Text>
             </Pressable>
 
             {/* Editar/excluir apenas nas rotinas criadas pelo usuário */}

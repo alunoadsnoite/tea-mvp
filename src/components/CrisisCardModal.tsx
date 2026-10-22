@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   Linking,
 } from "react-native";
+import { Link } from "expo-router";
 import { useCrisisStore } from "@/stores/crisisStore";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useThemeMode } from "@/hooks/useThemeMode";
@@ -34,8 +35,9 @@ interface ScrollViewEvent {
  * - Sem elementos piscando ou animações complexas
  */
 export function CrisisCardModal() {
-  const { messages, contacts, activeMessageId, setActiveMessage, primaryContactId } =
+  const { messages: allMessages, contacts, activeMessageId, setActiveMessage, primaryContactId } =
     useCrisisStore();
+  const messages = useMemo(() => allMessages.filter((message) => !message.hidden), [allMessages]);
   const { colors } = useThemeMode();
   const [currentIndex, setCurrentIndex] = useState(() => {
     if (!activeMessageId || messages.length === 0) return 0;
@@ -123,10 +125,19 @@ export function CrisisCardModal() {
     }
   };
 
-  if (!currentMessage) return null;
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.outerScroll} contentContainerStyle={styles.container}>
+      {!currentMessage && (
+        <View style={styles.emptyState}>
+          <Text style={styles.pageIndicatorText}>Nenhuma mensagem visível. Escolha uma mensagem nas configurações. Os contatos cadastrados aparecem abaixo.</Text>
+          <Link href="/crisis-settings" asChild>
+            <Pressable style={styles.emergencyButtonSecondary} accessibilityRole="button" accessibilityLabel="Escolher mensagens do cartão">
+              <Text style={styles.emergencyButtonSecondaryText}>Escolher mensagens</Text>
+            </Pressable>
+          </Link>
+        </View>
+      )}
       {/* Indicador de página sutil */}
       {messages.length > 1 && (
         <View style={styles.pageIndicator}>
@@ -194,7 +205,9 @@ export function CrisisCardModal() {
             onPress={handleEmergencyMessage}
             accessibilityRole="button"
             accessibilityLabel={`Enviar mensagem para ${emergencyContact.name}`}
-            accessibilityHint="Abre o aplicativo de mensagens"
+            disabled={!currentMessage}
+            accessibilityState={{ disabled: !currentMessage }}
+            accessibilityHint="Abre o aplicativo de mensagens com o texto visível no cartão"
           >
             <Text style={styles.emergencyButtonSecondaryText}>
               Enviar mensagem
@@ -202,21 +215,24 @@ export function CrisisCardModal() {
           </Pressable>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =>
   StyleSheet.create({
+    outerScroll: { flex: 1, backgroundColor: colors.background },
     container: {
-      flex: 1,
+      flexGrow: 1,
       backgroundColor: colors.background,
       paddingHorizontal: 24,
       paddingTop: 24,
       paddingBottom: 32,
     },
     scrollView: {
-      flex: 1,
+      flexGrow: 1,
+      flexShrink: 0,
+      minHeight: 300,
     },
     pageIndicator: {
       alignItems: "center",
@@ -227,12 +243,13 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       fontSize: fontSize(14),
     },
     messageContainer: {
-      flex: 1,
+      flexShrink: 0,
       justifyContent: "center",
       alignItems: "center",
     },
+    emptyState: { gap: 16 },
     messageContentWrapper: {
-      flex: 1,
+      flexGrow: 1,
       justifyContent: "center",
       alignItems: "flex-start",
       width: "100%",

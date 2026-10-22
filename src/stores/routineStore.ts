@@ -19,7 +19,7 @@ interface RoutineStore {
   deleteRoutine: (id: string) => void;
 
   // Ações para execução
-  startExecution: (routineId: string) => boolean;
+  startExecution: (routineId: string, replaceExisting?: boolean) => boolean;
   pauseExecution: () => void;
   resumeExecution: () => void;
   completeStep: () => void;
@@ -74,7 +74,11 @@ export const useRoutineStore = create<RoutineStore>()(
       },
 
       // === EXECUÇÃO ===
-      startExecution: (routineId) => {
+      startExecution: (routineId, replaceExisting = false) => {
+        const current = get().execution;
+        if (current && current.completedAt === null && !replaceExisting) {
+          return current.routineId === routineId;
+        }
         const routine = get().routines.find((r) => r.id === routineId);
         if (!routine || routine.steps.length === 0) return false;
 

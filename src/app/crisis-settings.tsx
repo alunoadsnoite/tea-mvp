@@ -31,6 +31,7 @@ export default function CrisisSettingsScreen() {
     primaryContactId,
     addMessage,
     updateMessage,
+    setMessageHidden,
     deleteMessage,
     addContact,
     updateContact,
@@ -177,6 +178,7 @@ export default function CrisisSettingsScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Mensagens</Text>
 
+          <Text style={[styles.itemDescription, { fontSize: fontSize(14) }]}>Escolha quais mensagens aparecem no cartão. Edite os textos para representar o que você deseja comunicar.</Text>
           {messages.map((message) => (
             <View key={message.id} style={styles.itemCard}>
               <View style={styles.itemHeader}>
@@ -203,9 +205,12 @@ export default function CrisisSettingsScreen() {
                 </View>
               </View>
               <Text style={[styles.itemDescription, { fontSize: fontSize(14) }]}>{message.content}</Text>
+              <Pressable style={styles.actionButton} accessibilityRole="switch" accessibilityState={{ checked: !message.hidden }} accessibilityLabel={`Mostrar mensagem ${message.title} no cartão`} onPress={() => setMessageHidden(message.id, !message.hidden)}>
+                <Text style={[styles.actionButtonText, { fontSize: fontSize(14) }]}>{message.hidden ? "Oculta — mostrar no cartão" : "Visível — ocultar do cartão"}</Text>
+              </Pressable>
               {message.isDefault && (
                 <Text style={[styles.itemHint, { fontSize: fontSize(12) }]}>
-                  Mensagem padrão — pode ser editada, mas não excluída.
+                  Mensagem padrão — pode ser editada ou ocultada.
                 </Text>
               )}
             </View>
@@ -476,10 +481,10 @@ const createStyles = (colors: ThemeColors) =>
     },
     itemHeader: {
       flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
       flexWrap: "wrap",
       gap: 8,
+      justifyContent: "space-between",
+      alignItems: "flex-start",
     },
     itemTitle: {
       color: colors.text,
@@ -488,6 +493,7 @@ const createStyles = (colors: ThemeColors) =>
     },
     itemActions: {
       flexDirection: "row",
+      flexWrap: "wrap",
       gap: 12,
     },
     actionButton: {

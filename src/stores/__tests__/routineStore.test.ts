@@ -42,6 +42,24 @@ describe("routineStore", () => {
     expect(useRoutineStore.getState().execution).toBeNull();
   });
 
+  it("reabrir a mesma rotina preserva passo, pausa e prazo", () => {
+    useRoutineStore.getState().startExecution("default-work");
+    useRoutineStore.getState().completeStep();
+    useRoutineStore.getState().pauseExecution();
+    const execution = useRoutineStore.getState().execution;
+    expect(useRoutineStore.getState().startExecution("default-work")).toBe(true);
+    expect(useRoutineStore.getState().execution).toBe(execution);
+  });
+
+  it("substituir uma rotina exige autorização explícita", () => {
+    useRoutineStore.getState().startExecution("default-work");
+    const execution = useRoutineStore.getState().execution;
+    expect(useRoutineStore.getState().startExecution("default-leaving")).toBe(false);
+    expect(useRoutineStore.getState().execution).toBe(execution);
+    expect(useRoutineStore.getState().startExecution("default-leaving", true)).toBe(true);
+    expect(useRoutineStore.getState().execution?.routineId).toBe("default-leaving");
+  });
+
   it("completeStep avança os passos e conclui no último", () => {
     useRoutineStore.getState().startExecution("default-work"); // 3 passos
 

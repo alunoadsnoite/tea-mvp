@@ -13,6 +13,7 @@ import { BREATHING_EXERCISES, BreathingExerciseConfig } from "@/types/coping";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useFontScale } from "@/hooks/useFontScale";
 import { ThemeColors } from "@/constants/theme";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { getBreathingProgress } from "@/lib/breathingProgress";
 
 /**
@@ -23,6 +24,7 @@ import { getBreathingProgress } from "@/lib/breathingProgress";
  */
 export default function BreathingGuideScreen() {
   const { colors } = useThemeMode();
+  const reduceMotion = useReducedMotion();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
 
@@ -55,7 +57,9 @@ export default function BreathingGuideScreen() {
     const isInhale = phaseIndex === 0;
     const isExhale = phaseIndex === 2;
 
-    if (isInhale) {
+    if (reduceMotion) {
+      scaleAnim.setValue(1);
+    } else if (isInhale) {
       Animated.timing(scaleAnim, {
         toValue: 1.3,
         duration: phaseDuration,
@@ -97,7 +101,7 @@ export default function BreathingGuideScreen() {
         clearTimeout(intervalRef.current);
       }
     };
-  }, [isActive, currentPhase, selectedExercise, cycleCount, scaleAnim, pattern]);
+  }, [isActive, currentPhase, selectedExercise, cycleCount, scaleAnim, pattern, reduceMotion]);
 
   const handleStart = () => {
     setIsActive(true);
@@ -304,7 +308,8 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
     },
     circle: {
       width: "60%",
-      aspectRatio: 1,
+      minHeight: 180,
+      padding: 24,
       borderRadius: 9999,
       backgroundColor: colors.accent,
       justifyContent: "center",
