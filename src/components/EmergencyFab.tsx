@@ -38,8 +38,6 @@ export function EmergencyFab() {
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     fab: {
-      position: "absolute",
-      bottom: 32,
       alignSelf: "center",
       width: 56,
       height: 56,

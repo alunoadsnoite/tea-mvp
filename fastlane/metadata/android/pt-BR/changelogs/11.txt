@@ -1,0 +1,1 @@
+Corrige a abertura fria do widget, preserva a rotina salva, permite rolagem vertical dos cartões e separa o SOS dos controles.

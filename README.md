@@ -2,9 +2,27 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.10 (candidata)
+## Versão Atual: 1.0.11
+
+F-Droid em 20/10/2026: receita por quatro arquiteturas aprovada no CI, com R8,
+permissões desnecessárias removidas e atualização por tags habilitada.
+Junker registrou teste funcional da 1.0.11 em Android 16; a aprovação dos mantenedores continua pendente.
+Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
 
 ### Changelog
+
+#### Ainda não lançado — retorno do Junker
+- Concluir uma rotina volta à lista anterior sem acrescentar outra cópia ao histórico; abertura restaurada sem histórico mantém uma saída segura.
+- A descrição do catálogo explicita a escala de fonte do sistema entre 85% e 130%, sem controle de tamanho próprio.
+- Detalhes e limites em [docs/JUNKER_REVIEW_FIXES.md](docs/JUNKER_REVIEW_FIXES.md).
+
+#### v1.0.11 (2026-10-21)
+- Voltar à rotina salva preserva a pausa, o passo e os horários.
+- Cartões de crise com rolagem vertical e seleção sincronizada pelo ID ativo.
+- SOS separado do viewport das telas, sem sobrepor os controles.
+- Widget recria a tarefa com a intenção de crise e aguarda o navegador montar.
+- As correções relacionadas ao relatório do TEA Kids e os limites da validação estão em [docs/JYRI_SHARED_FIXES.md](docs/JYRI_SHARED_FIXES.md).
+
 
 #### v1.0.10 (2026-10-10, candidata)
 - Rotinas: avançar enquanto pausado mantém o tempo correto do próximo passo.
@@ -14,7 +32,7 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 - Cartão de crise: carrossel acompanha a mensagem ativa após hidratação do armazenamento.
 - Respiração: progresso começa em 0% e não indica conclusão antes da última fase.
 - Respiração: controles acessíveis por rolagem em telas baixas/paisagem e animação interrompida ao parar/sair.
-- Receita candidata para F-Droid: gera o projeto nativo antes do build, usa release e preserva dependências necessárias. O build e a análise do APK passaram no F-Droid em 2026-10-11. A inclusão no catálogo ainda depende de capturas de tela e revisão dos mantenedores; veja [F_DROID_RELEASE.md](F_DROID_RELEASE.md).
+- Receita candidata para F-Droid: gera o projeto nativo antes do build, usa release e preserva dependências necessárias. O build e a análise do APK passaram no F-Droid em 2026-10-11. As capturas já foram fornecidas; a inclusão no catálogo ainda depende de revisão funcional e aprovação dos mantenedores; veja [F_DROID_RELEASE.md](F_DROID_RELEASE.md).
 
 
 #### v1.0.8 (2026-10-08)

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -38,15 +38,22 @@ export default function RoutineExecutionScreen() {
   const extendTime = useRoutineStore((state) => state.extendTime);
   const stopExecution = useRoutineStore((state) => state.stopExecution);
 
+  const returnToRoutines = useCallback(() => {
+    // Reuse the list that opened this execution rather than stacking a copy.
+    // A directly restored execution may have no previous route.
+    if (router.canGoBack()) router.back();
+    else router.replace("/routines");
+  }, [router]);
+
   // Trata também uma conclusão restaurada do armazenamento após reabrir o app.
   useEffect(() => {
     if (!execution || execution.completedAt === null) return;
     const timer = setTimeout(() => {
       stopExecution();
-      router.replace("/routines");
+      returnToRoutines();
     }, 1500);
     return () => clearTimeout(timer);
-  }, [execution, stopExecution, router]);
+  }, [execution, stopExecution, returnToRoutines]);
 
   if (!execution) {
     return (
@@ -56,7 +63,7 @@ export default function RoutineExecutionScreen() {
           <Text style={styles.emptyText}>Nenhuma rotina em execução</Text>
           <Pressable
             style={styles.backButton}
-            onPress={() => router.replace("/routines")}
+            onPress={returnToRoutines}
             accessibilityRole="button"
             accessibilityLabel="Voltar para Minhas Rotinas"
           >
@@ -80,7 +87,7 @@ export default function RoutineExecutionScreen() {
 
   const handleStop = () => {
     stopExecution();
-    router.back();
+    returnToRoutines();
   };
 
   if (!routine || !currentStep) {
