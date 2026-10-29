@@ -2,16 +2,22 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão em preparação: 1.0.12
+## Versão em preparação: 1.0.13
 
-F-Droid em 20/10/2026: receita por quatro arquiteturas aprovada no CI, com R8,
-permissões desnecessárias removidas e atualização por tags habilitada.
-Junker registrou teste funcional da 1.0.11 em Android 16; a aprovação dos mantenedores continua pendente.
+F-Droid verificado em 29/10/2026: submissão da 1.0.12 integrada e pipeline
+aprovado. A consulta à API do catálogo retornou 404; download ainda não confirmado.
 Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
+Os ajustes da 1.0.13 ainda não estão na versão integrada ao F-Droid.
 
 ### Changelog
 
-#### v1.0.12 — em preparação
+#### v1.0.13 — em preparação
+- Círculo de respiração mantém largura e altura iguais; texto separado da animação para respeitar fontes ampliadas.
+- Botão de emergência cresce com a fonte, evitando cortar o símbolo.
+- Teste físico no Motorola Edge 70 Fusion (Android 17): avanço de rotina pausada, fonte 200% e controles por rolagem em paisagem.
+- Resultados e limites em [docs/TESTE_MOTOROLA_EDGE.md](docs/TESTE_MOTOROLA_EDGE.md).
+
+#### v1.0.12
 - Concluir uma rotina volta à lista anterior sem acrescentar outra cópia ao histórico; abertura restaurada sem histórico mantém uma saída segura.
 - Texto acompanha a escala nativa de fonte do sistema, sem controle separado no app.
 - Restaura a tela de rotinas e as ações do cartão de crise após uma edição incompleta.

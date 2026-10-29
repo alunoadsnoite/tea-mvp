@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
@@ -24,6 +25,8 @@ import { getBreathingProgress } from "@/lib/breathingProgress";
  */
 export default function BreathingGuideScreen() {
   const { colors } = useThemeMode();
+  const { width } = useWindowDimensions();
+  const circleSize = Math.min(220, Math.max(0, width - 48) / 1.3);
   const reduceMotion = useReducedMotion();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors, fontSize), [colors, fontSize]);
@@ -170,25 +173,23 @@ export default function BreathingGuideScreen() {
           ))}
         </View>
 
-        {/* Círculo de respiração */}
+        {/* A geometria não depende do texto ampliado nem escala as letras. */}
         <View style={styles.circleContainer}>
-          <Animated.View
-            style={[
-              styles.circle,
-              {
-                transform: [{ scale: scaleAnim }],
-              },
-            ]}
-          >
-            <Text style={styles.phaseLabel}>
-              {isActive ? currentPhaseLabel : "Pronto?"}
+          <View style={{ width: circleSize * 1.3, height: circleSize * 1.3, justifyContent: "center", alignItems: "center" }}>
+            <Animated.View
+              testID="breathing-circle"
+              accessible={false}
+              style={[styles.circle, { width: circleSize, height: circleSize, transform: [{ scale: scaleAnim }] }]}
+            />
+          </View>
+          <Text style={styles.phaseLabel} accessibilityLiveRegion="polite">
+            {isActive ? currentPhaseLabel : "Pronto?"}
+          </Text>
+          {isActive && (
+            <Text style={styles.cycleLabel}>
+              {cycleCount + 1} / {selectedExercise.cycles}
             </Text>
-            {isActive && (
-              <Text style={styles.cycleLabel}>
-                {cycleCount + 1} / {selectedExercise.cycles}
-              </Text>
-            )}
-          </Animated.View>
+          )}
         </View>
 
         {/* Barra de progresso */}
@@ -302,14 +303,10 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       marginTop: 4,
     },
     circleContainer: {
-      flex: 1,
       justifyContent: "center",
       alignItems: "center",
     },
     circle: {
-      width: "60%",
-      minHeight: 180,
-      padding: 24,
       borderRadius: 9999,
       backgroundColor: colors.accent,
       justifyContent: "center",
@@ -317,12 +314,14 @@ const createStyles = (colors: ThemeColors, fontSize: (size: number) => number) =
       opacity: 0.8,
     },
     phaseLabel: {
-      color: colors.accentText,
+      textAlign: "center",
+      color: colors.text,
       fontSize: fontSize(24),
       fontWeight: "700",
     },
     cycleLabel: {
-      color: colors.accentText,
+      textAlign: "center",
+      color: colors.textSecondary,
       fontSize: fontSize(16),
       marginTop: 8,
     },
