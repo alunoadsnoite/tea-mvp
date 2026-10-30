@@ -1,0 +1,1 @@
+Breathing circle keeps its shape and separates text from animation. Emergency button grows with enlarged fonts. Paused routine advancement and landscape scrolling checked on Motorola Edge.

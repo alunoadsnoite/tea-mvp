@@ -117,3 +117,16 @@ test("an empty restored execution has a safe route back without history", () => 
   expect(mockBack).not.toHaveBeenCalled();
   act(() => tree.unmount());
 });
+
+ test.each([false, true])("Próximo Passo advances the rendered routine while paused=%s", (paused) => {
+  const routine = useRoutineStore.getState().routines[0];
+  useRoutineStore.getState().startExecution(routine.id);
+  if (paused) useRoutineStore.getState().pauseExecution();
+  const tree = renderExecution();
+  const button = tree.root.findAllByType(Pressable).find(p => p.props.accessibilityLabel === "Próximo Passo")!;
+  act(() => button.props.onPress());
+  expect(useRoutineStore.getState().execution?.currentStepIndex).toBe(1);
+  expect(useRoutineStore.getState().execution?.isPaused).toBe(paused);
+  expect(JSON.stringify(tree.toJSON())).toContain(routine.steps[1].title);
+  act(() => tree.unmount());
+});
