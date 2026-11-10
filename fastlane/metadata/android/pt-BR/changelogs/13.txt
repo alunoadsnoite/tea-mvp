@@ -1,0 +1,1 @@
+Círculo de respiração mantém largura e altura iguais; texto separado da animação para respeitar fontes ampliadas. Botão de emergência cresce com fontes ampliadas, evitando cortar o símbolo.

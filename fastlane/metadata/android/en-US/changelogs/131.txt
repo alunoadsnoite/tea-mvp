@@ -1,0 +1,1 @@
+Breathing circle keeps width and height equal; text separated from animation to respect enlarged fonts. Emergency button grows with enlarged fonts, avoiding cutting the symbol.

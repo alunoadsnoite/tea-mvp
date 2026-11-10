@@ -39,9 +39,11 @@ const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     fab: {
       alignSelf: "center",
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      minWidth: 56,
+      minHeight: 56,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 9999,
       backgroundColor: colors.accent,
       justifyContent: "center",
       alignItems: "center",
