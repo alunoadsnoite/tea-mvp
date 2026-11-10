@@ -63,7 +63,7 @@ test("opening a persisted paused routine preserves all execution timestamps", ()
   const saved = { ...useRoutineStore.getState().execution };
   let tree!: renderer.ReactTestRenderer;
   act(() => { tree = renderer.create(<RoutinesListScreen />); });
-  const button = tree.root.findAllByType(Pressable).find(p => p.props.accessibilityLabel === `Voltar à rotina ${routine.name}`)!;
+  const button = tree.root.findAllByType(Pressable).find(p => p.props.accessibilityLabel === `Continuar rotina ${routine.name}`)!;
   act(() => button.props.onPress());
   expect(useRoutineStore.getState().execution).toEqual(saved);
   expect(mockPush).toHaveBeenCalledWith("/routine-execution");

@@ -4,10 +4,10 @@ Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, 
 
 ## Versão Atual: 1.0.13
 
-F-Droid em 20/10/2026: receita por quatro arquiteturas aprovada no CI, com R8,
-permissões desnecessárias removidas e atualização por tags habilitada.
-Junker registrou teste funcional da 1.0.11 em Android 16; a aprovação dos mantenedores continua pendente.
+F-Droid verificado em 29/10/2026: submissão da 1.0.12 integrada e pipeline
+aprovado. A consulta à API do catálogo retornou 404; download ainda não confirmado.
 Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
+Os ajustes da 1.0.13 ainda não estão na versão integrada ao F-Droid.
 
 ### Changelog
 
@@ -16,9 +16,10 @@ Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites
 - Botão de emergência cresce com fontes ampliadas, evitando cortar o símbolo.
 - Testes físicos no Motorola Edge 70 Fusion (Android 17): fonte 200%, rotação paisagem, respiração 4-7-8 completa, abertura pelo widget, abertura fria sem rede e TalkBack básico.
 
-#### Ainda não lançado — retorno do Junker
+#### v1.0.12
 - Concluir uma rotina volta à lista anterior sem acrescentar outra cópia ao histórico; abertura restaurada sem histórico mantém uma saída segura.
-- A descrição do catálogo explicita a escala de fonte do sistema entre 85% e 130%, sem controle de tamanho próprio.
+- Texto acompanha a escala nativa de fonte do sistema, sem controle separado no app.
+- Restaura a tela de rotinas e as ações do cartão de crise após uma edição incompleta.
 - Detalhes e limites em [docs/JUNKER_REVIEW_FIXES.md](docs/JUNKER_REVIEW_FIXES.md).
 
 #### v1.0.11 (2026-10-21)

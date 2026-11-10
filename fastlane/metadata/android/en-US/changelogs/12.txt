@@ -1,0 +1,1 @@
+Fix routine navigation and crisis card actions. Text follows the system font scale.
