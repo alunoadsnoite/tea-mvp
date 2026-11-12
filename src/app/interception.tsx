@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
@@ -35,6 +36,7 @@ const LEVEL_LABELS: Record<string, string> = {
 };
 
 export default function EnergyCheckInScreen() {
+  const { t } = useTranslation();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const { trigger } = useHapticFeedback();
@@ -99,7 +101,7 @@ export default function EnergyCheckInScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Como estou me sentindo",
+          headerTitle: t("Como estou me sentindo"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
@@ -107,16 +109,14 @@ export default function EnergyCheckInScreen() {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <Link href="/checkin-history" asChild>
-          <Pressable style={styles.adjustButton} accessibilityRole="button" accessibilityLabel="Ver histórico de check-ins">
-            <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>Ver histórico</Text>
+          <Pressable style={styles.adjustButton} accessibilityRole="button" accessibilityLabel={t("Ver histórico de check-ins")}>
+            <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>{t("Ver histórico")}</Text>
           </Pressable>
         </Link>
         {/* Bateria Social */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Bateria Social</Text>
-          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
-            Disposição para interação interpessoal
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Bateria Social")}</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>{t("Disposição para interação interpessoal")}</Text>
 
           <View style={styles.sliderContainer}>
             <View style={styles.sliderLabels}>
@@ -137,7 +137,7 @@ export default function EnergyCheckInScreen() {
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.max(0, socialBattery - 10))}
                 accessibilityRole="button"
-                accessibilityLabel="Diminuir Bateria Social em 10%"
+                accessibilityLabel={t("Diminuir Bateria Social em 10%")}
               >
                 <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>-10</Text>
               </Pressable>
@@ -145,7 +145,7 @@ export default function EnergyCheckInScreen() {
                 style={styles.adjustButton}
                 onPress={() => setSocialBattery(Math.min(100, socialBattery + 10))}
                 accessibilityRole="button"
-                accessibilityLabel="Aumentar Bateria Social em 10%"
+                accessibilityLabel={t("Aumentar Bateria Social em 10%")}
               >
                 <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>+10</Text>
               </Pressable>
@@ -155,10 +155,8 @@ export default function EnergyCheckInScreen() {
 
         {/* Carga Sensorial */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Carga Sensorial</Text>
-          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
-            Desconforto com luzes, ruídos ou ambientes
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Carga Sensorial")}</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>{t("Desconforto com luzes, ruídos ou ambientes")}</Text>
 
           <View style={styles.levelSelector}>
             {[0, 1, 2, 3, 4, 5].map((level) => (
@@ -170,7 +168,7 @@ export default function EnergyCheckInScreen() {
                 ]}
                 onPress={() => setSensoryLoad(level)}
                 accessibilityRole="radio"
-                accessibilityLabel={`Nível ${level}, ${LEVEL_LABELS[String(level)]}`}
+                accessibilityLabel={t("Nível {0}, {1}", level, t(LEVEL_LABELS[String(level)]))}
                 accessibilityState={{ selected: sensoryLoad === level }}
               >
                 <Text
@@ -189,10 +187,8 @@ export default function EnergyCheckInScreen() {
 
         {/* Energia Física */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Energia Física</Text>
-          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
-            Disposição geral do corpo
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Energia Física")}</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>{t("Disposição geral do corpo")}</Text>
 
           <View style={styles.levelSelector}>
             {[0, 1, 2, 3, 4, 5].map((level) => (
@@ -204,7 +200,7 @@ export default function EnergyCheckInScreen() {
                 ]}
                 onPress={() => setPhysicalEnergy(level)}
                 accessibilityRole="radio"
-                accessibilityLabel={`Nível ${level}, ${LEVEL_LABELS[String(level)]}`}
+                accessibilityLabel={t("Nível {0}, {1}", level, t(LEVEL_LABELS[String(level)]))}
                 accessibilityState={{ selected: physicalEnergy === level }}
               >
                 <Text
@@ -223,10 +219,8 @@ export default function EnergyCheckInScreen() {
 
         {/* Gatilhos Rápidos */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Gatilhos</Text>
-          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
-            O que pode estar afetando você? (opcional)
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Gatilhos")}</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>{t("O que pode estar afetando você? (opcional)")}</Text>
 
           <View style={styles.chipsContainer}>
             {COMMON_TRIGGERS.map((trigger) => {
@@ -237,7 +231,7 @@ export default function EnergyCheckInScreen() {
                   style={[styles.chip, selected && styles.chipSelected]}
                   onPress={() => toggleTrigger(trigger)}
                   accessibilityRole="checkbox"
-                  accessibilityLabel={trigger}
+                  accessibilityLabel={t(trigger)}
                   accessibilityState={{ checked: selected }}
                 >
                   <Text
@@ -247,7 +241,7 @@ export default function EnergyCheckInScreen() {
                       { fontSize: fontSize(14) },
                     ]}
                   >
-                    {trigger}
+                    {t(trigger)}
                   </Text>
                 </Pressable>
               );
@@ -258,10 +252,10 @@ export default function EnergyCheckInScreen() {
         {/* Sugestões de Regulação */}
         {suggestions.length > 0 && (
           <View style={styles.suggestionsContainer}>
-            <Text style={[styles.suggestionsTitle, { fontSize: fontSize(16) }]}>Sugestões para você</Text>
+            <Text style={[styles.suggestionsTitle, { fontSize: fontSize(16) }]}>{t("Sugestões para você")}</Text>
             {suggestions.map((suggestion, index) => (
               <View key={index} style={styles.suggestionCard}>
-                <Text style={[styles.suggestionText, { fontSize: fontSize(14) }]}>{suggestion.message}</Text>
+                <Text style={[styles.suggestionText, { fontSize: fontSize(14) }]}>{t(suggestion.message)}</Text>
               </View>
             ))}
           </View>
@@ -274,9 +268,7 @@ export default function EnergyCheckInScreen() {
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
           >
-            <Text style={[styles.feedbackText, { fontSize: fontSize(16) }]}>
-              Check-in registrado. Cuide-se.
-            </Text>
+            <Text style={[styles.feedbackText, { fontSize: fontSize(16) }]}>{t("Check-in registrado. Cuide-se.")}</Text>
           </View>
         )}
 
@@ -285,10 +277,10 @@ export default function EnergyCheckInScreen() {
           style={styles.saveButton}
           onPress={handleSave}
           accessibilityRole="button"
-          accessibilityLabel="Registrar check-in"
-          accessibilityHint="Salva como você está se sentindo agora"
+          accessibilityLabel={t("Registrar check-in")}
+          accessibilityHint={t("Salva como você está se sentindo agora")}
         >
-          <Text style={[styles.saveButtonText, { fontSize: fontSize(18) }]}>Registrar</Text>
+          <Text style={[styles.saveButtonText, { fontSize: fontSize(18) }]}>{t("Registrar")}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

@@ -1,3 +1,5 @@
+import { LANGUAGES } from "@/lib/i18n";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import {
   View,
@@ -29,6 +31,7 @@ const DEVELOPER_EMAIL = "valdenorsa@proton.me";
  * - Sem sobrecarga de opções
  */
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const { mode, changeMode, colors } = useThemeMode();
   const { trigger } = useHapticFeedback();
   const { fontSize } = useFontScale();
@@ -36,17 +39,17 @@ export default function SettingsScreen() {
 
   const preferences = usePreferencesStore();
   const options = [
-    { label: "Vibração", description: "Permitir feedback por vibração nas interações.", value: preferences.hapticsEnabled, onChange: preferences.setHapticsEnabled },
-    { label: "Reduzir movimento", description: "Desativar transições e a expansão do círculo de respiração. A preferência do sistema também é respeitada.", value: preferences.reduceMotion, onChange: preferences.setReduceMotion },
-    { label: "Mostrar próximo passo", description: "Exibir Agora / Depois durante as rotinas.", value: preferences.showNextStep, onChange: preferences.setShowNextStep },
+    { label: t("Vibração"), description: t("Permitir feedback por vibração nas interações."), value: preferences.hapticsEnabled, onChange: preferences.setHapticsEnabled },
+    { label: t("Reduzir movimento"), description: t("Desativar transições e a expansão do círculo de respiração. A preferência do sistema também é respeitada."), value: preferences.reduceMotion, onChange: preferences.setReduceMotion },
+    { label: t("Mostrar próximo passo"), description: t("Exibir Agora / Depois durante as rotinas."), value: preferences.showNextStep, onChange: preferences.setShowNextStep },
   ];
 
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
   const themeOptions: { key: typeof mode; label: string; description: string }[] = [
-    { key: "dark", label: "Escuro", description: "Reduz fadiga visual (recomendado)" },
-    { key: "light", label: "Claro", description: "Para ambientes bem iluminados" },
-    { key: "auto", label: "Automático", description: "Segue o tema do sistema" },
+    { key: "dark", label: t("Escuro"), description: t("Reduz fadiga visual (recomendado)") },
+    { key: "light", label: t("Claro"), description: t("Para ambientes bem iluminados") },
+    { key: "auto", label: t("Automático"), description: t("Segue o tema do sistema") },
   ];
 
   const handleContactDeveloper = () => {
@@ -62,19 +65,48 @@ export default function SettingsScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Configurações",
+          headerTitle: t("Configurações"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        <View style={styles.section} accessibilityRole="radiogroup">
+          <Text accessibilityRole="header" style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>
+            {t("Idioma")}
+          </Text>
+          {LANGUAGES.map(({ code, label }) => {
+            const selected = preferences.language === code;
+            return (
+              <Pressable
+                key={code}
+                style={[
+                  styles.optionButton,
+                  selected && { borderColor: colors.accent, backgroundColor: colors.accentSoft },
+                ]}
+                onPress={() => {
+                  trigger("light");
+                  preferences.setLanguage(code);
+                }}
+                accessibilityRole="radio"
+                accessibilityLabel={label}
+                accessibilityLanguage={code}
+                accessibilityState={{ selected, checked: selected }}
+              >
+                <Text style={[styles.optionContent, styles.optionLabel, { fontSize: fontSize(16) }]}>
+                  {label}
+                </Text>
+                {selected && <Text style={[styles.checkmark, { fontSize: fontSize(20) }]}>✓</Text>}
+              </Pressable>
+            );
+          })}
+        </View>
+
         {/* Tema */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Tema</Text>
-          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
-            Escolha como o app aparece
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Tema")}</Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>{t("Escolha como o app aparece")}</Text>
 
           {themeOptions.map((option) => {
             const selected = mode === option.key;
@@ -111,7 +143,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Preferências</Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Preferências")}</Text>
           {options.map((option) => (
             <View key={option.label} style={styles.preferenceRow}>
               <View style={styles.optionContent}>
@@ -123,29 +155,25 @@ export default function SettingsScreen() {
           ))}
         </View>
         <Link href="/crisis-settings" asChild>
-          <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel="Configurar cartão de comunicação">
-            <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>Configurar cartão de comunicação</Text>
+          <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel={t("Configurar cartão de comunicação")}>
+            <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>{t("Configurar cartão de comunicação")}</Text>
           </Pressable>
         </Link>
 
         {/* Sobre */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>Sobre</Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Sobre")}</Text>
           <Text style={[styles.aboutText, { fontSize: fontSize(14) }]}>
             TEA Autonomia v{appVersion}
             {"\n"}
-            App para autonomia e regulação de adultos no Espectro Autista.
+            {t("App para autonomia e regulação de adultos no Espectro Autista.")}
           </Text>
         </View>
 
         {/* Desenvolvedor */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>
-            Desenvolvedor
-          </Text>
-          <Text style={[styles.developerName, { fontSize: fontSize(14) }]}>
-            Valdenor Tavares
-          </Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Desenvolvedor")}</Text>
+          <Text style={[styles.developerName, { fontSize: fontSize(14) }]}>Valdenor Tavares</Text>
           <Text style={[styles.developerEmail, { fontSize: fontSize(13) }]}>
             {DEVELOPER_EMAIL}
           </Text>
@@ -153,12 +181,10 @@ export default function SettingsScreen() {
             style={[styles.contactButton, { backgroundColor: colors.accent }]}
             onPress={handleContactDeveloper}
             accessibilityRole="button"
-            accessibilityLabel="Enviar e-mail ao desenvolvedor"
-            accessibilityHint="Abre seu aplicativo de e-mail"
+            accessibilityLabel={t("Enviar e-mail ao desenvolvedor")}
+            accessibilityHint={t("Abre seu aplicativo de e-mail")}
           >
-            <Text style={[styles.contactButtonText, { fontSize: fontSize(14) }]}>
-              Enviar e-mail
-            </Text>
+            <Text style={[styles.contactButtonText, { fontSize: fontSize(14) }]}>{t("Enviar e-mail")}</Text>
           </Pressable>
         </View>
       </ScrollView>

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useCheckInStore } from "@/stores/checkInStore";
@@ -18,6 +19,7 @@ function startOfToday(): number {
  * Design sóbrio, sem elementos de urgência.
  */
 export function CheckInCard() {
+  const { t, language } = useTranslation();
   const entries = useCheckInStore((state) => state.entries);
   const { colors } = useThemeMode();
   const { fontSize } = useFontScale();
@@ -51,13 +53,13 @@ export function CheckInCard() {
   if (!todayEntry) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyText}>Nenhum check-in hoje</Text>
+        <Text style={styles.emptyText}>{t("Nenhum check-in hoje")}</Text>
       </View>
     );
   }
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString("pt-BR", {
+    return new Date(timestamp).toLocaleTimeString(language, {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -65,26 +67,26 @@ export function CheckInCard() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Check-in de hoje</Text>
+      <Text style={styles.title}>{t("Check-in de hoje")}</Text>
 
       <View style={styles.metrics}>
         <View style={styles.metric}>
-          <Text style={styles.metricLabel}>Bateria Social</Text>
+          <Text style={styles.metricLabel}>{t("Bateria Social")}</Text>
           <Text style={styles.metricValue}>{todayEntry.socialBattery}%</Text>
         </View>
 
         <View style={styles.metric}>
-          <Text style={styles.metricLabel}>Carga Sensorial</Text>
+          <Text style={styles.metricLabel}>{t("Carga Sensorial")}</Text>
           <Text style={styles.metricValue}>{todayEntry.sensoryLoad}/5</Text>
         </View>
 
         <View style={styles.metric}>
-          <Text style={styles.metricLabel}>Energia Física</Text>
+          <Text style={styles.metricLabel}>{t("Energia Física")}</Text>
           <Text style={styles.metricValue}>{todayEntry.physicalEnergy}/5</Text>
         </View>
       </View>
 
-      <Text style={styles.timestamp}>às {formatTime(todayEntry.timestamp)}</Text>
+      <Text style={styles.timestamp}>{t("às {0}", formatTime(todayEntry.timestamp))}</Text>
     </View>
   );
 }

@@ -1,3 +1,5 @@
+import { localizeRoutine } from "@/lib/localizedContent";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
   View,
@@ -25,6 +27,7 @@ import { ThemeColors } from "@/constants/theme";
  * - Progresso claro ("Passo 2 de 5")
  */
 export default function RoutineExecutionScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const showNextStep = usePreferencesStore((state) => state.showNextStep);
   const { colors } = useThemeMode();
@@ -60,21 +63,22 @@ export default function RoutineExecutionScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhuma rotina em execução</Text>
+          <Text style={styles.emptyText}>{t("Nenhuma rotina em execução")}</Text>
           <Pressable
             style={styles.backButton}
             onPress={returnToRoutines}
             accessibilityRole="button"
-            accessibilityLabel="Voltar para Minhas Rotinas"
+            accessibilityLabel={t("Voltar para Minhas Rotinas")}
           >
-            <Text style={styles.backButtonText}>Voltar</Text>
+            <Text style={styles.backButtonText}>{t("Voltar")}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
     );
   }
 
-  const routine = routines.find((r) => r.id === execution.routineId);
+  const savedRoutine = routines.find((r) => r.id === execution.routineId);
+  const routine = savedRoutine && localizeRoutine(savedRoutine, t);
   const currentStep = routine?.steps[execution.currentStepIndex];
   const isLastStep =
     routine !== undefined &&
@@ -95,14 +99,14 @@ export default function RoutineExecutionScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Rotina indisponível</Text>
+          <Text style={styles.emptyText}>{t("Rotina indisponível")}</Text>
           <Pressable
             style={styles.backButton}
             onPress={handleStop}
             accessibilityRole="button"
-            accessibilityLabel="Voltar para Minhas Rotinas"
+            accessibilityLabel={t("Voltar para Minhas Rotinas")}
           >
-            <Text style={styles.backButtonText}>Voltar</Text>
+            <Text style={styles.backButtonText}>{t("Voltar")}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -120,9 +124,7 @@ export default function RoutineExecutionScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Progresso geral */}
         <View style={styles.progressContainer}>
-          <Text style={styles.progressText}>
-            Passo {execution.currentStepIndex + 1} de {routine.steps.length}
-          </Text>
+          <Text style={styles.progressText}>{t("Passo {0} de {1}", execution.currentStepIndex + 1, routine.steps.length)}</Text>
           <View style={styles.progressBar}>
             <View
               style={[
@@ -140,7 +142,7 @@ export default function RoutineExecutionScreen() {
 
         {/* Passo atual em destaque */}
         <View style={styles.stepCard}>
-          {showNextStep && <Text style={styles.progressText}>Agora</Text>}
+          {showNextStep && <Text style={styles.progressText}>{t("Agora")}</Text>}
           <Text style={styles.stepTitle}>{currentStep.title}</Text>
           {currentStep.description && (
             <Text style={styles.stepDescription}>{currentStep.description}</Text>
@@ -149,8 +151,8 @@ export default function RoutineExecutionScreen() {
 
         {showNextStep && !isCompleted && (
           <View style={styles.nextStepCard}>
-            <Text style={styles.progressText}>Depois</Text>
-            <Text style={styles.stepDescription}>{routine.steps[execution.currentStepIndex + 1]?.title ?? "Rotina concluída"}</Text>
+            <Text style={styles.progressText}>{t("Depois")}</Text>
+            <Text style={styles.stepDescription}>{routine.steps[execution.currentStepIndex + 1]?.title ?? t("Rotina concluída")}</Text>
           </View>
         )}
         {/* Timer visual suave */}
@@ -165,7 +167,7 @@ export default function RoutineExecutionScreen() {
               trackColor={colors.surfaceAlt}
             />
             {execution.isPaused && (
-              <Text style={styles.pausedText}>Pausado</Text>
+              <Text style={styles.pausedText}>{t("Pausado")}</Text>
             )}
           </View>
         )}
@@ -173,9 +175,7 @@ export default function RoutineExecutionScreen() {
         {/* Mensagem de conclusão */}
         {isCompleted && (
           <View style={styles.completedContainer}>
-            <Text style={styles.completedText}>
-              Rotina concluída. Bom trabalho.
-            </Text>
+            <Text style={styles.completedText}>{t("Rotina concluída. Bom trabalho.")}</Text>
           </View>
         )}
 
@@ -186,15 +186,15 @@ export default function RoutineExecutionScreen() {
               style={styles.primaryButton}
               onPress={handleCompleteStep}
               accessibilityRole="button"
-              accessibilityLabel={isLastStep ? "Concluir Rotina" : "Próximo Passo"}
+              accessibilityLabel={isLastStep ? t("Concluir Rotina") : t("Próximo Passo")}
               accessibilityHint={
                 isLastStep
-                  ? "Encerra a rotina e mostra a mensagem de conclusão"
-                  : "Marca o passo atual como concluído e avança para o seguinte"
+                  ? t("Encerra a rotina e mostra a mensagem de conclusão")
+                  : t("Marca o passo atual como concluído e avança para o seguinte")
               }
             >
               <Text style={styles.primaryButtonText}>
-                {isLastStep ? "Concluir Rotina" : "Próximo Passo"}
+                {isLastStep ? t("Concluir Rotina") : t("Próximo Passo")}
               </Text>
             </Pressable>
 
@@ -204,20 +204,20 @@ export default function RoutineExecutionScreen() {
                   style={styles.secondaryButton}
                   onPress={resumeExecution}
                   accessibilityRole="button"
-                  accessibilityLabel="Continuar rotina"
-                  accessibilityHint="Retoma a contagem do tempo deste passo"
+                  accessibilityLabel={t("Continuar rotina")}
+                  accessibilityHint={t("Retoma a contagem do tempo deste passo")}
                 >
-                  <Text style={styles.secondaryButtonText}>Continuar</Text>
+                  <Text style={styles.secondaryButtonText}>{t("Continuar")}</Text>
                 </Pressable>
               ) : (
                 <Pressable
                   style={styles.secondaryButton}
                   onPress={pauseExecution}
                   accessibilityRole="button"
-                  accessibilityLabel="Pausar rotina"
-                  accessibilityHint="Pausa a contagem do tempo deste passo"
+                  accessibilityLabel={t("Pausar rotina")}
+                  accessibilityHint={t("Pausa a contagem do tempo deste passo")}
                 >
-                  <Text style={styles.secondaryButtonText}>Pausar</Text>
+                  <Text style={styles.secondaryButtonText}>{t("Pausar")}</Text>
                 </Pressable>
               )}
 
@@ -225,20 +225,20 @@ export default function RoutineExecutionScreen() {
                 style={styles.secondaryButton}
                 onPress={() => extendTime(5)}
                 accessibilityRole="button"
-                accessibilityLabel="Adicionar 5 minutos"
-                accessibilityHint="Estende o tempo estimado deste passo em cinco minutos"
+                accessibilityLabel={t("Adicionar 5 minutos")}
+                accessibilityHint={t("Estende o tempo estimado deste passo em cinco minutos")}
               >
-                <Text style={styles.secondaryButtonText}>+5 min</Text>
+                <Text style={styles.secondaryButtonText}>{t("+5 min")}</Text>
               </Pressable>
 
               <Pressable
                 style={styles.stopButton}
                 onPress={handleStop}
                 accessibilityRole="button"
-                accessibilityLabel="Encerrar rotina"
-                accessibilityHint="Interrompe a execução e volta para a lista de rotinas"
+                accessibilityLabel={t("Encerrar rotina")}
+                accessibilityHint={t("Interrompe a execução e volta para a lista de rotinas")}
               >
-                <Text style={styles.stopButtonText}>Encerrar</Text>
+                <Text style={styles.stopButtonText}>{t("Encerrar")}</Text>
               </Pressable>
             </View>
           </View>

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   View,
@@ -24,6 +25,7 @@ import { getBreathingProgress } from "@/lib/breathingProgress";
  * Técnicas: 4-4-4-4 (caixa) e 4-7-8 (relaxante).
  */
 export default function BreathingGuideScreen() {
+  const { t } = useTranslation();
   const { colors } = useThemeMode();
   const reduceMotion = useReducedMotion();
   const { fontSize } = useFontScale();
@@ -41,7 +43,7 @@ export default function BreathingGuideScreen() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const phaseLabels = ["Inspirar", "Segurar", "Expirar", "Segurar"];
+  const phaseLabels = [t("Inspirar"), t("Segurar"), t("Expirar"), t("Segurar")];
   const pattern = selectedExercise.pattern;
 
   useEffect(() => {
@@ -134,7 +136,7 @@ export default function BreathingGuideScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Respiração Guiada",
+          headerTitle: t("Respiração Guiada"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
@@ -155,7 +157,7 @@ export default function BreathingGuideScreen() {
                 setSelectedExercise(exercise);
               }}
               accessibilityRole="radio"
-              accessibilityLabel={exercise.name}
+              accessibilityLabel={t(exercise.name)}
               accessibilityState={{ selected: selectedExercise.id === exercise.id }}
             >
               <Text
@@ -164,10 +166,10 @@ export default function BreathingGuideScreen() {
                   selectedExercise.id === exercise.id && styles.exerciseButtonTextActive,
                 ]}
               >
-                {exercise.name}
+                {t(exercise.name)}
               </Text>
               <Text style={styles.exerciseDescription}>
-                {exercise.description}
+                {t(exercise.description)}
               </Text>
             </Pressable>
           ))}
@@ -183,7 +185,7 @@ export default function BreathingGuideScreen() {
             />
           </View>
           <Text style={styles.phaseLabel} accessibilityLiveRegion="polite">
-            {isActive ? currentPhaseLabel : "Pronto?"}
+            {isActive ? currentPhaseLabel : t("Pronto?")}
           </Text>
           {isActive && (
             <Text style={styles.cycleLabel}>
@@ -208,7 +210,7 @@ export default function BreathingGuideScreen() {
 
         {/* Padrão de respiração */}
         <View style={styles.patternContainer}>
-          <Text style={styles.patternLabel}>Padrão:</Text>
+          <Text style={styles.patternLabel}>{t("Padrão:")}</Text>
           <View style={styles.patternSteps}>
             {pattern.map((seconds, index) => {
               // Fases com duração 0 não existem no exercício (ex.: 4ª do 4-7-8)
@@ -248,15 +250,15 @@ export default function BreathingGuideScreen() {
           style={[styles.controlButton, isActive && styles.controlButtonStop]}
           onPress={isActive ? handleStop : handleStart}
           accessibilityRole="button"
-          accessibilityLabel={isActive ? "Parar exercício" : "Começar exercício"}
+          accessibilityLabel={isActive ? t("Parar exercício") : t("Começar exercício")}
           accessibilityHint={
             isActive
-              ? "Interrompe o ciclo de respiração"
-              : `Inicia ${selectedExercise.cycles} ciclos de respiração ${selectedExercise.name}`
+              ? t("Interrompe o ciclo de respiração")
+              : t("Inicia {0} ciclos de respiração {1}", selectedExercise.cycles, t(selectedExercise.name))
           }
         >
           <Text style={styles.controlButtonText}>
-            {isActive ? "Parar" : "Começar"}
+            {isActive ? t("Parar") : t("Começar")}
           </Text>
         </Pressable>
       </ScrollView>

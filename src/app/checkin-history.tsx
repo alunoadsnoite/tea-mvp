@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import {
   View,
@@ -21,6 +22,7 @@ import { CheckInEntry } from "@/types/checkin";
  * Visualização simples dos últimos 7 dias para identificar padrões.
  */
 export default function CheckInHistoryScreen() {
+  const { t, language } = useTranslation();
   const { fontSize } = useFontScale();
   const getRecentEntries = useCheckInStore((state) => state.getRecentEntries);
   const clearHistory = useCheckInStore((state) => state.clearHistory);
@@ -31,7 +33,7 @@ export default function CheckInHistoryScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Filtrar e agrupar por dia civil. A chave é uma data ISO (YYYY-MM-DD),
-  // independente de locale — o rótulo pt-BR é derivado dela só na exibição.
+  // independente de locale — o rótulo localizado é derivado dela só na exibição.
   // A dependência é a referência do store, então o memo só recalcula quando um
   // check-in é adicionado ou removido.
   const groupedByDay = useMemo(() => {
@@ -53,7 +55,7 @@ export default function CheckInHistoryScreen() {
 
   const formatDayTitle = (isoDate: string) => {
     const [year, month, day] = isoDate.split("-").map(Number);
-    return new Date(year, month - 1, day).toLocaleDateString("pt-BR", {
+    return new Date(year, month - 1, day).toLocaleDateString(language, {
       weekday: "short",
       day: "numeric",
       month: "short",
@@ -61,7 +63,7 @@ export default function CheckInHistoryScreen() {
   };
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString("pt-BR", {
+    return new Date(timestamp).toLocaleTimeString(language, {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -69,11 +71,11 @@ export default function CheckInHistoryScreen() {
 
   const handleClearHistory = () => {
     Alert.alert(
-      "Limpar histórico",
-      "Todos os check-ins registrados serão apagados definitivamente. Deseja continuar?",
+      t("Limpar histórico"),
+      t("Todos os check-ins registrados serão apagados definitivamente. Deseja continuar?"),
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Apagar tudo", style: "destructive", onPress: clearHistory },
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Apagar tudo"), style: "destructive", onPress: clearHistory },
       ]
     );
   };
@@ -83,7 +85,7 @@ export default function CheckInHistoryScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Histórico de Check-ins",
+          headerTitle: t("Histórico de Check-ins"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
@@ -91,9 +93,7 @@ export default function CheckInHistoryScreen() {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {Object.keys(groupedByDay).length === 0 ? (
-          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>
-            Nenhum check-in nos últimos 7 dias
-          </Text>
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{t("Nenhum check-in nos últimos 7 dias")}</Text>
         ) : (
           <>
             {Object.entries(groupedByDay).map(([date, dayEntries]) => (
@@ -110,17 +110,17 @@ export default function CheckInHistoryScreen() {
 
                     <View style={styles.metrics}>
                       <View style={styles.metric}>
-                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Bateria Social</Text>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>{t("Bateria Social")}</Text>
                         <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.socialBattery}%</Text>
                       </View>
 
                       <View style={styles.metric}>
-                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Carga Sensorial</Text>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>{t("Carga Sensorial")}</Text>
                         <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.sensoryLoad}/5</Text>
                       </View>
 
                       <View style={styles.metric}>
-                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>Energia Física</Text>
+                        <Text style={[styles.metricLabel, { fontSize: fontSize(12) }]}>{t("Energia Física")}</Text>
                         <Text style={[styles.metricValue, { fontSize: fontSize(18) }]}>{entry.physicalEnergy}/5</Text>
                       </View>
                     </View>
@@ -129,7 +129,7 @@ export default function CheckInHistoryScreen() {
                       <View style={styles.triggers}>
                         {entry.triggers.map((trigger, index) => (
                           <View key={`${entry.id}-${trigger}-${index}`} style={styles.triggerChip}>
-                            <Text style={[styles.triggerText, { fontSize: fontSize(12) }]}>{trigger}</Text>
+                            <Text style={[styles.triggerText, { fontSize: fontSize(12) }]}>{t(trigger)}</Text>
                           </View>
                         ))}
                       </View>
@@ -149,12 +149,10 @@ export default function CheckInHistoryScreen() {
             style={styles.clearButton}
             onPress={handleClearHistory}
             accessibilityRole="button"
-            accessibilityLabel="Limpar histórico de check-ins"
-            accessibilityHint="Apaga definitivamente todos os check-ins registrados"
+            accessibilityLabel={t("Limpar histórico de check-ins")}
+            accessibilityHint={t("Apaga definitivamente todos os check-ins registrados")}
           >
-            <Text style={[styles.clearButtonText, { fontSize: fontSize(15) }]}>
-              Limpar histórico
-            </Text>
+            <Text style={[styles.clearButtonText, { fontSize: fontSize(15) }]}>{t("Limpar histórico")}</Text>
           </Pressable>
         )}
       </ScrollView>

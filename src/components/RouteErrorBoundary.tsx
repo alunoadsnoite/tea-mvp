@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { Stack, useRouter } from "expo-router";
@@ -20,6 +21,7 @@ interface RouteErrorBoundaryProps {
  * direto ao Cartão de Crise.
  */
 export function RouteErrorBoundary({ retry }: RouteErrorBoundaryProps) {
+  const { t } = useTranslation();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const router = useRouter();
@@ -29,10 +31,8 @@ export function RouteErrorBoundary({ retry }: RouteErrorBoundaryProps) {
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Algo deu errado</Text>
-        <Text style={styles.message}>
-          Ocorreu um problema inesperado. Tente novamente ou volte ao início.
-        </Text>
+        <Text style={styles.title}>{t("Algo deu errado")}</Text>
+        <Text style={styles.message}>{t("Ocorreu um problema inesperado. Tente novamente ou volte ao início.")}</Text>
 
         <View style={styles.actions}>
           {retry && (
@@ -40,9 +40,9 @@ export function RouteErrorBoundary({ retry }: RouteErrorBoundaryProps) {
               style={styles.button}
               onPress={retry}
               accessibilityRole="button"
-              accessibilityLabel="Tentar novamente"
+              accessibilityLabel={t("Tentar novamente")}
             >
-              <Text style={styles.buttonText}>Tentar novamente</Text>
+              <Text style={styles.buttonText}>{t("Tentar novamente")}</Text>
             </Pressable>
           )}
 
@@ -50,18 +50,18 @@ export function RouteErrorBoundary({ retry }: RouteErrorBoundaryProps) {
             style={styles.button}
             onPress={() => router.replace("/")}
             accessibilityRole="button"
-            accessibilityLabel="Voltar ao início"
+            accessibilityLabel={t("Voltar ao início")}
           >
-            <Text style={styles.buttonText}>Voltar ao início</Text>
+            <Text style={styles.buttonText}>{t("Voltar ao início")}</Text>
           </Pressable>
 
           <Pressable
             style={styles.crisisButton}
             onPress={() => router.replace("/crisis-card")}
             accessibilityRole="button"
-            accessibilityLabel="Abrir Cartão de Crise"
+            accessibilityLabel={t("Abrir Cartão de Crise")}
           >
-            <Text style={styles.crisisButtonText}>Abrir Cartão de Crise</Text>
+            <Text style={styles.crisisButtonText}>{t("Abrir Cartão de Crise")}</Text>
           </Pressable>
         </View>
       </ScrollView>

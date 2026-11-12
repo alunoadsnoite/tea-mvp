@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { Link } from "expo-router";
@@ -18,6 +19,7 @@ import { ThemeColors } from "@/constants/theme";
  * - Espaçamento generoso para reduzir carga cognitiva
  */
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -30,12 +32,10 @@ export default function HomeScreen() {
           <Pressable
             style={styles.crisisButton}
             accessibilityRole="button"
-            accessibilityLabel="Abrir Cartão de Comunicação de Crise"
-            accessibilityHint="Toque para acessar o cartão de emergência"
+            accessibilityLabel={t("Abrir Cartão de Comunicação de Crise")}
+            accessibilityHint={t("Toque para acessar o cartão de emergência")}
           >
-            <Text style={[styles.crisisButtonText, { fontSize: fontSize(20) }]}>
-              Estou em sobrecarga
-            </Text>
+            <Text style={[styles.crisisButtonText, { fontSize: fontSize(20) }]}>{t("Estou em sobrecarga")}</Text>
           </Pressable>
         </Link>
 
@@ -48,48 +48,40 @@ export default function HomeScreen() {
             <Pressable
               style={styles.secondaryButton}
               accessibilityRole="button"
-              accessibilityLabel="Fazer check-in"
-              accessibilityHint="Registra como você está se sentindo agora"
+              accessibilityLabel={t("Fazer check-in")}
+              accessibilityHint={t("Registra como você está se sentindo agora")}
             >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Fazer check-in
-              </Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Fazer check-in")}</Text>
             </Pressable>
           </Link>
           <Link href="/routines" asChild>
             <Pressable
               style={styles.secondaryButton}
               accessibilityRole="button"
-              accessibilityLabel="Minhas rotinas"
-              accessibilityHint="Inicia ou gerencia suas rotinas visuais"
+              accessibilityLabel={t("Minhas rotinas")}
+              accessibilityHint={t("Inicia ou gerencia suas rotinas visuais")}
             >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Minhas rotinas
-              </Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Minhas rotinas")}</Text>
             </Pressable>
           </Link>
           <Link href="/regulation" asChild>
             <Pressable
               style={styles.secondaryButton}
               accessibilityRole="button"
-              accessibilityLabel="Estratégias de calma"
-              accessibilityHint="Abre os cartões de regulação e a respiração guiada"
+              accessibilityLabel={t("Estratégias de calma")}
+              accessibilityHint={t("Abre os cartões de regulação e a respiração guiada")}
             >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Estratégias de calma
-              </Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Estratégias de calma")}</Text>
             </Pressable>
           </Link>
           <Link href="/settings" asChild>
             <Pressable
               style={styles.secondaryButton}
               accessibilityRole="button"
-              accessibilityLabel="Configurações"
-              accessibilityHint="Ajusta preferências e configura o cartão de comunicação"
+              accessibilityLabel={t("Configurações")}
+              accessibilityHint={t("Ajusta preferências e configura o cartão de comunicação")}
             >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>
-                Configurações
-              </Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Configurações")}</Text>
             </Pressable>
           </Link>
         </View>

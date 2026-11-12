@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { usePathname, useRouter } from "expo-router";
@@ -14,6 +15,7 @@ import { ThemeColors } from "@/constants/theme";
  * ligação/emergência, que são a ação principal daquela tela.
  */
 export function EmergencyFab() {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const { colors } = useThemeMode();
@@ -27,8 +29,8 @@ export function EmergencyFab() {
       style={styles.fab}
       onPress={() => router.push("/crisis-card")}
       accessibilityRole="button"
-      accessibilityLabel="Abrir Cartão de Crise"
-      accessibilityHint="Toque para acessar o cartão de emergência"
+      accessibilityLabel={t("Abrir Cartão de Crise")}
+      accessibilityHint={t("Toque para acessar o cartão de emergência")}
     >
       <Text style={styles.fabText}>!</Text>
     </Pressable>

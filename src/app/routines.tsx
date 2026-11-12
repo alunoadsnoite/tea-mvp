@@ -1,3 +1,5 @@
+import { localizeRoutine } from "@/lib/localizedContent";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import {
   View,
@@ -21,6 +23,7 @@ import { ThemeColors } from "@/constants/theme";
  * as personalizadas.
  */
 export default function RoutinesListScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
@@ -34,9 +37,9 @@ export default function RoutinesListScreen() {
   const handleStartRoutine = (routineId: string) => {
     const current = useRoutineStore.getState().execution;
     if (current && current.completedAt === null && current.routineId !== routineId) {
-      Alert.alert("Substituir rotina em andamento?", "O progresso da rotina atual será encerrado para iniciar a outra.", [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Substituir", style: "destructive", onPress: () => {
+      Alert.alert(t("Substituir rotina em andamento?"), t("O progresso da rotina atual será encerrado para iniciar a outra."), [
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Substituir"), style: "destructive", onPress: () => {
           if (startExecution(routineId, true)) router.push("/routine-execution");
         } },
       ]);
@@ -50,22 +53,22 @@ export default function RoutinesListScreen() {
 
   const handleDeleteRoutine = (id: string, name: string) => {
     Alert.alert(
-      "Excluir rotina",
-      `A rotina "${name}" será removida. Deseja continuar?`,
+      t("Excluir rotina"),
+      t("A rotina \"{0}\" será removida. Deseja continuar?", name),
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Excluir", style: "destructive", onPress: () => deleteRoutine(id) },
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Excluir"), style: "destructive", onPress: () => deleteRoutine(id) },
       ]
     );
   };
 
   const handleReset = () => {
     Alert.alert(
-      "Restaurar padrões",
-      "Isso irá remover todas as rotinas personalizadas e restaurar as rotinas padrão. Deseja continuar?",
+      t("Restaurar padrões"),
+      t("Isso irá remover todas as rotinas personalizadas e restaurar as rotinas padrão. Deseja continuar?"),
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Restaurar", style: "destructive", onPress: resetToDefaults },
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Restaurar"), style: "destructive", onPress: resetToDefaults },
       ]
     );
   };
@@ -75,7 +78,7 @@ export default function RoutinesListScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Minhas Rotinas",
+          headerTitle: t("Minhas Rotinas"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
@@ -86,12 +89,12 @@ export default function RoutinesListScreen() {
           style={styles.newButton}
           onPress={() => router.push("/routines/new")}
           accessibilityRole="button"
-          accessibilityLabel="Criar nova rotina"
+          accessibilityLabel={t("Criar nova rotina")}
         >
-          <Text style={[styles.newButtonText, { fontSize: fontSize(16) }]}>+ Nova rotina</Text>
+          <Text style={[styles.newButtonText, { fontSize: fontSize(16) }]}>{t("+ Nova rotina")}</Text>
         </Pressable>
 
-        {routines.map((routine) => (
+        {routines.map((routine) => localizeRoutine(routine, t)).map((routine) => (
           <View key={routine.id} style={styles.routineCard}>
             <Text style={[styles.routineName, { fontSize: fontSize(20) }]}>{routine.name}</Text>
             {routine.description && (
@@ -107,9 +110,7 @@ export default function RoutinesListScreen() {
                 </Text>
               ))}
               {routine.steps.length > 3 && (
-                <Text style={[styles.moreSteps, { fontSize: fontSize(12) }]}>
-                  +{routine.steps.length - 3} passos
-                </Text>
+                <Text style={[styles.moreSteps, { fontSize: fontSize(12) }]}>{t("+{0} passos", routine.steps.length - 3)}</Text>
               )}
             </View>
 
@@ -117,10 +118,10 @@ export default function RoutinesListScreen() {
               style={styles.startButton}
               onPress={() => handleStartRoutine(routine.id)}
               accessibilityRole="button"
-              accessibilityLabel={execution?.routineId === routine.id ? `Continuar rotina ${routine.name}` : `Iniciar rotina ${routine.name}`}
-              accessibilityHint="Começa a execução passo a passo desta rotina"
+              accessibilityLabel={execution?.routineId === routine.id ? t("Continuar rotina {0}", routine.name) : t("Iniciar rotina {0}", routine.name)}
+              accessibilityHint={t("Começa a execução passo a passo desta rotina")}
             >
-              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>{execution?.routineId === routine.id ? "Voltar à rotina" : "Iniciar Rotina"}</Text>
+              <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>{execution?.routineId === routine.id ? t("Voltar à rotina") : t("Iniciar Rotina")}</Text>
             </Pressable>
 
             {/* Editar/excluir apenas nas rotinas criadas pelo usuário */}
@@ -130,17 +131,17 @@ export default function RoutinesListScreen() {
                   style={styles.manageButton}
                   onPress={() => router.push(`/routines/new?id=${routine.id}`)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Editar rotina ${routine.name}`}
+                  accessibilityLabel={t("Editar rotina {0}", routine.name)}
                 >
-                  <Text style={[styles.manageButtonText, { fontSize: fontSize(14) }]}>Editar</Text>
+                  <Text style={[styles.manageButtonText, { fontSize: fontSize(14) }]}>{t("Editar")}</Text>
                 </Pressable>
                 <Pressable
                   style={styles.manageButton}
                   onPress={() => handleDeleteRoutine(routine.id, routine.name)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Excluir rotina ${routine.name}`}
+                  accessibilityLabel={t("Excluir rotina {0}", routine.name)}
                 >
-                  <Text style={[styles.manageButtonTextDelete, { fontSize: fontSize(14) }]}>Excluir</Text>
+                  <Text style={[styles.manageButtonTextDelete, { fontSize: fontSize(14) }]}>{t("Excluir")}</Text>
                 </Pressable>
               </View>
             )}
@@ -152,10 +153,10 @@ export default function RoutinesListScreen() {
           style={styles.resetButton}
           onPress={handleReset}
           accessibilityRole="button"
-          accessibilityLabel="Restaurar rotinas padrão"
-          accessibilityHint="Remove rotinas personalizadas e volta às rotinas padrão"
+          accessibilityLabel={t("Restaurar rotinas padrão")}
+          accessibilityHint={t("Remove rotinas personalizadas e volta às rotinas padrão")}
         >
-          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>Restaurar padrões</Text>
+          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>{t("Restaurar padrões")}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
