@@ -2,14 +2,16 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão Atual: 1.0.13
+## Versão 1.0.14
 
-F-Droid verificado em 29/10/2026: submissão da 1.0.12 integrada e pipeline
-aprovado. A consulta à API do catálogo retornou 404; download ainda não confirmado.
-Consulte [F_DROID_RELEASE.md](F_DROID_RELEASE.md) para fonte, pipeline e limites.
-Os ajustes da 1.0.13 ainda não estão na versão integrada ao F-Droid.
+Use **Configurações → Idioma** para escolher **Português (Brasil)**, **English** ou **Español**. A preferência funciona offline e os textos personalizados são preservados. Acompanhe a disponibilidade no [catálogo do F-Droid](https://f-droid.org/packages/com.teamvp.app/).
 
 ### Changelog
+
+#### v1.0.14
+
+- Interface e conteúdo padrão em português do Brasil, inglês e espanhol.
+- O idioma fica salvo no aparelho. O widget Android usa o idioma do sistema no launcher.
 
 #### v1.0.13 (2026-10-29)
 - Círculo de respiração mantém largura e altura iguais; texto separado da animação para respeitar fontes ampliadas.
@@ -118,7 +120,7 @@ Os ajustes da 1.0.13 ainda não estão na versão integrada ao F-Droid.
 - Respiração Guiada (4-4-4-4 e 4-7-8)
 
 ## Melhorias locais em validação
-- Português do Brasil, inglês e espanhol em **Configurações → Idioma**. Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md).
+- Veja o [roteiro de validação e publicação da atualização de idiomas](docs/PUBLICAR_IDIOMAS.md).
 
 - Rotinas em andamento oferecem Continuar e preservam passo, pausa e tempo. Iniciar outra rotina pede confirmação.
 - A Home permite rolagem; o histórico fica no check-in e a edição do cartão fica em Configurações.
