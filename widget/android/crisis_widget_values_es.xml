@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crisis_widget_title">Tarjeta de crisis</string>
+    <string name="crisis_widget_subtitle">Toca para abrir</string>
+    <string name="crisis_widget_description">Tarjeta de crisis. Toca para abrir directamente la pantalla de crisis.</string>
+</resources>

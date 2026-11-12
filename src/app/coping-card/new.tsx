@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +20,7 @@ const CATEGORY_LABELS = {
  * Com `?id=<cardId>` a mesma tela edita um cartão existente.
  */
 export default function NovaCartaScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { fontSize } = useFontScale();
@@ -74,7 +76,7 @@ export default function NovaCartaScreen() {
     const filteredSteps = steps.map((s) => s.trim()).filter((s) => s !== "");
     if (!title.trim() || !description.trim() || filteredSteps.length === 0) {
       setFormError(
-        "Preencha o título, a descrição e pelo menos um passo para salvar."
+        t("Preencha o título, a descrição e pelo menos um passo para salvar.")
       );
       return;
     }
@@ -105,36 +107,36 @@ export default function NovaCartaScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: isEditing ? "Editar Cartão" : "Novo Cartão",
+          headerTitle: isEditing ? t("Editar Cartão") : t("Novo Cartão"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
-          headerBackTitle: "Voltar",
+          headerBackTitle: t("Voltar"),
         }}
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Título */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>Título</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>{t("Título")}</Text>
           <TextInput
             style={[styles.input, { fontSize: fontSize(16) }]}
-            placeholder="Ex: Respirar fundo"
+            placeholder={t("Ex: Respirar fundo")}
             placeholderTextColor={colors.placeholder}
             value={title}
             onChangeText={(text) => {
               setTitle(text);
               setFormError(null);
             }}
-            accessibilityLabel="Título do cartão"
+            accessibilityLabel={t("Título do cartão")}
           />
         </View>
 
         {/* Descrição */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>Descrição</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>{t("Descrição")}</Text>
           <TextInput
             style={[styles.input, styles.textArea, { fontSize: fontSize(16) }]}
-            placeholder="Descreva para que serve este cartão"
+            placeholder={t("Descreva para que serve este cartão")}
             placeholderTextColor={colors.placeholder}
             value={description}
             onChangeText={(text) => {
@@ -143,13 +145,13 @@ export default function NovaCartaScreen() {
             }}
             multiline
             numberOfLines={3}
-            accessibilityLabel="Descrição do cartão"
+            accessibilityLabel={t("Descrição do cartão")}
           />
         </View>
 
         {/* Categoria */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>Categoria</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>{t("Categoria")}</Text>
           <View style={styles.categoryRow}>
             {(["grounding", "breathing", "custom"] as const).map((cat) => (
               <Pressable
@@ -157,7 +159,7 @@ export default function NovaCartaScreen() {
                 style={[styles.categoryChip, category === cat && styles.categoryChipActive]}
                 onPress={() => setCategory(cat)}
                 accessibilityRole="radio"
-                accessibilityLabel={CATEGORY_LABELS[cat]}
+                accessibilityLabel={t(CATEGORY_LABELS[cat])}
                 accessibilityState={{ selected: category === cat }}
               >
                 <Text
@@ -167,7 +169,7 @@ export default function NovaCartaScreen() {
                     { fontSize: fontSize(14) },
                   ]}
                 >
-                  {CATEGORY_LABELS[cat]}
+                  {t(CATEGORY_LABELS[cat])}
                 </Text>
               </Pressable>
             ))}
@@ -176,24 +178,24 @@ export default function NovaCartaScreen() {
 
         {/* Passos */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>Passos</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>{t("Passos")}</Text>
           {steps.map((step, index) => (
             <View key={index} style={styles.stepRow}>
-              <Text style={[styles.stepNumber, { fontSize: fontSize(12) }]}>Passo {index + 1}</Text>
+              <Text style={[styles.stepNumber, { fontSize: fontSize(12) }]}>{t("Passo {0}", index + 1)}</Text>
               <TextInput
                 style={[styles.input, styles.stepInput, { fontSize: fontSize(16) }]}
-                placeholder={`Descreva o passo ${index + 1}`}
+                placeholder={t("Descreva o passo {0}", index + 1)}
                 placeholderTextColor={colors.placeholder}
                 value={step}
                 onChangeText={(text) => handleUpdateStep(index, text)}
-                accessibilityLabel={`Passo ${index + 1}`}
+                accessibilityLabel={t("Passo {0}", index + 1)}
               />
               {steps.length > 1 && (
                 <Pressable
                   style={styles.removeStepButton}
                   onPress={() => handleRemoveStep(index)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Remover passo ${index + 1}`}
+                  accessibilityLabel={t("Remover passo {0}", index + 1)}
                 >
                   <Text style={[styles.removeStepText, { fontSize: fontSize(14) }]}>×</Text>
                 </Pressable>
@@ -204,9 +206,9 @@ export default function NovaCartaScreen() {
             style={styles.addStepButton}
             onPress={handleAddStep}
             accessibilityRole="button"
-            accessibilityLabel="Adicionar passo ao cartão"
+            accessibilityLabel={t("Adicionar passo ao cartão")}
           >
-            <Text style={[styles.addStepText, { fontSize: fontSize(14) }]}>Adicionar passo</Text>
+            <Text style={[styles.addStepText, { fontSize: fontSize(14) }]}>{t("Adicionar passo")}</Text>
           </Pressable>
         </View>
 
@@ -224,10 +226,10 @@ export default function NovaCartaScreen() {
           style={styles.saveButton}
           onPress={handleSave}
           accessibilityRole="button"
-          accessibilityLabel={isEditing ? "Salvar alterações do cartão" : "Criar cartão"}
+          accessibilityLabel={isEditing ? t("Salvar alterações do cartão") : t("Criar cartão")}
         >
           <Text style={[styles.saveButtonText, { fontSize: fontSize(16) }]}>
-            {isEditing ? "Salvar Cartão" : "Criar Cartão"}
+            {isEditing ? t("Salvar Cartão") : t("Criar Cartão")}
           </Text>
         </Pressable>
       </ScrollView>

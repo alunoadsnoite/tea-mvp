@@ -1,5 +1,14 @@
 # Publicação no F-Droid
 
+## Atualização 1.0.14
+
+A versão 1.0.14 acrescenta o seletor de português do Brasil, inglês e espanhol.
+O catálogo apresentava a 1.0.13 (códigos 131–134) em 12/11/2026.
+A receita oficial monitora tags `vX.Y.Z`. Para a 1.0.14, os códigos esperados
+são 141–144, na mesma ordem de arquiteturas da versão anterior.
+Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md) e
+acompanhe a indexação no [catálogo](https://f-droid.org/packages/com.teamvp.app/).
+
 ## Estado verificado em 29/10/2026
 
 A MR [!50479](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/50479) está **merged**, com versão 1.0.12. Consulta direta à API GitLab confirmou pipeline [2991084844](https://gitlab.com/alunoadsnoite/fdroiddata/-/pipelines/2991084844) aprovado. A receita integrada fixa `9348b1bce2b489043874222f9422d9a56d4df8c5`, códigos 121/122/123/124 e atualização por tags. A cópia `com.teamvp.app.yml` foi sincronizada com essa receita.

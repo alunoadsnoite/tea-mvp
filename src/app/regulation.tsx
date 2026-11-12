@@ -1,3 +1,5 @@
+import { localizeCopingCard } from "@/lib/localizedContent";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo, useState } from "react";
 import {
   View,
@@ -21,6 +23,7 @@ import { ThemeColors } from "@/constants/theme";
  * Permite navegar por cartões de coping, filtrar por categoria e favoritar.
  */
 export default function CopingCardsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
@@ -34,10 +37,10 @@ export default function CopingCardsScreen() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const categories: { key: CopingCardCategory | "all"; label: string }[] = [
-    { key: "all", label: "Todos" },
-    { key: "grounding", label: "Ancoragem" },
-    { key: "breathing", label: "Respiração" },
-    { key: "custom", label: "Personalizados" },
+    { key: "all", label: t("Todos") },
+    { key: "grounding", label: t("Ancoragem") },
+    { key: "breathing", label: t("Respiração") },
+    { key: "custom", label: t("Personalizados") },
   ];
 
   const filteredCards = useMemo(() => {
@@ -57,22 +60,22 @@ export default function CopingCardsScreen() {
 
   const handleDeleteCard = (id: string, title: string) => {
     Alert.alert(
-      "Excluir cartão",
-      `O cartão "${title}" será removido. Deseja continuar?`,
+      t("Excluir cartão"),
+      t("O cartão \"{0}\" será removido. Deseja continuar?", title),
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Excluir", style: "destructive", onPress: () => deleteCard(id) },
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Excluir"), style: "destructive", onPress: () => deleteCard(id) },
       ]
     );
   };
 
   const handleReset = () => {
     Alert.alert(
-      "Restaurar padrões",
-      "Isso irá remover os cartões personalizados e restaurar os cartões padrão. Seus favoritos são mantidos. Deseja continuar?",
+      t("Restaurar padrões"),
+      t("Isso irá remover os cartões personalizados e restaurar os cartões padrão. Seus favoritos são mantidos. Deseja continuar?"),
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Restaurar", style: "destructive", onPress: resetToDefaults },
+        { text: t("Cancelar"), style: "cancel" },
+        { text: t("Restaurar"), style: "destructive", onPress: resetToDefaults },
       ]
     );
   };
@@ -82,7 +85,7 @@ export default function CopingCardsScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Estratégias de Calma",
+          headerTitle: t("Estratégias de Calma"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
         }}
@@ -122,7 +125,7 @@ export default function CopingCardsScreen() {
           style={[styles.favoriteFilter, showFavoritesOnly && styles.favoriteFilterActive]}
           onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}
           accessibilityRole="checkbox"
-          accessibilityLabel="Mostrar apenas favoritos"
+          accessibilityLabel={t("Mostrar apenas favoritos")}
           accessibilityState={{ checked: showFavoritesOnly }}
         >
           <Text
@@ -131,18 +134,16 @@ export default function CopingCardsScreen() {
               showFavoritesOnly && styles.favoriteFilterTextActive,
             ]}
           >
-            {showFavoritesOnly ? "★ Favoritos" : "☆ Favoritos"}
+            {showFavoritesOnly ? t("★ Favoritos") : t("☆ Favoritos")}
           </Text>
         </Pressable>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {filteredCards.length === 0 ? (
-          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>
-            Nenhum cartão encontrado
-          </Text>
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{t("Nenhum cartão encontrado")}</Text>
         ) : (
-          filteredCards.map((card) => (
+          filteredCards.map((card) => localizeCopingCard(card, t)).map((card) => (
             <View key={card.id} style={styles.card}>
               <View style={styles.cardHeader}>
                 {/* A área textual é o alvo de navegação; o favorito é irmão,
@@ -153,22 +154,20 @@ export default function CopingCardsScreen() {
                   onPress={() => router.push(`/coping-card/${card.id}`)}
                   accessibilityRole="button"
                   accessibilityLabel={card.title}
-                  accessibilityHint={`Abre o cartão com ${card.steps.length} passos`}
+                  accessibilityHint={t("Abre o cartão com {0} passos", card.steps.length)}
                 >
                   <Text style={[styles.cardTitle, { fontSize: fontSize(18) }]}>{card.title}</Text>
                   <Text style={[styles.cardDescription, { fontSize: fontSize(14) }]}>
                     {card.description}
                   </Text>
-                  <Text style={[styles.cardSteps, { fontSize: fontSize(12) }]}>
-                    {card.steps.length} passos
-                  </Text>
+                  <Text style={[styles.cardSteps, { fontSize: fontSize(12) }]}>{t("{0} passos", card.steps.length)}</Text>
                 </Pressable>
 
                 <Pressable
                   style={styles.favoriteButton}
                   onPress={() => toggleFavorite(card.id)}
                   accessibilityRole="checkbox"
-                  accessibilityLabel={`${card.title}: ${card.isFavorite ? "remover dos favoritos" : "adicionar aos favoritos"}`}
+                  accessibilityLabel={`${card.title}: ${card.isFavorite ? t("remover dos favoritos") : t("adicionar aos favoritos")}`}
                   accessibilityState={{ checked: card.isFavorite }}
                 >
                   <Text style={styles.favoriteIcon}>{card.isFavorite ? "★" : "☆"}</Text>
@@ -181,17 +180,17 @@ export default function CopingCardsScreen() {
                     style={styles.manageButton}
                     onPress={() => router.push(`/coping-card/new?id=${card.id}`)}
                     accessibilityRole="button"
-                    accessibilityLabel={`Editar cartão ${card.title}`}
+                    accessibilityLabel={t("Editar cartão {0}", card.title)}
                   >
-                    <Text style={[styles.manageButtonText, { fontSize: fontSize(14) }]}>Editar</Text>
+                    <Text style={[styles.manageButtonText, { fontSize: fontSize(14) }]}>{t("Editar")}</Text>
                   </Pressable>
                   <Pressable
                     style={styles.manageButton}
                     onPress={() => handleDeleteCard(card.id, card.title)}
                     accessibilityRole="button"
-                    accessibilityLabel={`Excluir cartão ${card.title}`}
+                    accessibilityLabel={t("Excluir cartão {0}", card.title)}
                   >
-                    <Text style={[styles.manageButtonTextDelete, { fontSize: fontSize(14) }]}>Excluir</Text>
+                    <Text style={[styles.manageButtonTextDelete, { fontSize: fontSize(14) }]}>{t("Excluir")}</Text>
                   </Pressable>
                 </View>
               )}
@@ -204,15 +203,11 @@ export default function CopingCardsScreen() {
           style={styles.breathingShortcut}
           onPress={() => router.push("/breathing-guide")}
           accessibilityRole="button"
-          accessibilityLabel="Exercício de Respiração Guiada"
-          accessibilityHint="Abre as técnicas de respiração 4-4-4-4 e 4-7-8"
+          accessibilityLabel={t("Exercício de Respiração Guiada")}
+          accessibilityHint={t("Abre as técnicas de respiração 4-4-4-4 e 4-7-8")}
         >
-          <Text style={[styles.breathingShortcutTitle, { fontSize: fontSize(16) }]}>
-            Exercício de Respiração Guiada
-          </Text>
-          <Text style={[styles.breathingShortcutDescription, { fontSize: fontSize(14) }]}>
-            Técnicas 4-4-4-4 e 4-7-8 para acalmar
-          </Text>
+          <Text style={[styles.breathingShortcutTitle, { fontSize: fontSize(16) }]}>{t("Exercício de Respiração Guiada")}</Text>
+          <Text style={[styles.breathingShortcutDescription, { fontSize: fontSize(14) }]}>{t("Técnicas 4-4-4-4 e 4-7-8 para acalmar")}</Text>
         </Pressable>
 
         {/* Novo cartão */}
@@ -220,11 +215,9 @@ export default function CopingCardsScreen() {
           style={styles.newCardButton}
           onPress={() => router.push("/coping-card/new")}
           accessibilityRole="button"
-          accessibilityLabel="Criar novo cartão personalizado"
+          accessibilityLabel={t("Criar novo cartão personalizado")}
         >
-          <Text style={[styles.newCardButtonText, { fontSize: fontSize(16) }]}>
-            + Novo cartão personalizado
-          </Text>
+          <Text style={[styles.newCardButtonText, { fontSize: fontSize(16) }]}>{t("+ Novo cartão personalizado")}</Text>
         </Pressable>
 
         {/* Reset */}
@@ -232,10 +225,10 @@ export default function CopingCardsScreen() {
           style={styles.resetButton}
           onPress={handleReset}
           accessibilityRole="button"
-          accessibilityLabel="Restaurar cartões padrão"
-          accessibilityHint="Remove cartões personalizados e volta aos cartões padrão, mantendo favoritos"
+          accessibilityLabel={t("Restaurar cartões padrão")}
+          accessibilityHint={t("Remove cartões personalizados e volta aos cartões padrão, mantendo favoritos")}
         >
-          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>Restaurar padrões</Text>
+          <Text style={[styles.resetButtonText, { fontSize: fontSize(16) }]}>{t("Restaurar padrões")}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

@@ -1,3 +1,4 @@
+import { usePreferencesHydrated } from "@/stores/preferencesStore";
 import { Stack, useRootNavigationState, useRouter, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -52,14 +53,14 @@ function ThemedStack() {
 
 export default function RootLayout() {
   const { hasHydrated } = useThemeMode();
+  const preferencesHydrated = usePreferencesHydrated();
 
   useEffect(() => {
-    // Só oculta o splash depois da reidratação, para não exibir um flash com
-    // a paleta errada quando o usuário tenha salvo o tema claro.
-    if (hasHydrated) {
+    // Aguarda a leitura das preferências de tema e idioma.
+    if (hasHydrated && preferencesHydrated) {
       void SplashScreen.hideAsync();
     }
-  }, [hasHydrated]);
+  }, [hasHydrated, preferencesHydrated]);
 
   return (
     <SafeAreaProvider>

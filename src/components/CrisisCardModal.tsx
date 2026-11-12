@@ -1,3 +1,5 @@
+import { localizeCrisisMessage } from "@/lib/localizedContent";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   View,
@@ -35,9 +37,10 @@ interface ScrollViewEvent {
  * - Sem elementos piscando ou animações complexas
  */
 export function CrisisCardModal() {
+  const { t } = useTranslation();
   const { messages: allMessages, contacts, activeMessageId, setActiveMessage, primaryContactId } =
     useCrisisStore();
-  const messages = useMemo(() => allMessages.filter((message) => !message.hidden), [allMessages]);
+  const messages = useMemo(() => allMessages.filter((message) => !message.hidden).map((message) => localizeCrisisMessage(message, t)), [allMessages, t]);
   const { colors } = useThemeMode();
   const selectedIndex = messages.findIndex((message) => message.id === activeMessageId);
   const currentIndex = Math.max(0, selectedIndex);
@@ -87,7 +90,7 @@ export function CrisisCardModal() {
       await Linking.openURL(url);
     } catch {
       setActionError(
-        `Não foi possível abrir ${action}. Verifique se há um aplicativo disponível.`
+        t("Não foi possível abrir {0}. Verifique se há um aplicativo disponível.", action)
       );
     }
   };
@@ -96,7 +99,7 @@ export function CrisisCardModal() {
   const handleEmergencyCall = () => {
     if (emergencyContact?.phone) {
       trigger("success");
-      void openEmergencyLink(`tel:${emergencyContact.phone}`, "o telefone");
+      void openEmergencyLink(`tel:${emergencyContact.phone}`, t("o telefone"));
     }
   };
 
@@ -107,7 +110,7 @@ export function CrisisCardModal() {
       const message = encodeURIComponent(currentMessage?.content || "");
       void openEmergencyLink(
         `sms:${emergencyContact.phone}?body=${message}`,
-        "o aplicativo de mensagens"
+        t("o aplicativo de mensagens")
       );
     }
   };
@@ -118,10 +121,10 @@ export function CrisisCardModal() {
     <View style={styles.container}>
       {!currentMessage && (
         <View>
-          <Text style={styles.messageTitle}>Nenhuma mensagem visível</Text>
+          <Text style={styles.messageTitle}>{t("Nenhuma mensagem visível")}</Text>
           <Link href="/crisis-settings" asChild>
-            <Pressable accessibilityRole="button" accessibilityLabel="Escolher mensagens do cartão">
-              <Text style={styles.emergencyButtonText}>Escolher mensagens do cartão</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={t("Escolher mensagens do cartão")}>
+              <Text style={styles.emergencyButtonText}>{t("Escolher mensagens do cartão")}</Text>
             </Pressable>
           </Link>
         </View>
@@ -137,9 +140,7 @@ export function CrisisCardModal() {
 
       {/* Instrução de navegação sutil */}
       {messages.length > 1 && (
-        <Text style={styles.swipeHint}>
-          Deslize para ver mais mensagens
-        </Text>
+        <Text style={styles.swipeHint}>{t("Deslize para ver mais mensagens")}</Text>
       )}
 
       {/* Mensagens com navegação por gesto */}
@@ -157,7 +158,7 @@ export function CrisisCardModal() {
         {messages.map((message) => (
           <ScrollView key={message.id} style={{ width: viewportWidth }}
             contentContainerStyle={styles.messageContainer} nestedScrollEnabled
-            showsVerticalScrollIndicator accessibilityLabel={`Cartão ${message.title}`}>
+            showsVerticalScrollIndicator accessibilityLabel={t("Cartão {0}", message.title)}>
             <View style={styles.messageContentWrapper}>
               <Text style={styles.messageTitle}>{message.title}</Text>
               <View style={styles.divider} />
@@ -184,12 +185,10 @@ export function CrisisCardModal() {
             style={styles.emergencyButton}
             onPress={handleEmergencyCall}
             accessibilityRole="button"
-            accessibilityLabel={`Ligar para ${emergencyContact.name}`}
-            accessibilityHint="Abre o telefone para discar"
+            accessibilityLabel={t("Ligar para {0}", emergencyContact.name)}
+            accessibilityHint={t("Abre o telefone para discar")}
           >
-            <Text style={styles.emergencyButtonText}>
-              Ligar para {emergencyContact.name}
-            </Text>
+            <Text style={styles.emergencyButtonText}>{t("Ligar para {0}", emergencyContact.name)}</Text>
           </Pressable>
 
           <Pressable
@@ -198,12 +197,10 @@ export function CrisisCardModal() {
             disabled={!currentMessage}
             accessibilityState={{ disabled: !currentMessage }}
             accessibilityRole="button"
-            accessibilityLabel={`Enviar mensagem para ${emergencyContact.name}`}
-            accessibilityHint="Abre o aplicativo de mensagens"
+            accessibilityLabel={t("Enviar mensagem para {0}", emergencyContact.name)}
+            accessibilityHint={t("Abre o aplicativo de mensagens")}
           >
-            <Text style={styles.emergencyButtonSecondaryText}>
-              Enviar mensagem
-            </Text>
+            <Text style={styles.emergencyButtonSecondaryText}>{t("Enviar mensagem")}</Text>
           </Pressable>
         </View>
       )}

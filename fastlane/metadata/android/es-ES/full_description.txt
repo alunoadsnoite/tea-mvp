@@ -1,0 +1,3 @@
+TEA Autonomia ofrece herramientas sin conexión para personas adultas autistas. Incluye una tarjeta de comunicación en crisis, contactos de emergencia, registros de batería social y carga sensorial, rutinas visuales, tarjetas de regulación y respiración guiada.
+
+Los datos se guardan en tu dispositivo. La aplicación tiene temas claro y oscuro, respeta el tamaño de letra del sistema en sus pantallas principales e incluye un widget de Android para abrir la tarjeta de crisis. Elige portugués de Brasil, inglés o español en Configuración.

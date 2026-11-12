@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +14,7 @@ import { useThemeMode } from "@/hooks/useThemeMode";
  * Suporta rotação automática (portrait e landscape).
  */
 export default function CrisisCardScreen() {
+  const { t } = useTranslation();
   const { colors } = useThemeMode();
 
   return (
@@ -20,10 +22,10 @@ export default function CrisisCardScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "Cartão de Crise",
+          headerTitle: t("Cartão de Crise"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
-          headerBackTitle: "Voltar",
+          headerBackTitle: t("Voltar"),
           orientation: "default",
         }}
       />

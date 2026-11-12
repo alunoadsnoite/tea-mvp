@@ -1,3 +1,5 @@
+import { localizeCopingCard } from "@/lib/localizedContent";
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo, useState } from "react";
 import {
   View,
@@ -19,16 +21,18 @@ import { ThemeColors } from "@/constants/theme";
  * Mostra os passos do cartão de forma clara e sequencial.
  */
 export default function CopingCardDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const card = useCopingCardsStore((state) =>
+  const savedCard = useCopingCardsStore((state) =>
     id ? state.getCardById(id) : undefined
   );
   const toggleFavorite = useCopingCardsStore((state) => state.toggleFavorite);
 
+  const card = savedCard && localizeCopingCard(savedCard, t);
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
@@ -36,14 +40,14 @@ export default function CopingCardDetailScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>Cartão não encontrado</Text>
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{t("Cartão não encontrado")}</Text>
           <Pressable
             style={styles.backButton}
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Voltar para as estratégias de calma"
+            accessibilityLabel={t("Voltar para as estratégias de calma")}
           >
-            <Text style={[styles.backButtonText, { fontSize: fontSize(16) }]}>Voltar</Text>
+            <Text style={[styles.backButtonText, { fontSize: fontSize(16) }]}>{t("Voltar")}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -78,7 +82,7 @@ export default function CopingCardDetailScreen() {
               onPress={() => toggleFavorite(card.id)}
               style={styles.headerFavorite}
               accessibilityRole="checkbox"
-              accessibilityLabel={card.isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+              accessibilityLabel={card.isFavorite ? t("Remover dos favoritos") : t("Adicionar aos favoritos")}
               accessibilityState={{ checked: card.isFavorite }}
             >
               <Text style={styles.headerFavoriteIcon}>
@@ -95,9 +99,7 @@ export default function CopingCardDetailScreen() {
 
         {/* Progresso */}
         <View style={styles.progressContainer}>
-          <Text style={[styles.progressText, { fontSize: fontSize(14) }]}>
-            Passo {Math.min(currentStep + 1, card.steps.length)} de {card.steps.length}
-          </Text>
+          <Text style={[styles.progressText, { fontSize: fontSize(14) }]}>{t("Passo {0} de {1}", Math.min(currentStep + 1, card.steps.length), card.steps.length)}</Text>
           <View style={styles.progressBar}>
             <View
               style={[
@@ -113,18 +115,14 @@ export default function CopingCardDetailScreen() {
         {/* Passo atual */}
         {!isComplete ? (
           <View style={styles.stepCard}>
-            <Text style={[styles.stepNumber, { fontSize: fontSize(14) }]}>
-              Passo {currentStep + 1}
-            </Text>
+            <Text style={[styles.stepNumber, { fontSize: fontSize(14) }]}>{t("Passo {0}", currentStep + 1)}</Text>
             <Text style={[styles.stepText, { fontSize: fontSize(24) }]}>
               {card.steps[currentStep]}
             </Text>
           </View>
         ) : (
           <View style={styles.completedCard}>
-            <Text style={[styles.completedText, { fontSize: fontSize(20) }]}>
-              Exercício concluído. Como você se sente?
-            </Text>
+            <Text style={[styles.completedText, { fontSize: fontSize(20) }]}>{t("Exercício concluído. Como você se sente?")}</Text>
           </View>
         )}
 
@@ -136,12 +134,10 @@ export default function CopingCardDetailScreen() {
                 style={styles.secondaryButton}
                 onPress={() => setCurrentStep(currentStep - 1)}
                 accessibilityRole="button"
-                accessibilityLabel="Passo anterior"
-                accessibilityHint={`Volta para o passo ${currentStep}`}
+                accessibilityLabel={t("Passo anterior")}
+                accessibilityHint={t("Volta para o passo {0}", currentStep)}
               >
-                <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>
-                  Passo anterior
-                </Text>
+                <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>{t("Passo anterior")}</Text>
               </Pressable>
             )}
 
@@ -149,10 +145,10 @@ export default function CopingCardDetailScreen() {
               style={styles.primaryButton}
               onPress={handleNextStep}
               accessibilityRole="button"
-              accessibilityLabel={isLastStep ? "Concluir exercício" : "Próximo passo"}
+              accessibilityLabel={isLastStep ? t("Concluir exercício") : t("Próximo passo")}
             >
               <Text style={[styles.primaryButtonText, { fontSize: fontSize(18) }]}>
-                {isLastStep ? "Concluir" : "Próximo passo"}
+                {isLastStep ? t("Concluir") : t("Próximo passo")}
               </Text>
             </Pressable>
           </View>
@@ -164,19 +160,17 @@ export default function CopingCardDetailScreen() {
               style={styles.secondaryButton}
               onPress={handleRestart}
               accessibilityRole="button"
-              accessibilityLabel="Recomeçar exercício"
+              accessibilityLabel={t("Recomeçar exercício")}
             >
-              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>
-                Recomeçar
-              </Text>
+              <Text style={[styles.secondaryButtonText, { fontSize: fontSize(16) }]}>{t("Recomeçar")}</Text>
             </Pressable>
             <Pressable
               style={styles.primaryButton}
               onPress={() => router.back()}
               accessibilityRole="button"
-              accessibilityLabel="Voltar para as estratégias de calma"
+              accessibilityLabel={t("Voltar para as estratégias de calma")}
             >
-              <Text style={[styles.primaryButtonText, { fontSize: fontSize(18) }]}>Voltar</Text>
+              <Text style={[styles.primaryButtonText, { fontSize: fontSize(18) }]}>{t("Voltar")}</Text>
             </Pressable>
           </View>
         )}

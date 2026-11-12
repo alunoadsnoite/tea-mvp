@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,6 +18,7 @@ const MINUTES_OPTIONS = [1, 2, 3, 5, 10, 15, 20, 30];
  * Com `?id=<routineId>` a mesma tela edita uma rotina existente.
  */
 export default function NovaRotinaScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { fontSize } = useFontScale();
@@ -76,7 +78,7 @@ export default function NovaRotinaScreen() {
       .filter((s) => s.title.trim() !== "")
       .map((s) => ({ ...s, title: s.title.trim() }));
     if (!name.trim() || validSteps.length === 0) {
-      setFormError("Preencha o nome e pelo menos um passo com título para salvar.");
+      setFormError(t("Preencha o nome e pelo menos um passo com título para salvar."));
       return;
     }
     setFormError(null);
@@ -104,58 +106,58 @@ export default function NovaRotinaScreen() {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: isEditing ? "Editar Rotina" : "Nova Rotina",
+          headerTitle: isEditing ? t("Editar Rotina") : t("Nova Rotina"),
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
-          headerBackTitle: "Voltar",
+          headerBackTitle: t("Voltar"),
         }}
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Nome */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(20) }]}>Nome da rotina</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(20) }]}>{t("Nome da rotina")}</Text>
           <TextInput
             style={[styles.input, { fontSize: fontSize(16) }]}
-            placeholder="Ex: Preparação matinal"
+            placeholder={t("Ex: Preparação matinal")}
             placeholderTextColor={colors.placeholder}
             value={name}
             onChangeText={(text) => {
               setName(text);
               setFormError(null);
             }}
-            accessibilityLabel="Nome da rotina"
+            accessibilityLabel={t("Nome da rotina")}
           />
         </View>
 
         {/* Descrição */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>Descrição (opcional)</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(16) }]}>{t("Descrição (opcional)")}</Text>
           <TextInput
             style={[styles.input, styles.textArea, { fontSize: fontSize(16) }]}
-            placeholder="Por que esta rotina é importante?"
+            placeholder={t("Por que esta rotina é importante?")}
             placeholderTextColor={colors.placeholder}
             value={description}
             onChangeText={setDescription}
             multiline
             numberOfLines={3}
-            accessibilityLabel="Descrição da rotina (opcional)"
+            accessibilityLabel={t("Descrição da rotina (opcional)")}
           />
         </View>
 
         {/* Passos */}
         <View style={styles.field}>
-          <Text style={[styles.fieldLabel, { fontSize: fontSize(20) }]}>Passos</Text>
+          <Text style={[styles.fieldLabel, { fontSize: fontSize(20) }]}>{t("Passos")}</Text>
           {steps.map((step, index) => (
             <View key={step.id} style={styles.stepCard}>
               <View style={styles.stepHeader}>
-                <Text style={[styles.stepNumber, { fontSize: fontSize(14) }]}>Passo {index + 1}</Text>
+                <Text style={[styles.stepNumber, { fontSize: fontSize(14) }]}>{t("Passo {0}", index + 1)}</Text>
                 {steps.length > 1 && (
                   <Pressable
                     style={styles.removeStepButton}
                     onPress={() => handleRemoveStep(index)}
                     accessibilityRole="button"
-                    accessibilityLabel={`Remover passo ${index + 1}`}
+                    accessibilityLabel={t("Remover passo {0}", index + 1)}
                   >
                     <Text style={[styles.removeStepText, { fontSize: fontSize(18) }]}>×</Text>
                   </Pressable>
@@ -164,16 +166,16 @@ export default function NovaRotinaScreen() {
 
               <TextInput
                 style={[styles.input, { fontSize: fontSize(16) }]}
-                placeholder="Título do passo"
+                placeholder={t("Título do passo")}
                 placeholderTextColor={colors.placeholder}
                 value={step.title}
                 onChangeText={(title) => handleUpdateStep(index, { title })}
-                accessibilityLabel={`Título do passo ${index + 1}`}
+                accessibilityLabel={t("Título do passo {0}", index + 1)}
               />
 
               <TextInput
                 style={[styles.input, styles.textArea, { fontSize: fontSize(16) }]}
-                placeholder="Descrição opcional"
+                placeholder={t("Descrição opcional")}
                 placeholderTextColor={colors.placeholder}
                 value={step.description}
                 onChangeText={(stepDescription) =>
@@ -181,11 +183,11 @@ export default function NovaRotinaScreen() {
                 }
                 multiline
                 numberOfLines={2}
-                accessibilityLabel={`Descrição do passo ${index + 1} (opcional)`}
+                accessibilityLabel={t("Descrição do passo {0} (opcional)", index + 1)}
               />
 
               <View style={styles.minutesRow}>
-                <Text style={[styles.minutesLabel, { fontSize: fontSize(14) }]}>Minutos estimados:</Text>
+                <Text style={[styles.minutesLabel, { fontSize: fontSize(14) }]}>{t("Minutos estimados:")}</Text>
                 <View style={styles.minutesButtons}>
                   {MINUTES_OPTIONS.map((m) => (
                     <Pressable
@@ -196,7 +198,7 @@ export default function NovaRotinaScreen() {
                       ]}
                       onPress={() => handleUpdateStep(index, { estimatedMinutes: m })}
                       accessibilityRole="radio"
-                      accessibilityLabel={`${m} minutos`}
+                      accessibilityLabel={t("{0} minutos", m)}
                       accessibilityState={{ selected: step.estimatedMinutes === m }}
                     >
                       <Text
@@ -218,9 +220,9 @@ export default function NovaRotinaScreen() {
             style={styles.addStepButton}
             onPress={handleAddStep}
             accessibilityRole="button"
-            accessibilityLabel="Adicionar passo à rotina"
+            accessibilityLabel={t("Adicionar passo à rotina")}
           >
-            <Text style={[styles.addStepText, { fontSize: fontSize(16) }]}>Adicionar passo</Text>
+            <Text style={[styles.addStepText, { fontSize: fontSize(16) }]}>{t("Adicionar passo")}</Text>
           </Pressable>
         </View>
 
@@ -238,10 +240,10 @@ export default function NovaRotinaScreen() {
           style={styles.saveButton}
           onPress={handleSave}
           accessibilityRole="button"
-          accessibilityLabel={isEditing ? "Salvar alterações da rotina" : "Criar rotina"}
+          accessibilityLabel={isEditing ? t("Salvar alterações da rotina") : t("Criar rotina")}
         >
           <Text style={[styles.saveButtonText, { fontSize: fontSize(18) }]}>
-            {isEditing ? "Salvar Rotina" : "Criar Rotina"}
+            {isEditing ? t("Salvar Rotina") : t("Criar Rotina")}
           </Text>
         </Pressable>
       </ScrollView>

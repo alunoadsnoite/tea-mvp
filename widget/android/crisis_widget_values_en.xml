@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crisis_widget_title">Crisis card</string>
+    <string name="crisis_widget_subtitle">Tap to open</string>
+    <string name="crisis_widget_description">Crisis card. Tap to go directly to the crisis screen.</string>
+</resources>
