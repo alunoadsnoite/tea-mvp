@@ -6,6 +6,8 @@ import Settings from "@/app/settings";
 import { CrisisCardModal } from "@/components/CrisisCardModal";
 import { localizeCopingCard, localizeRoutine } from "@/lib/localizedContent";
 import { translate } from "@/lib/i18n";
+import english from "@/lib/en-US.json";
+import spanish from "@/lib/es-ES.json";
 import { usePreferencesStore } from "@/stores/preferencesStore";
 import { useCrisisStore } from "@/stores/crisisStore";
 import { DEFAULT_COPING_CARDS } from "@/types/coping";
@@ -40,22 +42,25 @@ test("old preferences retain their values and default to Brazilian Portuguese", 
   });
 });
 
-test("settings exposes a selected radio, translates immediately and restores English on hydration", async () => {
+test.each([
+  ["English", "Reduce motion"],
+  ["Español", "Reducir movimiento"],
+])("settings translates immediately and restores %s on hydration", async (language, label) => {
   let screen!: renderer.ReactTestRenderer;
   act(() => { screen = renderer.create(<Settings />); });
-  const option = (label: string) => screen.root.findAllByType(Pressable).find(
-    (button) => button.props.accessibilityRole === "radio" && button.props.accessibilityLabel === label
+  const option = (name: string) => screen.root.findAllByType(Pressable).find(
+    (button) => button.props.accessibilityRole === "radio" && button.props.accessibilityLabel === name
   )!;
   expect(option("Português (Brasil)").props.accessibilityState.checked).toBe(true);
-  act(() => option("English").props.onPress());
-  expect(option("English").props.accessibilityState.checked).toBe(true);
-  expect(JSON.stringify(screen.toJSON())).toContain("Reduce motion");
+  act(() => option(language).props.onPress());
+  expect(option(language).props.accessibilityState.checked).toBe(true);
+  expect(JSON.stringify(screen.toJSON())).toContain(label);
 
   const persisted = (await AsyncStorage.getItem(preferencesKey))!;
   act(() => usePreferencesStore.getState().setLanguage("pt-BR"));
   await AsyncStorage.setItem(preferencesKey, persisted);
   await act(async () => { await usePreferencesStore.persist.rehydrate(); });
-  expect(option("English").props.accessibilityState.checked).toBe(true);
+  expect(option(language).props.accessibilityState.checked).toBe(true);
   act(() => screen.unmount());
 });
 
@@ -92,4 +97,15 @@ test("built-in content keeps its identifiers and user choices in English", () =>
     id: routine.steps[0].id, estimatedMinutes: routine.steps[0].estimatedMinutes, title: "Organize your desk",
   });
   expect(localizeRoutine({ ...routine, isDefault: false }, t).name).toBe(routine.name);
+});
+
+
+test("both translation catalogs have the same messages and interpolation tokens", () => {
+  const tokens = (value: string) => (value.match(/\{\d+\}/g) ?? []).sort();
+  expect(Object.keys(spanish).sort()).toEqual(Object.keys(english).sort());
+  for (const [key, translation] of Object.entries(english)) {
+    expect(tokens(translation)).toEqual(tokens(key));
+    expect(tokens(spanish[key as keyof typeof spanish])).toEqual(tokens(key));
+  }
+  expect(translate["es-ES"]("Passo {0} de {1}", 2, 5)).toBe("Paso 2 de 5");
 });

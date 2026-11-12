@@ -118,7 +118,7 @@ Os ajustes da 1.0.13 ainda não estão na versão integrada ao F-Droid.
 - Respiração Guiada (4-4-4-4 e 4-7-8)
 
 ## Melhorias locais em validação
-- Português do Brasil e inglês em **Configurações → Idioma**. Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md).
+- Português do Brasil, inglês e espanhol em **Configurações → Idioma**. Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md).
 
 - Rotinas em andamento oferecem Continuar e preservam passo, pausa e tempo. Iniciar outra rotina pede confirmação.
 - A Home permite rolagem; o histórico fica no check-in e a edição do cartão fica em Configurações.

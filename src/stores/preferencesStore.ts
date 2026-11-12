@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import type { Language } from "@/lib/i18n";
+import { isLanguage, type Language } from "@/lib/i18n";
 
 interface PreferencesStore {
   language: Language;
@@ -42,7 +42,7 @@ export const usePreferencesStore = create<PreferencesStore>()(
       },
       merge: (persisted, current) => {
         const saved = persisted as Partial<PreferencesStore> | undefined;
-        return { ...current, ...saved, language: saved?.language === "en-US" ? "en-US" : "pt-BR" };
+        return { ...current, ...saved, language: isLanguage(saved?.language) ? saved.language : "pt-BR" };
       },
     }
   )
