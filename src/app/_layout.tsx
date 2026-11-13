@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { usePreferencesHydrated } from "@/stores/preferencesStore";
 import { Stack, useRootNavigationState, useRouter, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -13,10 +14,11 @@ import { useThemeMode } from "@/hooks/useThemeMode";
 // nomeado `ErrorBoundary` em layout/rota (o antigo `_error.tsx` era ignorado).
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/RouteErrorBoundary";
 
-// Mantém o splash screen até que o tema salvo seja lido do armazenamento
+// Mantém o splash até que as preferências salvas sejam lidas.
 void SplashScreen.preventAutoHideAsync();
 
 function ThemedStack() {
+  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const { colors, isDark } = useThemeMode();
   const router = useRouter();
@@ -37,6 +39,7 @@ function ThemedStack() {
       <Stack
         screenOptions={{
           headerShown: false,
+          headerBackTitle: t("Voltar"),
           contentStyle: { backgroundColor: colors.background },
           animation: reduceMotion ? "none" : "fade", // Animação suave, sem elementos piscando
         }}

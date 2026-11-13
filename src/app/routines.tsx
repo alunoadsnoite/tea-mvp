@@ -110,7 +110,7 @@ export default function RoutinesListScreen() {
                 </Text>
               ))}
               {routine.steps.length > 3 && (
-                <Text style={[styles.moreSteps, { fontSize: fontSize(12) }]}>{t("+{0} passos", routine.steps.length - 3)}</Text>
+                <Text style={[styles.moreSteps, { fontSize: fontSize(12) }]}>{t(routine.steps.length === 4 ? "+{0} passo" : "+{0} passos", routine.steps.length - 3)}</Text>
               )}
             </View>
 

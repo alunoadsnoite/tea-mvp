@@ -198,7 +198,7 @@ export default function NovaRotinaScreen() {
                       ]}
                       onPress={() => handleUpdateStep(index, { estimatedMinutes: m })}
                       accessibilityRole="radio"
-                      accessibilityLabel={t("{0} minutos", m)}
+                      accessibilityLabel={t(m === 1 ? "{0} minuto" : "{0} minutos", m)}
                       accessibilityState={{ selected: step.estimatedMinutes === m }}
                     >
                       <Text

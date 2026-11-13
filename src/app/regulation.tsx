@@ -154,13 +154,13 @@ export default function CopingCardsScreen() {
                   onPress={() => router.push(`/coping-card/${card.id}`)}
                   accessibilityRole="button"
                   accessibilityLabel={card.title}
-                  accessibilityHint={t("Abre o cartão com {0} passos", card.steps.length)}
+                  accessibilityHint={t(card.steps.length === 1 ? "Abre o cartão com {0} passo" : "Abre o cartão com {0} passos", card.steps.length)}
                 >
                   <Text style={[styles.cardTitle, { fontSize: fontSize(18) }]}>{card.title}</Text>
                   <Text style={[styles.cardDescription, { fontSize: fontSize(14) }]}>
                     {card.description}
                   </Text>
-                  <Text style={[styles.cardSteps, { fontSize: fontSize(12) }]}>{t("{0} passos", card.steps.length)}</Text>
+                  <Text style={[styles.cardSteps, { fontSize: fontSize(12) }]}>{t(card.steps.length === 1 ? "{0} passo" : "{0} passos", card.steps.length)}</Text>
                 </Pressable>
 
                 <Pressable

@@ -28,7 +28,13 @@ beforeEach(async () => {
   useCrisisStore.getState().resetToDefaults();
 });
 
-afterEach(() => jest.restoreAllMocks());
+let screen: renderer.ReactTestRenderer | undefined;
+
+afterEach(() => {
+  act(() => screen?.unmount());
+  screen = undefined;
+  jest.restoreAllMocks();
+});
 
 test("old preferences retain their values and default to Brazilian Portuguese", async () => {
   usePreferencesStore.setState({ language: "en-US" });
@@ -46,22 +52,20 @@ test.each([
   ["English", "Reduce motion"],
   ["Español", "Reducir movimiento"],
 ])("settings translates immediately and restores %s on hydration", async (language, label) => {
-  let screen!: renderer.ReactTestRenderer;
   act(() => { screen = renderer.create(<Settings />); });
-  const option = (name: string) => screen.root.findAllByType(Pressable).find(
+  const option = (name: string) => screen!.root.findAllByType(Pressable).find(
     (button) => button.props.accessibilityRole === "radio" && button.props.accessibilityLabel === name
   )!;
   expect(option("Português (Brasil)").props.accessibilityState.checked).toBe(true);
   act(() => option(language).props.onPress());
   expect(option(language).props.accessibilityState.checked).toBe(true);
-  expect(JSON.stringify(screen.toJSON())).toContain(label);
+  expect(JSON.stringify(screen!.toJSON())).toContain(label);
 
   const persisted = (await AsyncStorage.getItem(preferencesKey))!;
   act(() => usePreferencesStore.getState().setLanguage("pt-BR"));
   await AsyncStorage.setItem(preferencesKey, persisted);
   await act(async () => { await usePreferencesStore.persist.rehydrate(); });
   expect(option(language).props.accessibilityState.checked).toBe(true);
-  act(() => screen.unmount());
 });
 
 test("crisis SMS translates the built-in message and keeps saved edits verbatim", async () => {
@@ -69,9 +73,9 @@ test("crisis SMS translates the built-in message and keeps saved edits verbatim"
   store.addContact({ name: "Apoio", phone: "123", relationship: "" });
   usePreferencesStore.getState().setLanguage("en-US");
   const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
-  let screen!: renderer.ReactTestRenderer;
+  openURL.mockClear();
   act(() => { screen = renderer.create(<CrisisCardModal />); });
-  const send = () => screen.root.findAllByType(Pressable).find(
+  const send = () => screen!.root.findAllByType(Pressable).find(
     (button) => button.props.accessibilityLabel === "Send a message to Apoio"
   )!.props.onPress();
   await act(async () => { send(); });
@@ -83,7 +87,6 @@ test("crisis SMS translates the built-in message and keeps saved edits verbatim"
   act(() => store.updateMessage(DEFAULT_MESSAGES[0].id, { content: "Mensagem pessoal {0}" }));
   await act(async () => { send(); });
   expect(decodeURIComponent(openURL.mock.calls[1][0])).toBe("sms:123?body=Mensagem pessoal {0}");
-  act(() => screen.unmount());
 });
 
 test("built-in content keeps its identifiers and user choices in English", () => {
@@ -99,7 +102,6 @@ test("built-in content keeps its identifiers and user choices in English", () =>
   expect(localizeRoutine({ ...routine, isDefault: false }, t).name).toBe(routine.name);
 });
 
-
 test("both translation catalogs have the same messages and interpolation tokens", () => {
   const tokens = (value: string) => (value.match(/\{\d+\}/g) ?? []).sort();
   expect(Object.keys(spanish).sort()).toEqual(Object.keys(english).sort());
@@ -108,4 +110,22 @@ test("both translation catalogs have the same messages and interpolation tokens"
     expect(tokens(spanish[key as keyof typeof spanish])).toEqual(tokens(key));
   }
   expect(translate["es-ES"]("Passo {0} de {1}", 2, 5)).toBe("Paso 2 de 5");
+});
+
+test("developer feedback opens a draft with the Spanish subject", async () => {
+  usePreferencesStore.getState().setLanguage("es-ES");
+  const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+  openURL.mockClear();
+  act(() => { screen = renderer.create(<Settings />); });
+  const button = screen!.root.findAllByType(Pressable).find(
+    ({ props }) => props.accessibilityLabel === translate["es-ES"]("Enviar e-mail ao desenvolvedor")
+  )!;
+  await act(async () => { button.props.onPress(); });
+  expect(decodeURIComponent(openURL.mock.calls[0][0])).toContain("?subject=TEA Autonomia - Comentarios");
+});
+
+test("singular counters use singular units in each language", () => {
+  expect(translate["pt-BR"]("+{0} passo", 1)).toBe("+1 passo");
+  expect(translate["en-US"]("{0} minuto", 1)).toBe("1 minute");
+  expect(translate["es-ES"]("Abre o cartão com {0} passo", 1)).toBe("Abre la tarjeta con 1 paso");
 });

@@ -54,7 +54,7 @@ export default function SettingsScreen() {
 
   const handleContactDeveloper = () => {
     Linking.openURL(
-      `mailto:${DEVELOPER_EMAIL}?subject=TEA%20Autonomia%20-%20Feedback`
+      `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t("TEA Autonomia - Feedback"))}`
     ).catch(() => {
       // Sem app de e-mail disponível: nada a abrir (o botão não é crítico)
     });
