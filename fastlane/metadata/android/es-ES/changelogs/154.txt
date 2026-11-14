@@ -1,0 +1,1 @@
+Traduce la etiqueta para volver y el asunto del correo y corrige los contadores en singular.

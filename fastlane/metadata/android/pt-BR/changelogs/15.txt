@@ -1,0 +1,1 @@
+Traduz o rótulo de voltar e o assunto do e-mail e corrige os contadores no singular.
