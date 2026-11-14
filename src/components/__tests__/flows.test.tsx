@@ -62,9 +62,9 @@ describe("fluxos de rotina e comunicação", () => {
     store.messages.forEach((message) => store.setMessageHidden(message.id, true));
     let screen: ReturnType<typeof create>;
     act(() => { screen = create(<CrisisCardModal />); });
-    expect(screen.root.findAllByProps({ accessibilityLabel: "Ligar para Apoio" }).length).toBeGreaterThan(0);
+    expect(screen.root.findAllByProps({ accessibilityLabel: "Abrir telefone para Apoio" }).length).toBeGreaterThan(0);
     expect(screen.root.findAllByProps({ accessibilityLabel: "Escolher mensagens do cartão" }).length).toBeGreaterThan(0);
-    expect(screen.root.findAllByProps({ accessibilityLabel: "Enviar mensagem para Apoio" })[0].props.disabled).toBe(true);
+    expect(screen.root.findAllByProps({ accessibilityLabel: "Preparar SMS para Apoio" })[0].props.disabled).toBe(true);
     act(() => screen.unmount());
   });
 });

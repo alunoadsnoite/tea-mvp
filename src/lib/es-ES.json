@@ -349,5 +349,13 @@
   "Água Fria": "Agua fría",
   "às {0}": "a las {0}",
   "★ Favoritos": "★ Favoritos",
-  "☆ Favoritos": "☆ Favoritos"
+  "☆ Favoritos": "☆ Favoritos",
+  "Privacidade": "Privacidad",
+  "O app salva check-ins, rotinas, cartões, contatos de apoio e preferências no aparelho. O desenvolvedor não recebe esses registros pelo app. O app solicita ao Android que exclua seus dados de backups e transferências entre aparelhos.": "La aplicación guarda registros, rutinas, tarjetas, contactos de apoyo y preferencias en el dispositivo. El desarrollador no recibe estos datos a través de la aplicación. La aplicación pide a Android que excluya sus datos de las copias de seguridad y las transferencias entre dispositivos.",
+  "Para apagar registros, use o Histórico de Check-ins e as configurações do Cartão de Crise. Para apagar todos os dados locais, limpe o armazenamento do app nas configurações do Android.": "Para borrar registros, usa el Historial de registros y los ajustes de la Tarjeta de crisis. Para borrar todos los datos locales, elimina el almacenamiento de la aplicación en los ajustes de Android.",
+  "Ao abrir o telefone ou o SMS pelo cartão, o app passa o número e, no caso do SMS, o texto do cartão ao aplicativo escolhido. Você decide se quer ligar ou enviar. Dúvidas sobre privacidade: {0}.": "Al abrir el teléfono o SMS desde la tarjeta, la aplicación pasa el número y, para SMS, el texto de la tarjeta a la aplicación elegida. Tú decides si quieres llamar o enviar. Consultas de privacidad: {0}.",
+  "Abrir telefone para {0}": "Abrir teléfono para {0}",
+  "Preparar SMS para {0}": "Preparar SMS para {0}",
+  "Preparar SMS": "Preparar SMS",
+  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Abre el SMS con el texto de la tarjeta para que puedas revisarlo antes de enviarlo."
 }

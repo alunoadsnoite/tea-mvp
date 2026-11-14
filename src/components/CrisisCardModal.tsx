@@ -185,10 +185,10 @@ export function CrisisCardModal() {
             style={styles.emergencyButton}
             onPress={handleEmergencyCall}
             accessibilityRole="button"
-            accessibilityLabel={t("Ligar para {0}", emergencyContact.name)}
+            accessibilityLabel={t("Abrir telefone para {0}", emergencyContact.name)}
             accessibilityHint={t("Abre o telefone para discar")}
           >
-            <Text style={styles.emergencyButtonText}>{t("Ligar para {0}", emergencyContact.name)}</Text>
+            <Text style={styles.emergencyButtonText}>{t("Abrir telefone para {0}", emergencyContact.name)}</Text>
           </Pressable>
 
           <Pressable
@@ -197,10 +197,10 @@ export function CrisisCardModal() {
             disabled={!currentMessage}
             accessibilityState={{ disabled: !currentMessage }}
             accessibilityRole="button"
-            accessibilityLabel={t("Enviar mensagem para {0}", emergencyContact.name)}
-            accessibilityHint={t("Abre o aplicativo de mensagens")}
+            accessibilityLabel={t("Preparar SMS para {0}", emergencyContact.name)}
+            accessibilityHint={t("Abre o SMS com o texto do cartão para você revisar antes de enviar.")}
           >
-            <Text style={styles.emergencyButtonSecondaryText}>{t("Enviar mensagem")}</Text>
+            <Text style={styles.emergencyButtonSecondaryText}>{t("Preparar SMS")}</Text>
           </Pressable>
         </View>
       )}

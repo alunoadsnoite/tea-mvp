@@ -349,5 +349,13 @@
   "Água Fria": "Cold water",
   "às {0}": "at {0}",
   "★ Favoritos": "★ Favorites",
-  "☆ Favoritos": "☆ Favorites"
+  "☆ Favoritos": "☆ Favorites",
+  "Privacidade": "Privacy",
+  "O app salva check-ins, rotinas, cartões, contatos de apoio e preferências no aparelho. O desenvolvedor não recebe esses registros pelo app. O app solicita ao Android que exclua seus dados de backups e transferências entre aparelhos.": "The app stores check-ins, routines, cards, support contacts and preferences on the device. The developer does not receive these records through the app. The app asks Android to exclude its data from backups and device transfers.",
+  "Para apagar registros, use o Histórico de Check-ins e as configurações do Cartão de Crise. Para apagar todos os dados locais, limpe o armazenamento do app nas configurações do Android.": "To delete records, use Check-in History and the Crisis Card settings. To erase all local data, clear the app storage in Android settings.",
+  "Ao abrir o telefone ou o SMS pelo cartão, o app passa o número e, no caso do SMS, o texto do cartão ao aplicativo escolhido. Você decide se quer ligar ou enviar. Dúvidas sobre privacidade: {0}.": "When you open the dialer or SMS from the card, the app passes the number and, for SMS, the card text to the selected app. You decide whether to call or send. Privacy questions: {0}.",
+  "Abrir telefone para {0}": "Open dialer for {0}",
+  "Preparar SMS para {0}": "Compose SMS to {0}",
+  "Preparar SMS": "Compose SMS",
+  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Opens SMS with the card text so you can review it before sending."
 }

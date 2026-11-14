@@ -119,6 +119,14 @@ Use **Configurações → Idioma** para escolher **Português (Brasil)**, **Engl
 - Central de Cartões de Regulação (Coping Cards)
 - Respiração Guiada (4-4-4-4 e 4-7-8)
 
+## Privacidade
+
+O TEA Autonomia guarda check-ins, rotinas, cartões, contatos de apoio e preferências no aparelho. O desenvolvedor não recebe esses registros pelo app. O app solicita ao Android que exclua seus dados de backups e de transferências entre aparelhos.
+
+Use o Histórico de Check-ins e as configurações do Cartão de Crise para apagar registros. Para apagar todos os dados locais, limpe o armazenamento do app nas configurações do Android. Ao escolher uma ação no cartão, o número e, no caso do SMS, o texto são repassados ao aplicativo de telefone ou mensagens. Você decide se quer ligar ou enviar.
+
+Dúvidas sobre privacidade podem ser enviadas para valdenorsa@proton.me.
+
 ## Melhorias locais em validação
 - Veja o [roteiro de validação e publicação da atualização de idiomas](docs/PUBLICAR_IDIOMAS.md).
 

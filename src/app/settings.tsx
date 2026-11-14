@@ -160,6 +160,21 @@ export default function SettingsScreen() {
           </Pressable>
         </Link>
 
+        <View style={styles.section}>
+          <Text accessibilityRole="header" style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>
+            {t("Privacidade")}
+          </Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
+            {t("O app salva check-ins, rotinas, cartões, contatos de apoio e preferências no aparelho. O desenvolvedor não recebe esses registros pelo app. O app solicita ao Android que exclua seus dados de backups e transferências entre aparelhos.")}
+          </Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
+            {t("Para apagar registros, use o Histórico de Check-ins e as configurações do Cartão de Crise. Para apagar todos os dados locais, limpe o armazenamento do app nas configurações do Android.")}
+          </Text>
+          <Text style={[styles.sectionDescription, { fontSize: fontSize(14) }]}>
+            {t("Ao abrir o telefone ou o SMS pelo cartão, o app passa o número e, no caso do SMS, o texto do cartão ao aplicativo escolhido. Você decide se quer ligar ou enviar. Dúvidas sobre privacidade: {0}.", DEVELOPER_EMAIL)}
+          </Text>
+        </View>
+
         {/* Sobre */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Sobre")}</Text>

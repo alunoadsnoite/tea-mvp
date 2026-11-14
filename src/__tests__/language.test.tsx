@@ -76,7 +76,7 @@ test("crisis SMS translates the built-in message and keeps saved edits verbatim"
   openURL.mockClear();
   act(() => { screen = renderer.create(<CrisisCardModal />); });
   const send = () => screen!.root.findAllByType(Pressable).find(
-    (button) => button.props.accessibilityLabel === "Send a message to Apoio"
+    (button) => button.props.accessibilityLabel === "Compose SMS to Apoio"
   )!.props.onPress();
   await act(async () => { send(); });
   expect(decodeURIComponent(openURL.mock.calls[0][0])).toBe(
