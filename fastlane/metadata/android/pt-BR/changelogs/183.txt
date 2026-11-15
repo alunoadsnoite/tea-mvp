@@ -1,0 +1,1 @@
+Tela de abertura com o símbolo do infinito e validação do telefone no cartão de apoio.
