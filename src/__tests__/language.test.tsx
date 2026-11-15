@@ -70,7 +70,7 @@ test.each([
 
 test("crisis SMS translates the built-in message and keeps saved edits verbatim", async () => {
   const store = useCrisisStore.getState();
-  store.addContact({ name: "Apoio", phone: "123", relationship: "" });
+  store.addContact({ name: "Apoio", phone: "+55 (85) 99999-1234", relationship: "" });
   usePreferencesStore.getState().setLanguage("en-US");
   const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
   openURL.mockClear();
@@ -80,13 +80,19 @@ test("crisis SMS translates the built-in message and keeps saved edits verbatim"
   )!.props.onPress();
   await act(async () => { send(); });
   expect(decodeURIComponent(openURL.mock.calls[0][0])).toBe(
-    "sms:123?body=I'm experiencing sensory overload. I need a few minutes in a quiet place."
+    "sms:+5585999991234?body=I'm experiencing sensory overload. I need a few minutes in a quiet place."
   );
   expect(useCrisisStore.getState().messages[0].content).toBe(DEFAULT_MESSAGES[0].content);
 
   act(() => store.updateMessage(DEFAULT_MESSAGES[0].id, { content: "Mensagem pessoal {0}" }));
   await act(async () => { send(); });
-  expect(decodeURIComponent(openURL.mock.calls[1][0])).toBe("sms:123?body=Mensagem pessoal {0}");
+  expect(decodeURIComponent(openURL.mock.calls[1][0])).toBe("sms:+5585999991234?body=Mensagem pessoal {0}");
+
+  const contactId = useCrisisStore.getState().contacts[0].id;
+  act(() => store.updateContact(contactId, { phone: "123?body=extra" }));
+  await act(async () => { send(); });
+  expect(openURL).toHaveBeenCalledTimes(2);
+  expect(JSON.stringify(screen!.toJSON())).toContain("Check the contact’s phone number");
 });
 
 test("built-in content keeps its identifiers and user choices in English", () => {

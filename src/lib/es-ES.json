@@ -357,5 +357,7 @@
   "Abrir telefone para {0}": "Abrir teléfono para {0}",
   "Preparar SMS para {0}": "Preparar SMS para {0}",
   "Preparar SMS": "Preparar SMS",
-  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Abre el SMS con el texto de la tarjeta para que puedas revisarlo antes de enviarlo."
+  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Abre el SMS con el texto de la tarjeta para que puedas revisarlo antes de enviarlo.",
+  "Informe um telefone com números, código de área e, se necessário, o prefixo +.": "Introduce un teléfono con números, código de área y, si hace falta, el prefijo +.",
+  "Confira o telefone do contato nas configurações do cartão.": "Revisa el teléfono del contacto en los ajustes de la tarjeta."
 }

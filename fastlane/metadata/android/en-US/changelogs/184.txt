@@ -1,0 +1,1 @@
+Infinity symbol on the splash screen and phone number validation on the support card.
