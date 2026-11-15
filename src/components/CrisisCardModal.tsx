@@ -1,3 +1,4 @@
+import { supportPhone } from "@/lib/supportPhone";
 import { localizeCrisisMessage } from "@/lib/localizedContent";
 import { useTranslation } from "@/hooks/useTranslation";
 import React, { useState, useRef, useMemo, useEffect } from "react";
@@ -95,21 +96,29 @@ export function CrisisCardModal() {
     }
   };
 
-  // Ligar para contato de emergência
+  const phone = supportPhone(emergencyContact?.phone ?? "");
+
+  // Abrir o discador para o contato de apoio
   const handleEmergencyCall = () => {
-    if (emergencyContact?.phone) {
-      trigger("success");
-      void openEmergencyLink(`tel:${emergencyContact.phone}`, t("o telefone"));
+    if (!phone) {
+      setActionError(t("Confira o telefone do contato nas configurações do cartão."));
+      return;
     }
+    trigger("light");
+    void openEmergencyLink(`tel:${phone}`, t("o telefone"));
   };
 
   // Enviar mensagem para contato de emergência
   const handleEmergencyMessage = () => {
-    if (emergencyContact?.phone && currentMessage) {
+    if (!phone) {
+      setActionError(t("Confira o telefone do contato nas configurações do cartão."));
+      return;
+    }
+    if (currentMessage) {
       trigger("light");
       const message = encodeURIComponent(currentMessage?.content || "");
       void openEmergencyLink(
-        `sms:${emergencyContact.phone}?body=${message}`,
+        `sms:${phone}?body=${message}`,
         t("o aplicativo de mensagens")
       );
     }

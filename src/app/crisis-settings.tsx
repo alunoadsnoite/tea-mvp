@@ -1,3 +1,4 @@
+import { supportPhone } from "@/lib/supportPhone";
 import { localizeCrisisMessage } from "@/lib/localizedContent";
 import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo, useState } from "react";
@@ -109,6 +110,10 @@ export default function CrisisSettingsScreen() {
   const handleSaveContact = () => {
     if (!contactName.trim() || !contactPhone.trim()) {
       setContactError(t("Preencha o nome e o telefone do contato para salvar."));
+      return;
+    }
+    if (!supportPhone(contactPhone)) {
+      setContactError(t("Informe um telefone com números, código de área e, se necessário, o prefixo +."));
       return;
     }
     setContactError(null);

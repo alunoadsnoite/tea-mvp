@@ -100,7 +100,7 @@ Use **Configurações → Idioma** para escolher **Português (Brasil)**, **Engl
 - **Rotação na tela**: orientation default no Stack.Screen
 
 #### v1.0.1 (2026-09-27)
-- **Ícone do app**: Nova imagem do puzzle colorido (símbolo universal do autismo)
+- **Ícone do app**: A versão usava uma imagem de quebra-cabeça colorido
 - **Cartão de Crise**: Texto com destaque visual aprimorado (título maior, divisor, sombra)
 - **Rotação automática**: App agora gira automaticamente quando o celular é rotacionado para horizontal
 - **Correções de dependências**: Atualizado para Expo SDK 50 com todas as dependências compatíveis

@@ -357,5 +357,7 @@
   "Abrir telefone para {0}": "Open dialer for {0}",
   "Preparar SMS para {0}": "Compose SMS to {0}",
   "Preparar SMS": "Compose SMS",
-  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Opens SMS with the card text so you can review it before sending."
+  "Abre o SMS com o texto do cartão para você revisar antes de enviar.": "Opens SMS with the card text so you can review it before sending.",
+  "Informe um telefone com números, código de área e, se necessário, o prefixo +.": "Enter a phone number with digits, an area code and, if needed, a + prefix.",
+  "Confira o telefone do contato nas configurações do cartão.": "Check the contact’s phone number in the card settings."
 }
