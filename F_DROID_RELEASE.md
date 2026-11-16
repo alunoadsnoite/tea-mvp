@@ -1,13 +1,10 @@
 # Publicação no F-Droid
 
-## Atualização 1.0.14
+## Estado em 15/11/2026
 
-A versão 1.0.14 acrescenta o seletor de português do Brasil, inglês e espanhol.
-O catálogo apresentava a 1.0.13 (códigos 131–134) em 12/11/2026.
-A receita oficial monitora tags `vX.Y.Z`. Para a 1.0.14, os códigos esperados
-são 141–144, na mesma ordem de arquiteturas da versão anterior.
-Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md) e
-acompanhe a indexação no [catálogo](https://f-droid.org/packages/com.teamvp.app/).
+O GitHub `main` está na versão **1.0.18**. O catálogo F-Droid oferece a **1.0.13** (códigos 131–134); o Monitor mostra os builds 151–154 da tag `v1.0.15` em andamento, a partir do commit `1d6402c`. O espelho local `com.teamvp.app.yml` foi alinhado a essa compilação em andamento. Aguarde o resultado antes de preparar outra atualização. A versão 1.0.18 ainda precisará de avaliação e atualização própria dos metadados; não foi enviada nova submissão.
+
+A 1.0.14 acrescenta o seletor de português do Brasil, inglês e espanhol. Veja o [roteiro de validação e publicação](docs/PUBLICAR_IDIOMAS.md) e acompanhe a indexação no [catálogo](https://f-droid.org/packages/com.teamvp.app/).
 
 ## Estado verificado em 29/10/2026
 
