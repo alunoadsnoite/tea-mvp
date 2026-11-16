@@ -22,6 +22,8 @@ export const COMMON_TRIGGERS = [
   "Reunião longa",
   "Barulho de trânsito",
   "Luz fluorescente",
+  "Cheiros fortes",
+  "Toque ou textura",
   "Pouco sono",
   "Socialização",
   "Mudança de rotina",

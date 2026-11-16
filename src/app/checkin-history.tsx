@@ -14,6 +14,7 @@ import { useCheckInStore } from "@/stores/checkInStore";
 import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { ThemeColors } from "@/constants/theme";
+import { summarizeSensoryHistory } from "@/lib/sensoryHistory";
 import { CheckInEntry } from "@/types/checkin";
 
 /**
@@ -32,12 +33,11 @@ export default function CheckInHistoryScreen() {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  // Filtrar e agrupar por dia civil. A chave é uma data ISO (YYYY-MM-DD),
-  // independente de locale — o rótulo localizado é derivado dela só na exibição.
-  // A dependência é a referência do store, então o memo só recalcula quando um
-  // check-in é adicionado ou removido.
+  const entries = useMemo(() => getRecentEntries(7), [allEntries, getRecentEntries]);
+  const { highLoadCount, topTriggers } = useMemo(() => summarizeSensoryHistory(entries), [entries]);
+
+  // Agrupa por dia civil com uma chave independente do idioma.
   const groupedByDay = useMemo(() => {
-    const entries = getRecentEntries(7);
     return entries.reduce((acc, entry) => {
       const date = new Date(entry.timestamp);
       const key = [
@@ -51,7 +51,7 @@ export default function CheckInHistoryScreen() {
       acc[key].push(entry);
       return acc;
     }, {} as Record<string, CheckInEntry[]>);
-  }, [allEntries, getRecentEntries]);
+  }, [entries]);
 
   const formatDayTitle = (isoDate: string) => {
     const [year, month, day] = isoDate.split("-").map(Number);
@@ -96,6 +96,28 @@ export default function CheckInHistoryScreen() {
           <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{t("Nenhum check-in nos últimos 7 dias")}</Text>
         ) : (
           <>
+            <View style={styles.entryCard}>
+              <Text accessibilityRole="header" style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
+                {t("Resumo sensorial dos últimos 7 dias")}
+              </Text>
+              <Text style={[styles.summaryText, { fontSize: fontSize(14) }]}>
+                {t("Carga sensorial de 4 ou 5 em {0} de {1} registros.", highLoadCount, entries.length)}
+              </Text>
+              <Text accessibilityRole="header" style={[styles.dayTitle, { fontSize: fontSize(14) }]}>
+                {t("Gatilhos mais frequentes")}
+              </Text>
+              {topTriggers.length === 0 ? (
+                <Text style={[styles.summaryText, { fontSize: fontSize(14) }]}>
+                  {t("Nenhum gatilho registrado no período.")}
+                </Text>
+              ) : (
+                topTriggers.map(({ trigger, count }) => (
+                  <Text key={trigger} style={[styles.summaryText, { fontSize: fontSize(14) }]}>
+                    {t("{0} em {1} de {2} registros.", t(trigger), count, entries.length)}
+                  </Text>
+                ))
+              )}
+            </View>
             {Object.entries(groupedByDay).map(([date, dayEntries]) => (
               <View key={date} style={styles.daySection}>
                 <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
@@ -194,12 +216,17 @@ const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
       gap: 12,
     },
+    summaryText: {
+      color: colors.text,
+    },
     entryTime: {
       color: colors.textMuted,
     },
     metrics: {
       flexDirection: "row",
+      flexWrap: "wrap",
       justifyContent: "space-around",
+      gap: 8,
     },
     metric: {
       alignItems: "center",

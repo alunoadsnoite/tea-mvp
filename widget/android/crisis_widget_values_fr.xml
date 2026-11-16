@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crisis_widget_title">Carte de crise</string>
+    <string name="crisis_widget_subtitle">Toucher pour ouvrir</string>
+    <string name="crisis_widget_description">Carte de crise. Touchez pour ouvrir directement la carte de crise.</string>
+</resources>

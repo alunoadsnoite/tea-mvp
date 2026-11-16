@@ -35,6 +35,7 @@ const RES_FILES = [
   ["res/values/crisis_widget.xml", "crisis_widget_values.xml"],
   ["res/values-en/crisis_widget.xml", "crisis_widget_values_en.xml"],
   ["res/values-es/crisis_widget.xml", "crisis_widget_values_es.xml"],
+  ["res/values-fr/crisis_widget.xml", "crisis_widget_values_fr.xml"],
 ];
 
 /** Lê o pacote real do projeto nativo para não duplicar o applicationId. */

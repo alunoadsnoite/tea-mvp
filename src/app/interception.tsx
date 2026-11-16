@@ -258,6 +258,13 @@ export default function EnergyCheckInScreen() {
                 <Text style={[styles.suggestionText, { fontSize: fontSize(14) }]}>{t(suggestion.message)}</Text>
               </View>
             ))}
+            <Link href="/regulation" asChild>
+              <Pressable style={styles.adjustButton} accessibilityRole="button">
+                <Text style={[styles.adjustButtonText, { fontSize: fontSize(16) }]}>
+                  {t("Estratégias de Calma")}
+                </Text>
+              </Pressable>
+            </Link>
           </View>
         )}
 

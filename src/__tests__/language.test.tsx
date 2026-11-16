@@ -4,10 +4,11 @@ import { Linking, Pressable } from "react-native";
 import renderer, { act } from "react-test-renderer";
 import Settings from "@/app/settings";
 import { CrisisCardModal } from "@/components/CrisisCardModal";
-import { localizeCopingCard, localizeRoutine } from "@/lib/localizedContent";
+import { localizeCopingCard, localizeCrisisMessage, localizeRoutine } from "@/lib/localizedContent";
 import { translate } from "@/lib/i18n";
 import english from "@/lib/en-US.json";
 import spanish from "@/lib/es-ES.json";
+import french from "@/lib/fr-FR.json";
 import { usePreferencesStore } from "@/stores/preferencesStore";
 import { useCrisisStore } from "@/stores/crisisStore";
 import { DEFAULT_COPING_CARDS } from "@/types/coping";
@@ -51,6 +52,7 @@ test("old preferences retain their values and default to Brazilian Portuguese", 
 test.each([
   ["English", "Reduce motion"],
   ["Español", "Reducir movimiento"],
+  ["Français", "Réduire les animations"],
 ])("settings translates immediately and restores %s on hydration", async (language, label) => {
   act(() => { screen = renderer.create(<Settings />); });
   const option = (name: string) => screen!.root.findAllByType(Pressable).find(
@@ -108,12 +110,13 @@ test("built-in content keeps its identifiers and user choices in English", () =>
   expect(localizeRoutine({ ...routine, isDefault: false }, t).name).toBe(routine.name);
 });
 
-test("both translation catalogs have the same messages and interpolation tokens", () => {
+test("all translation catalogs have the same messages and interpolation tokens", () => {
   const tokens = (value: string) => (value.match(/\{\d+\}/g) ?? []).sort();
-  expect(Object.keys(spanish).sort()).toEqual(Object.keys(english).sort());
-  for (const [key, translation] of Object.entries(english)) {
-    expect(tokens(translation)).toEqual(tokens(key));
-    expect(tokens(spanish[key as keyof typeof spanish])).toEqual(tokens(key));
+  for (const catalog of [english, spanish, french]) {
+    expect(Object.keys(catalog).sort()).toEqual(Object.keys(english).sort());
+    for (const [key, translation] of Object.entries(catalog)) {
+      expect(tokens(translation)).toEqual(tokens(key));
+    }
   }
   expect(translate["es-ES"]("Passo {0} de {1}", 2, 5)).toBe("Paso 2 de 5");
 });
@@ -134,4 +137,17 @@ test("singular counters use singular units in each language", () => {
   expect(translate["pt-BR"]("+{0} passo", 1)).toBe("+1 passo");
   expect(translate["en-US"]("{0} minuto", 1)).toBe("1 minute");
   expect(translate["es-ES"]("Abre o cartão com {0} passo", 1)).toBe("Abre la tarjeta con 1 paso");
+});
+
+test("French translates built-in crisis content and leaves saved edits intact", () => {
+  const t = translate["fr-FR"];
+  const message = DEFAULT_MESSAGES[0];
+  expect(localizeCrisisMessage(message, t)).toMatchObject({
+    title: "Je suis autiste",
+    content: "Je suis en surcharge sensorielle. J’ai besoin de quelques minutes dans un endroit calme.",
+  });
+  const saved = { ...message, content: "Preciso dos meus fones." };
+  expect(localizeCrisisMessage(saved, t).content).toBe(saved.content);
+  expect(t("{0} em {1} de {2} registros.", t("Cheiros fortes"), 2, 3))
+    .toBe("Odeurs fortes : 2 sur 3 bilans.");
 });

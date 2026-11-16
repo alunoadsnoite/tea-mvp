@@ -2,11 +2,19 @@
 
 Aplicativo móvel para adultos no Espectro Autista (TEA) focado em **autonomia, previsibilidade e gerenciamento de sobrecarga sensorial e crises**.
 
-## Versão 1.0.14
+## Versão 1.0.19
 
-Use **Configurações → Idioma** para escolher **Português (Brasil)**, **English** ou **Español**. A preferência funciona offline e os textos personalizados são preservados. Acompanhe a disponibilidade no [catálogo do F-Droid](https://f-droid.org/packages/com.teamvp.app/).
+Use **Configurações → Idioma** para escolher **Português (Brasil)**, **English**, **Español** ou **Français**. A escolha fica no aparelho, funciona offline e preserva os textos personalizados. O widget Android usa o idioma do sistema.
+
+Acompanhe a versão no [GitHub](https://github.com/alunoadsnoite/tea-mvp/releases/tag/v1.0.19) e a disponibilidade no [F-Droid](https://f-droid.org/packages/com.teamvp.app/).
 
 ### Changelog
+
+#### v1.0.19
+
+- Francês na interface, no conteúdo padrão e no widget Android.
+- Resumo sensorial dos últimos sete dias com a frequência dos gatilhos e a contagem de check-ins com carga sensorial de 4 ou 5.
+- Gatilhos opcionais para cheiros fortes e toque ou textura. Atalho das sugestões do check-in para os cartões de regulação.
 
 #### v1.0.14
 
@@ -154,7 +162,8 @@ Dúvidas sobre privacidade podem ser enviadas para valdenorsa@proton.me.
 - Energia Física (0-5)
 - Gatilhos rápidos selecionáveis
 - Sugestões automáticas de regulação
-- Histórico dos últimos 7 dias
+- Histórico dos últimos 7 dias com resumo da carga sensorial e dos três gatilhos mais registrados
+- Acesso aos cartões de regulação e favoritos pelas sugestões do check-in
 
 ### 3. Rotinas Visuais Sequenciais
 - Execução passo-a-passo (uma tarefa por vez)

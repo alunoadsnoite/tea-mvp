@@ -1,10 +1,12 @@
 import english from "./en-US.json";
 import spanish from "./es-ES.json";
+import french from "./fr-FR.json";
 
 export const LANGUAGES = [
   { code: "pt-BR", label: "Português (Brasil)" },
   { code: "en-US", label: "English" },
   { code: "es-ES", label: "Español" },
+  { code: "fr-FR", label: "Français" },
 ] as const;
 
 export type Language = typeof LANGUAGES[number]["code"];
@@ -30,4 +32,5 @@ export const translate: Record<Language, Translate> = {
   "pt-BR": interpolate,
   "en-US": fromCatalog(english),
   "es-ES": fromCatalog(spanish),
+  "fr-FR": fromCatalog(french),
 };
