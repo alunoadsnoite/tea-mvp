@@ -1,6 +1,6 @@
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Linking, Pressable } from "react-native";
+import { Clipboard, Linking, Pressable } from "react-native";
 import renderer, { act } from "react-test-renderer";
 import Settings from "@/app/settings";
 import { CrisisCardModal } from "@/components/CrisisCardModal";
@@ -68,6 +68,24 @@ test.each([
   await AsyncStorage.setItem(preferencesKey, persisted);
   await act(async () => { await usePreferencesStore.persist.rehydrate(); });
   expect(option(language).props.accessibilityState.checked).toBe(true);
+});
+
+test("settings copies a Pix key offline and reports failure to open Sponsors", async () => {
+  usePreferencesStore.getState().setLanguage("en-US");
+  const copy = jest.spyOn(Clipboard, "setString").mockImplementation(() => {});
+  const openURL = jest.spyOn(Linking, "openURL").mockRejectedValue(new Error("offline"));
+  act(() => { screen = renderer.create(<Settings />); });
+  const action = (label: string) => screen!.root.findAllByType(Pressable).find(
+    (button) => button.props.accessibilityLabel === label
+  )!.props.onPress;
+  act(() => action("Copy Pix key")());
+  expect(copy).toHaveBeenCalledWith(expect.stringMatching(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/));
+  expect(openURL).not.toHaveBeenCalled();
+  expect(JSON.stringify(screen!.toJSON())).toContain("Pix key copied.");
+
+  await act(async () => { await action("GitHub Sponsors")(); });
+  expect(openURL).toHaveBeenCalledWith("https://github.com/sponsors/alunoadsnoite");
+  expect(JSON.stringify(screen!.toJSON())).toContain("Couldn't open GitHub Sponsors.");
 });
 
 test("crisis SMS translates the built-in message and keeps saved edits verbatim", async () => {
