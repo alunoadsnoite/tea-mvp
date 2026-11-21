@@ -211,3 +211,11 @@ uma cópia dos dados de destino antes de restaurar se quiser preservá-los.
 Os planos e as preferências PRO acompanham o backup. A edição gratuita
 pode importar e reexportar esses dados para uma futura transferência à
 PRO, onde os recursos correspondentes ficam disponíveis.
+
+## Vida prática na edição PRO
+
+Em Planejar eventos, os modelos de mercado, consulta e estudo podem ser editados antes de salvar. “Me ajude a começar” mostra apenas o próximo item pendente de preparação ou de objetos para levar. O progresso permanece no aparelho e permite retomar depois. “Meu plano mudou” abre a alternativa escrita no plano. Os modelos são sugestões adaptáveis, sem geração por IA ou envio de dados.
+
+Validação em aparelho ainda necessária: TalkBack, fonte ampliada, teclado e retomada após fechar o aplicativo.
+
+A seção de doações por Pix e GitHub Sponsors aparece apenas na edição gratuita; a edição PRO não exibe esses controles.

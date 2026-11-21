@@ -1,6 +1,6 @@
 import { LANGUAGES } from "@/lib/i18n";
 import { useTranslation } from "@/hooks/useTranslation";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  Clipboard,
   Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +21,9 @@ import { isProEdition } from "@/lib/edition";
 import { ThemeColors } from "@/constants/theme";
 
 import { usePreferencesStore } from "@/stores/preferencesStore";
+
+const PIX_KEY = "81063e93-0c1b-4ddb-8a16-b9be68a75d4e";
+const SPONSORS_URL = "https://github.com/sponsors/alunoadsnoite";
 
 const DEVELOPER_EMAIL = "valdenorsa@proton.me";
 
@@ -37,6 +41,8 @@ export default function SettingsScreen() {
   const { trigger } = useHapticFeedback();
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors), [colors]);
+
+  const [supportMessage, setSupportMessage] = useState("");
 
   const preferences = usePreferencesStore();
   const options = [
@@ -199,6 +205,53 @@ export default function SettingsScreen() {
             {t("App para autonomia e regulação de adultos no Espectro Autista.")}
           </Text>
         </View>
+
+        {!isProEdition && (
+        <View style={styles.section}>
+          <Text accessibilityRole="header" style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>
+            {t("Apoie o desenvolvedor")}
+          </Text>
+          <Pressable
+            style={styles.optionButton}
+            onPress={() => {
+              try {
+                Clipboard.setString(PIX_KEY);
+                setSupportMessage("Chave Pix copiada.");
+              } catch {
+                setSupportMessage("Não foi possível copiar a chave Pix.");
+              }
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("Copiar chave Pix")}
+            accessibilityHint={t("Use a chave no aplicativo do seu banco.")}
+          >
+            <Text style={[styles.optionContent, styles.optionLabel, { fontSize: fontSize(16) }]}>
+              {t("Copiar chave Pix")}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.optionButton}
+            onPress={async () => {
+              setSupportMessage("");
+              try {
+                await Linking.openURL(SPONSORS_URL);
+              } catch {
+                setSupportMessage("Não foi possível abrir o GitHub Sponsors.");
+              }
+            }}
+            accessibilityRole="link"
+            accessibilityLabel="GitHub Sponsors"
+            accessibilityHint={t("Abre a página de patrocínio no navegador.")}
+          >
+            <Text style={[styles.optionContent, styles.optionLabel, { fontSize: fontSize(16) }]}>
+              GitHub Sponsors
+            </Text>
+          </Pressable>
+          <Text accessibilityLiveRegion="polite" style={[styles.optionDescription, { fontSize: fontSize(14) }]}>
+            {supportMessage && t(supportMessage)}
+          </Text>
+        </View>
+        )}
 
         {/* Desenvolvedor */}
         <View style={styles.section}>

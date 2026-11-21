@@ -18,6 +18,12 @@ const fields = {
   alternatives: "Alternativas para imprevistos",
 } as const;
 
+const templates = [
+  { title: "Ir ao mercado", preparation: "Preparar a lista de compras\nEscolher um horário confortável\nDefinir como chegar e voltar", objects: "Lista de compras\nForma de pagamento\nSacola", alternatives: "Se estiver cheio, posso esperar em um local mais tranquilo ou voltar em outro horário." },
+  { title: "Ir a uma consulta", preparation: "Confirmar horário e endereço\nAnotar o que quero perguntar\nPlanejar o deslocamento", objects: "Documento\nAnotações\nExames solicitados", alternatives: "Se houver atraso, posso perguntar sobre a espera e pedir um local mais tranquilo." },
+  { title: "Começar a estudar", preparation: "Escolher um assunto\nSeparar o material\nAbrir a primeira atividade\nFazer uma pequena parte", objects: "Material de estudo\nÁgua", alternatives: "Se estiver difícil, posso escolher uma tarefa menor ou fazer uma pausa." },
+] as const;
+
 const lists: PlanList[] = ["preparation", "objects"];
 
 function validDate(value: string) {
@@ -37,6 +43,8 @@ function EventPlans() {
   const { fontSize } = useFontScale();
   const { plans, save, remove, toggle } = useEventPlanStore();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [focused, setFocused] = useState(false);
+  const [showAlternative, setShowAlternative] = useState(false);
   const [selected, setSelected] = useState<string>();
   const [editor, setEditor] = useState<{
     id?: string;
@@ -56,6 +64,10 @@ function EventPlans() {
     );
     return () => { active = false; };
   }, []);
+
+  const pending = plan && lists.flatMap((list) => plan[list]
+    .filter((item) => !item.done).map((item) => ({ list, item })));
+  const next = pending?.[0];
 
   function openEditor(source?: EventPlan, reuse = false) {
     setEditor({
@@ -147,7 +159,18 @@ function EventPlans() {
           {button(t("Ver todos os planos"), () => setSelected(undefined))}
           {text(plan.title, true)}
           {!!plan.date && text(plan.date)}
-          {lists.map((list) => (
+          {button(t(focused ? "Ver lista completa" : "Me ajude a começar"), () => setFocused(!focused))}
+          {focused && (
+            <View style={styles.field}>
+              {text(t("Um passo de cada vez"), true)}
+              {next ? <>
+                {text(next.item.text, true)}
+                {button(t("Concluir este passo"), () => toggle(plan.id, next.list, next.item.id))}
+                {text(t("Você pode parar e continuar depois. O progresso fica salvo."))}
+              </> : text(t("Todos os passos foram concluídos."))}
+            </View>
+          )}
+          {!focused && lists.map((list) => (
             <View key={list} style={styles.field}>
               {text(t(fields[list]), true)}
               {plan[list].length === 0 && text(t("Nenhum item."))}
@@ -163,8 +186,11 @@ function EventPlans() {
           ))}
           {!!plan.alternatives && (
             <View style={styles.field}>
-              {text(t(fields.alternatives), true)}
-              {text(plan.alternatives)}
+              {button(t(showAlternative ? "Ocultar meu plano B" : "Meu plano mudou"), () => setShowAlternative(!showAlternative))}
+              {showAlternative && <>
+                {text(t("Meu plano B"), true)}
+                {text(plan.alternatives)}
+              </>}
             </View>
           )}
           {button(t("Editar plano"), () => openEditor(plan))}
@@ -178,10 +204,20 @@ function EventPlans() {
       {status === "ready" && !editor && !plan && (
         <>
           {button(t("Novo plano"), () => openEditor())}
+          {text(t("Comece com uma situação do dia a dia e adapte ao seu jeito."))}
+          {templates.map((template) => <View key={template.title}>
+            {button(t(template.title), () => setEditor({
+              title: t(template.title), date: "",
+              preparation: template.preparation.split("\n").map((line) => t(line)).join("\n"),
+              objects: template.objects.split("\n").map((line) => t(line)).join("\n"),
+              alternatives: t(template.alternatives),
+            }))}
+          </View>)}
+          {text(t("Meus planos"), true)}
           {plans.length === 0 && text(t("Nenhum plano salvo."))}
           {plans.map((item) => (
             <View key={item.id}>
-              {button(item.date ? `${item.title} · ${item.date}` : item.title, () => setSelected(item.id))}
+              {button(item.date ? `${item.title} · ${item.date}` : item.title, () => { setSelected(item.id); setFocused(false); setShowAlternative(false); })}
             </View>
           ))}
         </>
@@ -191,7 +227,7 @@ function EventPlans() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 24, gap: 16 },
+  content: { padding: 24, paddingBottom: 96, gap: 16 },
   control: { minHeight: 48, padding: 12, borderWidth: 1, borderRadius: 8, justifyContent: "center" },
   field: { gap: 8 },
 });
