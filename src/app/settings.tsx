@@ -44,6 +44,7 @@ export default function SettingsScreen() {
     { label: t("Mostrar próximo passo"), description: t("Exibir Agora / Depois durante as rotinas."), value: preferences.showNextStep, onChange: preferences.setShowNextStep },
   ];
 
+  const appName = Constants.expoConfig?.name ?? "TEA Autonomia";
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
   const themeOptions: { key: typeof mode; label: string; description: string }[] = [
@@ -175,11 +176,17 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
+        <Link href="/backup" asChild>
+          <Pressable style={styles.optionButton} accessibilityRole="button">
+            <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>{t("Backup e migração")}</Text>
+          </Pressable>
+        </Link>
+
         {/* Sobre */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Sobre")}</Text>
           <Text style={[styles.aboutText, { fontSize: fontSize(14) }]}>
-            TEA Autonomia v{appVersion}
+            {appName} v{appVersion}
             {"\n"}
             {t("App para autonomia e regulação de adultos no Espectro Autista.")}
           </Text>

@@ -47,7 +47,7 @@ class CrisisWidgetProvider : AppWidgetProvider() {
     }
 
     /**
-     * Deep link `tea://crisis-card`, resolvido pelo Expo Router para a rota
+     * Deep link do cartão de crise, resolvido pelo Expo Router para a rota
      * `/crisis-card`. `setClassName` mantém o PendingIntent dentro do próprio app,
      * sem depender de outra activity responder pelo scheme.
      */

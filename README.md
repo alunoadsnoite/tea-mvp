@@ -162,3 +162,37 @@ GPL-3.0 — ver [LICENSE](LICENSE).
 ## Como contribuir
 
 Sugestões, traduções e relatos de problemas são bem-vindos. Abra uma issue com o contexto e o comportamento esperado. Para alterações de código, explique a mudança e os testes realizados no pull request. Use dados fictícios nos exemplos e nas capturas.
+
+## Edições gratuita e PRO
+
+O build padrão continua sendo o TEA Autonomia (`com.teamvp.app`), incluindo o
+build do F-Droid. Defina `TEA_EDITION=pro` ao gerar o projeto nativo para
+compilar o TEA Autonomia PRO (`com.teamvp.app.pro`). As duas edições podem ficar
+instaladas juntas e usam a mesma base de código, sob GPL-3.0-or-later.
+
+Para preparar o Android PRO em um checkout de desenvolvimento com JDK 17:
+
+```sh
+npm ci
+TEA_EDITION=pro npx expo prebuild --clean --platform android --no-install
+(cd android && TEA_EDITION=pro ./gradlew assembleRelease)
+```
+
+Use um checkout separado para cada edição ou regenere o projeto nativo com
+`--clean` ao trocar de edição. O identificador do iOS também muda com a mesma
+variável. O build padrão e a receita do F-Droid continuam usando `app.json`
+para a versão.
+
+### Backup e transferência
+
+Na edição de origem, abra **Configurações → Backup e migração → Salvar backup**
+e guarde o JSON numa pasta privada. Na edição de destino, abra a mesma tela,
+toque em **Selecionar backup** e confirme a substituição. O procedimento
+funciona da gratuita para a PRO, da PRO para a gratuita e entre aparelhos.
+Em versões anteriores que ainda não exibem o menu, atualize a edição de
+origem antes de exportar.
+
+O arquivo inclui check-ins, cartões de regulação, rotinas com seu progresso,
+mensagens de crise, contatos, tema e preferências. O app gera e lê esse
+arquivo localmente. O JSON é legível e pode conter dados pessoais. Salve
+uma cópia dos dados de destino antes de restaurar se quiser preservá-los.

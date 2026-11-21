@@ -1,6 +1,7 @@
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePreferencesHydrated } from "@/stores/preferencesStore";
 import { Stack, useRootNavigationState, useRouter, usePathname } from "expo-router";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
@@ -28,7 +29,8 @@ function ThemedStack() {
     if (!navigationState?.key) return;
     let active = true;
     void Linking.getInitialURL().then((url) => {
-      if (active && url?.split(/[?#]/)[0] === "tea://crisis-card") router.replace("/crisis-card");
+      const scheme = Constants.expoConfig?.scheme ?? "tea";
+      if (active && url?.split(/[?#]/)[0] === `${scheme}://crisis-card`) router.replace("/crisis-card");
     });
     return () => { active = false; };
   }, [navigationState?.key, router]);
