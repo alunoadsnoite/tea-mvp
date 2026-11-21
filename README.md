@@ -229,3 +229,7 @@ Planejar eventos → Ver mais exemplos de eventos amplia o catálogo para onze s
 Na PRO, o botão flutuante de acesso ao Cartão de Crise usa ∞. Seu nome e sua ação de acessibilidade permanecem os mesmos.
 
 A edição paga se chama **TEA Passos**. O identificador `com.teamvp.app.pro`, os links existentes e o formato dos dados e backups foram mantidos para permitir atualizar as instalações anteriores da PRO.
+
+O TEA Passos usa um ícone próprio com a letra P com o infinito entrelaçado na haste, em `assets/passos-icon.png`, no lançador e na abertura. O ícone da edição gratuita é preservado.
+
+O APK de teste do TEA Passos 1.0.20 atualiza a antiga edição PRO; a edição gratuita continua em 1.0.19.
