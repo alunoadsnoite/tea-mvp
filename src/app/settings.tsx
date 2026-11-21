@@ -16,6 +16,7 @@ import Constants from "expo-constants";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useFontScale } from "@/hooks/useFontScale";
+import { isProEdition } from "@/lib/edition";
 import { ThemeColors } from "@/constants/theme";
 
 import { usePreferencesStore } from "@/stores/preferencesStore";
@@ -43,6 +44,13 @@ export default function SettingsScreen() {
     { label: t("Reduzir movimento"), description: t("Desativar transições e a expansão do círculo de respiração. A preferência do sistema também é respeitada."), value: preferences.reduceMotion, onChange: preferences.setReduceMotion },
     { label: t("Mostrar próximo passo"), description: t("Exibir Agora / Depois durante as rotinas."), value: preferences.showNextStep, onChange: preferences.setShowNextStep },
   ];
+
+  if (isProEdition) {
+    options.push(
+      { label: t("Texto maior"), description: t("Aumenta o texto do app além da escala do sistema."), value: preferences.largerText, onChange: preferences.setLargerText },
+      { label: t("Abrir nos favoritos"), description: t("Abre os cartões de regulação com o filtro de favoritos ativo."), value: preferences.favoritesFirstView, onChange: preferences.setFavoritesFirstView },
+    );
+  }
 
   const appName = Constants.expoConfig?.name ?? "TEA Autonomia";
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";

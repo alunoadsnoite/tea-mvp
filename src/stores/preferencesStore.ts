@@ -10,6 +10,10 @@ interface PreferencesStore {
   hapticsEnabled: boolean;
   reduceMotion: boolean;
   showNextStep: boolean;
+  largerText: boolean;
+  favoritesFirstView: boolean;
+  setLargerText: (enabled: boolean) => void;
+  setFavoritesFirstView: (enabled: boolean) => void;
   setHapticsEnabled: (enabled: boolean) => void;
   setReduceMotion: (enabled: boolean) => void;
   setShowNextStep: (enabled: boolean) => void;
@@ -29,6 +33,10 @@ export const usePreferencesStore = create<PreferencesStore>()(
       hapticsEnabled: false,
       reduceMotion: false,
       showNextStep: false,
+      largerText: false,
+      favoritesFirstView: false,
+      setLargerText: (largerText) => set({ largerText }),
+      setFavoritesFirstView: (favoritesFirstView) => set({ favoritesFirstView }),
       setHapticsEnabled: (hapticsEnabled) => set({ hapticsEnabled }),
       setReduceMotion: (reduceMotion) => set({ reduceMotion }),
       setShowNextStep: (showNextStep) => set({ showNextStep }),

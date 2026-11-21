@@ -1,4 +1,6 @@
 import { localizeCopingCard } from "@/lib/localizedContent";
+import { isProEdition } from "@/lib/edition";
+import { usePreferencesStore } from "@/stores/preferencesStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo, useState } from "react";
 import {
@@ -34,7 +36,8 @@ export default function CopingCardsScreen() {
   const resetToDefaults = useCopingCardsStore((state) => state.resetToDefaults);
 
   const [selectedCategory, setSelectedCategory] = useState<CopingCardCategory | "all">("all");
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const favoritesFirstView = usePreferencesStore((state) => isProEdition && state.favoritesFirstView);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(favoritesFirstView);
 
   const categories: { key: CopingCardCategory | "all"; label: string }[] = [
     { key: "all", label: t("Todos") },

@@ -196,3 +196,18 @@ O arquivo inclui check-ins, cartões de regulação, rotinas com seu progresso,
 mensagens de crise, contatos, tema e preferências. O app gera e lê esse
 arquivo localmente. O JSON é legível e pode conter dados pessoais. Salve
 uma cópia dos dados de destino antes de restaurar se quiser preservá-los.
+
+### Recursos da PRO
+
+- **Planejar eventos** reúne planos locais com data opcional, roteiro de
+  preparação, objetos para levar e alternativas para imprevistos. Um plano
+  pode ser reutilizado como modelo com os itens desmarcados.
+- **Histórico de Check-ins** oferece períodos de 7, 30 e 90 dias, médias por
+  dia, resumo descritivo e exportação local do relatório em PDF.
+- **Minhas rotinas** permite começar uma rotina nova a partir de uma
+  existente. Em **Configurações**, a PRO permite aumentar o texto e abrir
+  os cartões de regulação com o filtro de favoritos ativo.
+
+Os planos e as preferências PRO acompanham o backup. A edição gratuita
+pode importar e reexportar esses dados para uma futura transferência à
+PRO, onde os recursos correspondentes ficam disponíveis.

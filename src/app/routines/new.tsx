@@ -1,3 +1,5 @@
+import { isProEdition } from "@/lib/edition";
+import { localizeRoutine } from "@/lib/localizedContent";
 import { useTranslation } from "@/hooks/useTranslation";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, TextInput } from "react-native";
@@ -20,7 +22,7 @@ const MINUTES_OPTIONS = [1, 2, 3, 5, 10, 15, 20, 30];
 export default function NovaRotinaScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, template } = useLocalSearchParams<{ id?: string; template?: string }>();
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -29,6 +31,11 @@ export default function NovaRotinaScreen() {
   const existingRoutine = useRoutineStore((state) =>
     id ? state.getRoutineById(id) : undefined
   );
+
+  const templateRoutine = useRoutineStore((state) =>
+    !id && isProEdition && template ? state.getRoutineById(template) : undefined
+  );
+
 
   const isEditing = Boolean(id && existingRoutine);
 
@@ -40,6 +47,14 @@ export default function NovaRotinaScreen() {
     ]
   );
   const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!templateRoutine) return;
+    const source = localizeRoutine(templateRoutine, t);
+    setName(source.name);
+    setDescription(source.description ?? "");
+    setSteps(source.steps.map((step) => ({ ...step, id: createId("step") })));
+  }, [templateRoutine, t]);
 
   // A store é hidratada de forma assíncrona: em deep link ou abertura fria o
   // primeiro render não encontra a rotina. Ressincroniza quando ela chega

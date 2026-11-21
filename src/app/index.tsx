@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CheckInCard } from "@/components/CheckInCard";
 import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { isProEdition } from "@/lib/edition";
 import { ThemeColors } from "@/constants/theme";
 
 /**
@@ -74,6 +75,13 @@ export default function HomeScreen() {
               <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Estratégias de calma")}</Text>
             </Pressable>
           </Link>
+          {isProEdition && (
+            <Link href="/event-plans" asChild>
+              <Pressable style={styles.secondaryButton} accessibilityRole="button">
+                <Text style={[styles.secondaryButtonText, { fontSize: fontSize(15) }]}>{t("Planejar eventos")}</Text>
+              </Pressable>
+            </Link>
+          )}
           <Link href="/settings" asChild>
             <Pressable
               style={styles.secondaryButton}

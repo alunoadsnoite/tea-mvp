@@ -97,6 +97,25 @@ export const backupFields = {
     hapticsEnabled: boolean,
     reduceMotion: boolean,
     showNextStep: boolean,
+    largerText: boolean,
+    favoritesFirstView: boolean,
   },
   theme: { mode: oneOf("auto", "dark", "light") },
+};
+
+const planItem: Validator = (value) => matches(value, {
+  id: string,
+  text: string,
+  done: boolean,
+});
+
+export const eventPlanFields = {
+  plans: array((value) => matches(value, {
+    id: string,
+    title: string,
+    date: string,
+    preparation: array(planItem),
+    objects: array(planItem),
+    alternatives: string,
+  })),
 };

@@ -5,7 +5,9 @@ import { useCrisisStore } from "@/stores/crisisStore";
 import { usePreferencesStore } from "@/stores/preferencesStore";
 import { useRoutineStore } from "@/stores/routineStore";
 import { useThemeStore } from "@/stores/themeStore";
-import { backupFields, isRecord, matches } from "./backupSchema";
+import { useEventPlanStore } from "@/stores/eventPlanStore";
+import { isProEdition } from "@/lib/edition";
+import { backupFields, eventPlanFields, isRecord, matches } from "./backupSchema";
 
 const stores = {
   checkIn: useCheckInStore,
@@ -14,9 +16,11 @@ const stores = {
   routines: useRoutineStore,
   preferences: usePreferencesStore,
   theme: useThemeStore,
+  eventPlans: useEventPlanStore,
 };
 type Section = keyof typeof stores;
 const sections = Object.keys(stores) as Section[];
+const fieldsBySection = { ...backupFields, eventPlans: eventPlanFields };
 
 type StoredState = { version: number; state: Record<string, unknown> };
 type StorageEntry = [key: string, value: string];
@@ -73,12 +77,12 @@ function normalize(section: Section, value: unknown): StoredState {
   }
 
   // Preferences v1 predates the language selector.
-  if (section === "preferences" && migrated.language === undefined) {
-    migrated = { ...migrated, language: "pt-BR" };
+  if (section === "preferences") {
+    migrated = { language: "pt-BR", largerText: false, favoritesFirstView: false, ...migrated };
   }
 
   // Pick data fields so the backup cannot replace store methods.
-  const fields = backupFields[section];
+  const fields = fieldsBySection[section];
   const state = Object.fromEntries(Object.keys(fields).map((key) => [key, migrated[key]]));
   if (!matches(state, fields)) throw new InvalidBackupError();
   return { version, state };
@@ -95,8 +99,11 @@ export async function exportBackup(): Promise<string> {
       : parseJson(raw!);
     const normalized = normalize(section, value);
     requireSize(JSON.stringify(normalized), MAX_ENTRY_BYTES);
-    return [section, normalized];
+    return [section, normalized] as const;
   }));
+  // O campo é opcional para manter a leitura de backups anteriores. A
+  // gratuita também preserva planos importados em uma futura exportação.
+  if ((data.eventPlans.state.plans as unknown[]).length === 0) delete (data as Partial<typeof data>).eventPlans;
   const text = JSON.stringify({ format: FORMAT, version: FORMAT_VERSION, data });
   requireSize(text, MAX_BACKUP_BYTES);
   return text;
@@ -113,7 +120,10 @@ function readBackup(text: string): StorageEntry[] {
     !isRecord(backup.data)) throw new InvalidBackupError();
   const data = backup.data;
   return sections.map((section) => {
-    const serialized = JSON.stringify(normalize(section, data[section]));
+    const value = section === "eventPlans" && data.eventPlans === undefined
+      ? { version: 1, state: { plans: [] } }
+      : data[section];
+    const serialized = JSON.stringify(normalize(section, value));
     requireSize(serialized, MAX_ENTRY_BYTES);
     return [stores[section].persist.getOptions().name!, serialized];
   });
@@ -140,7 +150,9 @@ export async function restoreBackup(text: string): Promise<void> {
       throw error;
     }
 
-    await Promise.all(sections.map(async (section) => {
+    const activeSections = sections.filter((section) => section !== "eventPlans" ||
+      isProEdition || useEventPlanStore.persist.hasHydrated());
+    await Promise.all(activeSections.map(async (section) => {
       const { persist } = stores[section];
       await persist.rehydrate();
       if (!persist.hasHydrated()) throw new Error("Could not reload restored data");

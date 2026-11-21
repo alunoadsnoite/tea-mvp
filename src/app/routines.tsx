@@ -1,4 +1,5 @@
 import { localizeRoutine } from "@/lib/localizedContent";
+import { isProEdition } from "@/lib/edition";
 import { useTranslation } from "@/hooks/useTranslation";
 import React, { useMemo } from "react";
 import {
@@ -124,6 +125,13 @@ export default function RoutinesListScreen() {
               <Text style={[styles.startButtonText, { fontSize: fontSize(16) }]}>{execution?.routineId === routine.id ? t("Voltar à rotina") : t("Iniciar Rotina")}</Text>
             </Pressable>
 
+            {isProEdition && (
+              <Pressable style={[styles.manageButton, { minHeight: 48, justifyContent: "center" }]}
+                onPress={() => router.push({ pathname: "/routines/new", params: { template: routine.id } })}
+                accessibilityRole="button" accessibilityLabel={t("Usar {0} como modelo", routine.name)}>
+                <Text style={[styles.manageButtonText, { fontSize: fontSize(14) }]}>{t("Usar como modelo")}</Text>
+              </Pressable>
+            )}
             {/* Editar/excluir apenas nas rotinas criadas pelo usuário */}
             {!routine.isDefault && (
               <View style={styles.manageRow}>
