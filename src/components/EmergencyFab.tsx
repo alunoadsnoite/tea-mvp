@@ -1,3 +1,4 @@
+import { isProEdition } from "@/lib/edition";
 import { useTranslation } from "@/hooks/useTranslation";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
@@ -32,7 +33,7 @@ export function EmergencyFab() {
       accessibilityLabel={t("Abrir Cartão de Crise")}
       accessibilityHint={t("Toque para acessar o cartão de emergência")}
     >
-      <Text style={styles.fabText}>!</Text>
+      <Text style={styles.fabText} accessible={false}>{isProEdition ? "∞" : "!"}</Text>
     </Pressable>
   );
 }

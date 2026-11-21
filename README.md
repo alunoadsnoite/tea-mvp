@@ -219,3 +219,11 @@ Em Planejar eventos, os modelos de mercado, consulta e estudo podem ser editados
 Validação em aparelho ainda necessária: TalkBack, fonte ampliada, teclado e retomada após fechar o aplicativo.
 
 A seção de doações por Pix e GitHub Sponsors aparece apenas na edição gratuita; a edição PRO não exibe esses controles.
+
+### Exemplos adicionais da PRO
+
+Minhas rotinas → Exemplos de rotinas oferece oito modelos editáveis: manhã, refeição simples, organização da casa, roupas, estudo, sono, atividade física e pausa ao chegar em casa. Os exemplos abrem como rascunhos e só entram nas suas rotinas ao salvar, sem substituir dados ou a execução em andamento. Os tempos são estimativas ajustáveis.
+
+Planejar eventos → Ver mais exemplos de eventos amplia o catálogo para onze situações, incluindo dentista, entrevista, banco/serviço público, encontro de família, viagem, transporte público, curso presencial e restaurante. Cada exemplo inclui preparação, objetos e uma alternativa para imprevistos.
+
+Na PRO, o botão flutuante de acesso ao Cartão de Crise usa ∞. Seu nome e sua ação de acessibilidade permanecem os mesmos.

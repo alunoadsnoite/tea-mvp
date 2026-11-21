@@ -39,3 +39,24 @@ it("creates an editable everyday plan and resumes its next unfinished step", asy
   expect(JSON.stringify(screen.toJSON())).not.toContain("Preparar a lista de compras");
   act(() => screen.unmount());
 });
+
+
+it("lets an existing user expand and save an additional event example", async () => {
+  useEventPlanStore.setState({ plans: [] });
+  let screen!: renderer.ReactTestRenderer;
+  await act(async () => { screen = renderer.create(<EventPlans />); });
+  const press = (label: string) => act(() => {
+    screen.root.findAllByType(Pressable).find((node) =>
+      node.findAllByType(Text).some((text) => text.props.children === label))!.props.onPress();
+  });
+  press("Ver mais exemplos de eventos");
+  press("Ir ao dentista");
+  expect(useEventPlanStore.getState().plans).toHaveLength(0);
+  press("Salvar plano");
+  expect(useEventPlanStore.getState().plans[0]).toMatchObject({
+    title: "Ir ao dentista",
+    alternatives: "Se eu precisar de uma pausa, posso usar o sinal combinado e conversar sobre como continuar.",
+  });
+  expect(useEventPlanStore.getState().plans[0].preparation).toHaveLength(3);
+  act(() => screen.unmount());
+});

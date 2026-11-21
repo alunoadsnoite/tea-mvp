@@ -1,3 +1,4 @@
+import { EVENT_TEMPLATES } from "@/lib/practicalTemplates";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Redirect, Stack } from "expo-router";
@@ -18,12 +19,6 @@ const fields = {
   alternatives: "Alternativas para imprevistos",
 } as const;
 
-const templates = [
-  { title: "Ir ao mercado", preparation: "Preparar a lista de compras\nEscolher um horário confortável\nDefinir como chegar e voltar", objects: "Lista de compras\nForma de pagamento\nSacola", alternatives: "Se estiver cheio, posso esperar em um local mais tranquilo ou voltar em outro horário." },
-  { title: "Ir a uma consulta", preparation: "Confirmar horário e endereço\nAnotar o que quero perguntar\nPlanejar o deslocamento", objects: "Documento\nAnotações\nExames solicitados", alternatives: "Se houver atraso, posso perguntar sobre a espera e pedir um local mais tranquilo." },
-  { title: "Começar a estudar", preparation: "Escolher um assunto\nSeparar o material\nAbrir a primeira atividade\nFazer uma pequena parte", objects: "Material de estudo\nÁgua", alternatives: "Se estiver difícil, posso escolher uma tarefa menor ou fazer uma pausa." },
-] as const;
-
 const lists: PlanList[] = ["preparation", "objects"];
 
 function validDate(value: string) {
@@ -43,6 +38,7 @@ function EventPlans() {
   const { fontSize } = useFontScale();
   const { plans, save, remove, toggle } = useEventPlanStore();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [moreExamples, setMoreExamples] = useState(false);
   const [focused, setFocused] = useState(false);
   const [showAlternative, setShowAlternative] = useState(false);
   const [selected, setSelected] = useState<string>();
@@ -205,7 +201,7 @@ function EventPlans() {
         <>
           {button(t("Novo plano"), () => openEditor())}
           {text(t("Comece com uma situação do dia a dia e adapte ao seu jeito."))}
-          {templates.map((template) => <View key={template.title}>
+          {(moreExamples ? EVENT_TEMPLATES : EVENT_TEMPLATES.slice(0, 3)).map((template) => <View key={template.title}>
             {button(t(template.title), () => setEditor({
               title: t(template.title), date: "",
               preparation: template.preparation.split("\n").map((line) => t(line)).join("\n"),
@@ -213,6 +209,11 @@ function EventPlans() {
               alternatives: t(template.alternatives),
             }))}
           </View>)}
+          <Pressable style={[styles.control, { borderColor: colors.borderStrong }]}
+            accessibilityRole="button" accessibilityState={{ expanded: moreExamples }}
+            onPress={() => setMoreExamples(!moreExamples)}>
+            {text(t(moreExamples ? "Mostrar menos exemplos" : "Ver mais exemplos de eventos"))}
+          </Pressable>
           {text(t("Meus planos"), true)}
           {plans.length === 0 && text(t("Nenhum plano salvo."))}
           {plans.map((item) => (
