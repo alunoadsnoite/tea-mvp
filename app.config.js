@@ -3,7 +3,7 @@ module.exports = ({ config }) => {
 
   return {
     ...config,
-    name: "TEA Autonomia PRO",
+    name: "TEA Passos",
     scheme: "tea-autonomia-pro",
     android: { ...config.android, package: "com.teamvp.app.pro" },
     ios: { ...config.ios, bundleIdentifier: "com.teamvp.app.pro" },

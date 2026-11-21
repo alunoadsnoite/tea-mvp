@@ -312,7 +312,6 @@
   "Substituir": "Remplacer",
   "Substituir rotina em andamento?": "Remplacer la routine en cours ?",
   "Sugestões para você": "Suggestions pour vous",
-  "TEA Autonomia - Feedback": "TEA Autonomia - Commentaires",
   "Telefone": "Téléphone",
   "Telefone do contato": "Numéro de téléphone du contact",
   "Tema": "Thème",
@@ -558,5 +557,6 @@
   "Consultar o cardápio, se disponível": "Consulter le menu, s’il est disponible",
   "Escolher um horário e um lugar confortável": "Choisir un horaire et un lieu confortables",
   "Planejar como comunicar meu pedido": "Prévoir comment communiquer ma commande",
-  "Se o ambiente estiver desconfortável, posso pedir outra mesa, levar a comida ou escolher outro local.": "Si l’environnement est inconfortable, je peux demander une autre table, emporter le repas ou choisir un autre lieu."
+  "Se o ambiente estiver desconfortável, posso pedir outra mesa, levar a comida ou escolher outro local.": "Si l’environnement est inconfortable, je peux demander une autre table, emporter le repas ou choisir un autre lieu.",
+  "{0} - Feedback": "{0} - Commentaires"
 }

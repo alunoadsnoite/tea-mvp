@@ -1,3 +1,4 @@
+import { isProEdition } from "./edition";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -29,7 +30,7 @@ export async function selectBackupFile(): Promise<string | null> {
 export async function saveBackupFile(): Promise<"saved" | "shared" | "canceled"> {
   const contents = await exportBackup();
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const fileName = `tea-autonomia-${timestamp}`;
+  const fileName = `${isProEdition ? "tea-passos" : "tea-autonomia"}-${timestamp}`;
 
   if (Platform.OS === "android") {
     const folder = await StorageAccessFramework.requestDirectoryPermissionsAsync();

@@ -312,7 +312,6 @@
   "Substituir": "Replace",
   "Substituir rotina em andamento?": "Replace the routine in progress?",
   "Sugestões para você": "Suggestions for you",
-  "TEA Autonomia - Feedback": "TEA Autonomia - Feedback",
   "Telefone": "Phone",
   "Telefone do contato": "Contact phone number",
   "Tema": "Theme",
@@ -558,5 +557,6 @@
   "Consultar o cardápio, se disponível": "Check the menu, if available",
   "Escolher um horário e um lugar confortável": "Choose a comfortable time and place",
   "Planejar como comunicar meu pedido": "Plan how to communicate my order",
-  "Se o ambiente estiver desconfortável, posso pedir outra mesa, levar a comida ou escolher outro local.": "If the environment feels uncomfortable, I can ask for another table, get takeaway or choose another place."
+  "Se o ambiente estiver desconfortável, posso pedir outra mesa, levar a comida ou escolher outro local.": "If the environment feels uncomfortable, I can ask for another table, get takeaway or choose another place.",
+  "{0} - Feedback": "{0} - Feedback"
 }

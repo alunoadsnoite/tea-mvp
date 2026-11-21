@@ -167,7 +167,7 @@ Sugestões, traduções e relatos de problemas são bem-vindos. Abra uma issue c
 
 O build padrão continua sendo o TEA Autonomia (`com.teamvp.app`), incluindo o
 build do F-Droid. Defina `TEA_EDITION=pro` ao gerar o projeto nativo para
-compilar o TEA Autonomia PRO (`com.teamvp.app.pro`). As duas edições podem ficar
+compilar o TEA Passos (`com.teamvp.app.pro`). As duas edições podem ficar
 instaladas juntas e usam a mesma base de código, sob GPL-3.0-or-later.
 
 Para preparar o Android PRO em um checkout de desenvolvimento com JDK 17:
@@ -227,3 +227,5 @@ Minhas rotinas → Exemplos de rotinas oferece oito modelos editáveis: manhã, 
 Planejar eventos → Ver mais exemplos de eventos amplia o catálogo para onze situações, incluindo dentista, entrevista, banco/serviço público, encontro de família, viagem, transporte público, curso presencial e restaurante. Cada exemplo inclui preparação, objetos e uma alternativa para imprevistos.
 
 Na PRO, o botão flutuante de acesso ao Cartão de Crise usa ∞. Seu nome e sua ação de acessibilidade permanecem os mesmos.
+
+A edição paga se chama **TEA Passos**. O identificador `com.teamvp.app.pro`, os links existentes e o formato dos dados e backups foram mantidos para permitir atualizar as instalações anteriores da PRO.

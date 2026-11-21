@@ -58,7 +58,7 @@ export default function SettingsScreen() {
     );
   }
 
-  const appName = Constants.expoConfig?.name ?? "TEA Autonomia";
+  const appName = isProEdition ? "TEA Passos" : Constants.expoConfig?.name ?? "TEA Autonomia";
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
   const themeOptions: { key: typeof mode; label: string; description: string }[] = [
@@ -69,7 +69,7 @@ export default function SettingsScreen() {
 
   const handleContactDeveloper = () => {
     Linking.openURL(
-      `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t("TEA Autonomia - Feedback"))}`
+      `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t("{0} - Feedback", appName))}`
     ).catch(() => {
       // Sem app de e-mail disponível: nada a abrir (o botão não é crítico)
     });
