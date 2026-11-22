@@ -162,3 +162,74 @@ GPL-3.0 — ver [LICENSE](LICENSE).
 ## Como contribuir
 
 Sugestões, traduções e relatos de problemas são bem-vindos. Abra uma issue com o contexto e o comportamento esperado. Para alterações de código, explique a mudança e os testes realizados no pull request. Use dados fictícios nos exemplos e nas capturas.
+
+## Edições gratuita e PRO
+
+O build padrão continua sendo o TEA Autonomia (`com.teamvp.app`), incluindo o
+build do F-Droid. Defina `TEA_EDITION=pro` ao gerar o projeto nativo para
+compilar o TEA Passos (`com.teamvp.app.pro`). As duas edições podem ficar
+instaladas juntas e usam a mesma base de código, sob GPL-3.0-or-later.
+
+Para preparar o Android PRO em um checkout de desenvolvimento com JDK 17:
+
+```sh
+npm ci
+TEA_EDITION=pro npx expo prebuild --clean --platform android --no-install
+(cd android && TEA_EDITION=pro ./gradlew assembleRelease)
+```
+
+Use um checkout separado para cada edição ou regenere o projeto nativo com
+`--clean` ao trocar de edição. O identificador do iOS também muda com a mesma
+variável. O build padrão e a receita do F-Droid continuam usando `app.json`
+para a versão.
+
+### Backup e transferência
+
+Na edição de origem, abra **Configurações → Backup e migração → Salvar backup**
+e guarde o JSON numa pasta privada. Na edição de destino, abra a mesma tela,
+toque em **Selecionar backup** e confirme a substituição. O procedimento
+funciona da gratuita para a PRO, da PRO para a gratuita e entre aparelhos.
+Em versões anteriores que ainda não exibem o menu, atualize a edição de
+origem antes de exportar.
+
+O arquivo inclui check-ins, cartões de regulação, rotinas com seu progresso,
+mensagens de crise, contatos, tema e preferências. O app gera e lê esse
+arquivo localmente. O JSON é legível e pode conter dados pessoais. Salve
+uma cópia dos dados de destino antes de restaurar se quiser preservá-los.
+
+### Recursos da PRO
+
+- **Planejar eventos** reúne planos locais com data opcional, roteiro de
+  preparação, objetos para levar e alternativas para imprevistos. Um plano
+  pode ser reutilizado como modelo com os itens desmarcados.
+- **Histórico de Check-ins** oferece períodos de 7, 30 e 90 dias, médias por
+  dia, resumo descritivo e exportação local do relatório em PDF.
+- **Minhas rotinas** permite começar uma rotina nova a partir de uma
+  existente. Em **Configurações**, a PRO permite aumentar o texto e abrir
+  os cartões de regulação com o filtro de favoritos ativo.
+
+Os planos e as preferências PRO acompanham o backup. A edição gratuita
+pode importar e reexportar esses dados para uma futura transferência à
+PRO, onde os recursos correspondentes ficam disponíveis.
+
+## Vida prática na edição PRO
+
+Em Planejar eventos, os modelos de mercado, consulta e estudo podem ser editados antes de salvar. “Me ajude a começar” mostra apenas o próximo item pendente de preparação ou de objetos para levar. O progresso permanece no aparelho e permite retomar depois. “Meu plano mudou” abre a alternativa escrita no plano. Os modelos são sugestões adaptáveis, sem geração por IA ou envio de dados.
+
+Validação em aparelho ainda necessária: TalkBack, fonte ampliada, teclado e retomada após fechar o aplicativo.
+
+A seção de doações por Pix e GitHub Sponsors aparece apenas na edição gratuita; a edição PRO não exibe esses controles.
+
+### Exemplos adicionais da PRO
+
+Minhas rotinas → Exemplos de rotinas oferece oito modelos editáveis: manhã, refeição simples, organização da casa, roupas, estudo, sono, atividade física e pausa ao chegar em casa. Os exemplos abrem como rascunhos e só entram nas suas rotinas ao salvar, sem substituir dados ou a execução em andamento. Os tempos são estimativas ajustáveis.
+
+Planejar eventos → Ver mais exemplos de eventos amplia o catálogo para onze situações, incluindo dentista, entrevista, banco/serviço público, encontro de família, viagem, transporte público, curso presencial e restaurante. Cada exemplo inclui preparação, objetos e uma alternativa para imprevistos.
+
+Na PRO, o botão flutuante de acesso ao Cartão de Crise usa ∞. Seu nome e sua ação de acessibilidade permanecem os mesmos.
+
+A edição paga se chama **TEA Passos**. O identificador `com.teamvp.app.pro`, os links existentes e o formato dos dados e backups foram mantidos para permitir atualizar as instalações anteriores da PRO.
+
+O TEA Passos usa um ícone próprio com a letra P com o infinito entrelaçado na haste, em `assets/passos-icon.png`, no lançador e na abertura. O ícone da edição gratuita é preservado.
+
+O APK de teste do TEA Passos 1.0.20 atualiza a antiga edição PRO; a edição gratuita continua em 1.0.19.

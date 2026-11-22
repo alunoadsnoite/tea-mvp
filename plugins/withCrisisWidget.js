@@ -38,26 +38,16 @@ const RES_FILES = [
   ["res/values-fr/crisis_widget.xml", "crisis_widget_values_fr.xml"],
 ];
 
-/** Lê o pacote real do projeto nativo para não duplicar o applicationId. */
-function readPackageName(projectRoot) {
-  const manifestPath = path.join(
-    projectRoot,
-    "android/app/src/main/AndroidManifest.xml"
-  );
-  const manifest = fs.readFileSync(manifestPath, "utf8");
-  const match = manifest.match(/<manifest[^>]*\spackage="([^"]+)"/);
-  return match ? match[1] : "com.teamvp.app";
-}
-
-function copyWidgetSources(projectRoot) {
-  const packageName = readPackageName(projectRoot);
+function copyWidgetSources(projectRoot, packageName, scheme) {
   const resDir = path.join(projectRoot, "android/app/src/main");
   const javaDir = path.join(resDir, "java", ...packageName.split("."));
 
   fs.mkdirSync(javaDir, { recursive: true });
-  fs.copyFileSync(
-    path.join(SOURCE_DIR, "CrisisWidgetProvider.kt"),
-    path.join(javaDir, "CrisisWidgetProvider.kt")
+  const provider = fs.readFileSync(path.join(SOURCE_DIR, "CrisisWidgetProvider.kt"), "utf8");
+  fs.writeFileSync(
+    path.join(javaDir, "CrisisWidgetProvider.kt"),
+    provider.replace("package com.teamvp.app", `package ${packageName}`)
+      .replace("tea://crisis-card", `${scheme}://crisis-card`)
   );
 
   for (const [relative, fileName] of RES_FILES) {
@@ -66,15 +56,14 @@ function copyWidgetSources(projectRoot) {
     fs.copyFileSync(path.join(SOURCE_DIR, fileName), target);
   }
 
-  return packageName;
 }
 
 const withCrisisWidget = (config) => {
-  config = withAndroidManifest(config, (cfg) => {
-    const packageName = cfg.android?.package ?? "com.teamvp.app";
-    const provider = `${packageName}.CrisisWidgetProvider`;
+  const packageName = config.android.package;
+  const scheme = config.scheme;
+  const receiverName = ".CrisisWidgetProvider";
 
-    const receiverName = `.${provider.split(".").pop()}`;
+  config = withAndroidManifest(config, (cfg) => {
     const application = cfg.modResults.manifest.application?.[0];
 
     // Não duplica o receiver se o prebuild rodar mais de uma vez.
@@ -93,7 +82,7 @@ const withCrisisWidget = (config) => {
         $: {
           "android:name": receiverName,
           "android:exported": "true",
-          "android:label": "TEA Autonomia",
+          "android:label": "@string/app_name",
         },
         "intent-filter": [
           {
@@ -119,7 +108,7 @@ const withCrisisWidget = (config) => {
   config = withDangerousMod(config, [
     "android",
     (cfg) => {
-      copyWidgetSources(cfg.modRequest.projectRoot);
+      copyWidgetSources(cfg.modRequest.projectRoot, packageName, scheme);
       return cfg;
     },
   ]);

@@ -1,6 +1,6 @@
 import { LANGUAGES } from "@/lib/i18n";
 import { useTranslation } from "@/hooks/useTranslation";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  Clipboard,
   Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,9 +17,13 @@ import Constants from "expo-constants";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useFontScale } from "@/hooks/useFontScale";
+import { isProEdition } from "@/lib/edition";
 import { ThemeColors } from "@/constants/theme";
 
 import { usePreferencesStore } from "@/stores/preferencesStore";
+
+const PIX_KEY = "81063e93-0c1b-4ddb-8a16-b9be68a75d4e";
+const SPONSORS_URL = "https://github.com/sponsors/alunoadsnoite";
 
 const DEVELOPER_EMAIL = "valdenorsa@proton.me";
 
@@ -37,6 +42,8 @@ export default function SettingsScreen() {
   const { fontSize } = useFontScale();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
+  const [supportMessage, setSupportMessage] = useState("");
+
   const preferences = usePreferencesStore();
   const options = [
     { label: t("Vibração"), description: t("Permitir feedback por vibração nas interações."), value: preferences.hapticsEnabled, onChange: preferences.setHapticsEnabled },
@@ -44,6 +51,14 @@ export default function SettingsScreen() {
     { label: t("Mostrar próximo passo"), description: t("Exibir Agora / Depois durante as rotinas."), value: preferences.showNextStep, onChange: preferences.setShowNextStep },
   ];
 
+  if (isProEdition) {
+    options.push(
+      { label: t("Texto maior"), description: t("Aumenta o texto do app além da escala do sistema."), value: preferences.largerText, onChange: preferences.setLargerText },
+      { label: t("Abrir nos favoritos"), description: t("Abre os cartões de regulação com o filtro de favoritos ativo."), value: preferences.favoritesFirstView, onChange: preferences.setFavoritesFirstView },
+    );
+  }
+
+  const appName = isProEdition ? "TEA Passos" : Constants.expoConfig?.name ?? "TEA Autonomia";
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
   const themeOptions: { key: typeof mode; label: string; description: string }[] = [
@@ -54,7 +69,7 @@ export default function SettingsScreen() {
 
   const handleContactDeveloper = () => {
     Linking.openURL(
-      `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t("TEA Autonomia - Feedback"))}`
+      `mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(t("{0} - Feedback", appName))}`
     ).catch(() => {
       // Sem app de e-mail disponível: nada a abrir (o botão não é crítico)
     });
@@ -175,15 +190,68 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
+        <Link href="/backup" asChild>
+          <Pressable style={styles.optionButton} accessibilityRole="button">
+            <Text style={[styles.optionLabel, { fontSize: fontSize(16) }]}>{t("Backup e migração")}</Text>
+          </Pressable>
+        </Link>
+
         {/* Sobre */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>{t("Sobre")}</Text>
           <Text style={[styles.aboutText, { fontSize: fontSize(14) }]}>
-            TEA Autonomia v{appVersion}
+            {appName} v{appVersion}
             {"\n"}
             {t("App para autonomia e regulação de adultos no Espectro Autista.")}
           </Text>
         </View>
+
+        {!isProEdition && (
+        <View style={styles.section}>
+          <Text accessibilityRole="header" style={[styles.sectionTitle, { fontSize: fontSize(20) }]}>
+            {t("Apoie o desenvolvedor")}
+          </Text>
+          <Pressable
+            style={styles.optionButton}
+            onPress={() => {
+              try {
+                Clipboard.setString(PIX_KEY);
+                setSupportMessage("Chave Pix copiada.");
+              } catch {
+                setSupportMessage("Não foi possível copiar a chave Pix.");
+              }
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("Copiar chave Pix")}
+            accessibilityHint={t("Use a chave no aplicativo do seu banco.")}
+          >
+            <Text style={[styles.optionContent, styles.optionLabel, { fontSize: fontSize(16) }]}>
+              {t("Copiar chave Pix")}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.optionButton}
+            onPress={async () => {
+              setSupportMessage("");
+              try {
+                await Linking.openURL(SPONSORS_URL);
+              } catch {
+                setSupportMessage("Não foi possível abrir o GitHub Sponsors.");
+              }
+            }}
+            accessibilityRole="link"
+            accessibilityLabel="GitHub Sponsors"
+            accessibilityHint={t("Abre a página de patrocínio no navegador.")}
+          >
+            <Text style={[styles.optionContent, styles.optionLabel, { fontSize: fontSize(16) }]}>
+              GitHub Sponsors
+            </Text>
+          </Pressable>
+          <Text accessibilityLiveRegion="polite" style={[styles.optionDescription, { fontSize: fontSize(14) }]}>
+            {supportMessage && t(supportMessage)}
+          </Text>
+        </View>
+        )}
 
         {/* Desenvolvedor */}
         <View style={styles.section}>

@@ -1,5 +1,5 @@
 import { useTranslation } from "@/hooks/useTranslation";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import { useFontScale } from "@/hooks/useFontScale";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { ThemeColors } from "@/constants/theme";
 import { summarizeSensoryHistory } from "@/lib/sensoryHistory";
+import { isProEdition } from "@/lib/edition";
+import { reportHtml, reportRows, reportSummary } from "@/lib/checkInReport";
+import { shareReport } from "@/lib/shareReport";
 import { CheckInEntry } from "@/types/checkin";
 
 /**
@@ -33,7 +36,28 @@ export default function CheckInHistoryScreen() {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const entries = useMemo(() => getRecentEntries(7), [allEntries, getRecentEntries]);
+  const [days, setDays] = useState(7);
+  const exporting = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const entries = useMemo(() => getRecentEntries(days), [allEntries, days, getRecentEntries]);
+  const dailyRows = useMemo(() => isProEdition ? reportRows(entries, language) : [], [entries, language]);
+  const reportHeaders = [t("Data"), t("Bateria Social"), t("Carga Sensorial"), t("Energia Física")];
+
+  async function exportReport() {
+    if (exporting.current || !entries.length) return;
+    exporting.current = true;
+    setBusy(true);
+    try {
+      const html = reportHtml(t("Relatório de check-ins"), t("Últimos {0} dias", days),
+        reportSummary(entries, t), reportHeaders, dailyRows, language);
+      if (await shareReport(html)) Alert.alert(t("Relatório salvo."));
+    } catch {
+      Alert.alert(t("Não foi possível exportar o PDF."));
+    } finally {
+      exporting.current = false;
+      setBusy(false);
+    }
+  }
   const { highLoadCount, topTriggers } = useMemo(() => summarizeSensoryHistory(entries), [entries]);
 
   // Agrupa por dia civil com uma chave independente do idioma.
@@ -92,13 +116,33 @@ export default function CheckInHistoryScreen() {
       />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        {isProEdition && (
+          <View style={styles.entryCard}>
+            <Text accessibilityRole="header" style={[styles.dayTitle, { fontSize: fontSize(16) }]}>{t("Período do relatório")}</Text>
+            {[7, 30, 90].map((period) => (
+              <Pressable key={period} onPress={() => setDays(period)} accessibilityRole="radio"
+                accessibilityState={{ checked: days === period, disabled: busy }} disabled={busy}
+                style={{ minHeight: 48, justifyContent: "center" }}>
+                <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
+                  {days === period ? "✓ " : "○ "}{t("Últimos {0} dias", period)}
+                </Text>
+              </Pressable>
+            ))}
+            {entries.length > 0 && (
+              <Pressable onPress={exportReport} disabled={busy} accessibilityRole="button"
+                accessibilityState={{ disabled: busy, busy }} style={{ minHeight: 48, justifyContent: "center" }}>
+                <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>{t(busy ? "Aguarde." : "Exportar relatório em PDF")}</Text>
+              </Pressable>
+            )}
+          </View>
+        )}
         {Object.keys(groupedByDay).length === 0 ? (
-          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{t("Nenhum check-in nos últimos 7 dias")}</Text>
+          <Text style={[styles.emptyText, { fontSize: fontSize(16) }]}>{isProEdition ? t("Nenhum check-in no período.") : t("Nenhum check-in nos últimos 7 dias")}</Text>
         ) : (
           <>
             <View style={styles.entryCard}>
               <Text accessibilityRole="header" style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
-                {t("Resumo sensorial dos últimos 7 dias")}
+                {isProEdition ? t("Resumo sensorial do período") : t("Resumo sensorial dos últimos 7 dias")}
               </Text>
               <Text style={[styles.summaryText, { fontSize: fontSize(14) }]}>
                 {t("Carga sensorial de 4 ou 5 em {0} de {1} registros.", highLoadCount, entries.length)}
@@ -118,6 +162,18 @@ export default function CheckInHistoryScreen() {
                 ))
               )}
             </View>
+            {isProEdition && (
+              <View style={styles.entryCard}>
+                <Text accessibilityRole="header" style={[styles.dayTitle, { fontSize: fontSize(16) }]}>
+                  {t("Evolução por dia")}
+                </Text>
+                {dailyRows.map(([day, battery, load, energy]) => (
+                  <Text key={day} style={[styles.summaryText, { fontSize: fontSize(14) }]}>
+                    {t("{0} — Bateria social {1}, carga sensorial {2}, energia física {3}.", day, battery, load, energy)}
+                  </Text>
+                ))}
+              </View>
+            )}
             {Object.entries(groupedByDay).map(([date, dayEntries]) => (
               <View key={date} style={styles.daySection}>
                 <Text style={[styles.dayTitle, { fontSize: fontSize(16) }]}>

@@ -22,3 +22,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test -- --runInBand
       - run: npx --no-install expo export --platform android
+      - run: npx --no-install expo export --platform android --output-dir dist/pro
+        env:
+          TEA_EDITION: 'pro'

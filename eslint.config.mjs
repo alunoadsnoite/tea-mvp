@@ -22,6 +22,7 @@ export default tseslint.config(
       '.expo/',
       'android/',
       'ios/',
+      'app.config.js',
       'babel.config.js',
       'metro.config.js',
       // Setup do Jest roda em ambiente de teste, fora do escopo do app
