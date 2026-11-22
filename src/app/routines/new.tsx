@@ -1,3 +1,4 @@
+import { PRO_ROUTINE_TEMPLATES } from "@/lib/practicalTemplates";
 import { isProEdition } from "@/lib/edition";
 import { localizeRoutine } from "@/lib/localizedContent";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -32,10 +33,14 @@ export default function NovaRotinaScreen() {
     id ? state.getRoutineById(id) : undefined
   );
 
-  const templateRoutine = useRoutineStore((state) =>
+  const savedTemplateRoutine = useRoutineStore((state) =>
     !id && isProEdition && template ? state.getRoutineById(template) : undefined
   );
 
+
+  const templateRoutine = useMemo(() => savedTemplateRoutine ?? (
+    !id && isProEdition ? PRO_ROUTINE_TEMPLATES.find((example) => example.id === template) : undefined
+  ), [savedTemplateRoutine, id, template]);
 
   const isEditing = Boolean(id && existingRoutine);
 
@@ -50,7 +55,11 @@ export default function NovaRotinaScreen() {
 
   useEffect(() => {
     if (!templateRoutine) return;
-    const source = localizeRoutine(templateRoutine, t);
+    const source = PRO_ROUTINE_TEMPLATES.includes(templateRoutine) ? {
+      ...templateRoutine, name: t(templateRoutine.name),
+      description: templateRoutine.description && t(templateRoutine.description),
+      steps: templateRoutine.steps.map((step) => ({ ...step, title: t(step.title) })),
+    } : localizeRoutine(templateRoutine, t);
     setName(source.name);
     setDescription(source.description ?? "");
     setSteps(source.steps.map((step) => ({ ...step, id: createId("step") })));

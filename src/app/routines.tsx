@@ -1,7 +1,8 @@
+import { PRO_ROUTINE_TEMPLATES } from "@/lib/practicalTemplates";
 import { localizeRoutine } from "@/lib/localizedContent";
 import { isProEdition } from "@/lib/edition";
 import { useTranslation } from "@/hooks/useTranslation";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -29,6 +30,7 @@ export default function RoutinesListScreen() {
   const { fontSize } = useFontScale();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const [showExamples, setShowExamples] = useState(false);
   const routines = useRoutineStore((state) => state.routines);
   const execution = useRoutineStore((state) => state.execution);
   const startExecution = useRoutineStore((state) => state.startExecution);
@@ -94,6 +96,25 @@ export default function RoutinesListScreen() {
         >
           <Text style={[styles.newButtonText, { fontSize: fontSize(16) }]}>{t("+ Nova rotina")}</Text>
         </Pressable>
+
+        {isProEdition && <View style={styles.routineCard}>
+          <Pressable style={styles.manageButton} accessibilityRole="button"
+            accessibilityLabel={t("Exemplos de rotinas")} accessibilityState={{ expanded: showExamples }}
+            onPress={() => setShowExamples(!showExamples)}>
+            <Text style={[styles.routineName, { fontSize: fontSize(20) }]}>{t("Exemplos de rotinas")}</Text>
+          </Pressable>
+          {showExamples && <>
+            <Text style={[styles.routineDescription, { fontSize: fontSize(14) }]}>
+              {t("Escolha um exemplo para adaptar antes de salvar. Seus dados atuais serão preservados.")}
+            </Text>
+            {PRO_ROUTINE_TEMPLATES.map((example) => <Pressable key={example.id}
+              style={[styles.manageButton, { minHeight: 48, justifyContent: "center" }]}
+              accessibilityRole="button" accessibilityLabel={t("Usar {0} como modelo", t(example.name))}
+              onPress={() => router.push({ pathname: "/routines/new", params: { template: example.id } })}>
+              <Text style={[styles.manageButtonText, { fontSize: fontSize(16) }]}>{t(example.name)}</Text>
+            </Pressable>)}
+          </>}
+        </View>}
 
         {routines.map((routine) => localizeRoutine(routine, t)).map((routine) => (
           <View key={routine.id} style={styles.routineCard}>
