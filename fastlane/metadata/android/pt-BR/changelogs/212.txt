@@ -1,0 +1,1 @@
+O APK gerado bloqueia permissões de internet e armazenamento desnecessárias e exclui dados de backups e transferências.

@@ -1,0 +1,1 @@
+The Android build blocks unnecessary network and storage permissions and excludes app data from backups and transfers.
